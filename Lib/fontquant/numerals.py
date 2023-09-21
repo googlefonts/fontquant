@@ -48,7 +48,7 @@ PLN_MATRIX = ("lnum", "pnum")
 TLN_MATRIX = ("lnum", "tnum")
 
 
-def vertical_variance(ttFont, vhb, features):
+def vertical_variance(ttFont, vhb, features=None):
     """Determine numerals' upper and lower bbox variance"""
     upper = []
     lower = []
@@ -69,7 +69,7 @@ def width(vhb, string):
     return x_max + x_min
 
 
-def horizontal_variance(ttFont, vhb, features):
+def horizontal_variance(ttFont, vhb, features=None):
     """Determine numerals' horizontal bbox variance"""
     widths = []
     feature_dict = {}
@@ -191,7 +191,7 @@ class TLN_CHECK(Check):
 #     return vhb.str(NUMERALS) != vhb.str(NUMERALS, {"features": {"smcp": True}})
 
 
-def numeral_style_heuristics(ttFont, vhb, features):
+def numeral_style_heuristics(ttFont, vhb, features=None):
     x_bbox = vhb.bbox("x")
     x_height = x_bbox[3] - x_bbox[2]
     upper_variance, lower_variance = vertical_variance(ttFont, vhb, features)

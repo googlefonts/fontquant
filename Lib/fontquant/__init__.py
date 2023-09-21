@@ -86,14 +86,14 @@ class CustomHarfbuzz(Vharfbuzz):
 
         return x_cursor
 
-    def str(self, string, options):
+    def str(self, string, options=None):
         """Return the shaped string buffer as a string."""
-        buf = self.shape(string, options or {})
+        buf = self.shape(string, options)
         return self.serialize_buf(buf)
 
-    def bbox(self, string, options):
+    def bbox(self, string, options=None):
         """Return the shaped string buffer's  bbox."""
-        buf = self.shape(string, options or {})
+        buf = self.shape(string, options)
         return self.buf_to_bbox(buf)
 
 
