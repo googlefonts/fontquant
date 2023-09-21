@@ -198,3 +198,11 @@ from .numerals import Numerals
 
 class Base(Check):
     children = [Casing, Numerals]
+
+
+def quantify(font_path):
+    ttFont = CustomTTFont(font_path)
+    vhb = CustomHarfbuzz(font_path)
+
+    base = Base(ttFont, vhb)
+    return base.JSON()

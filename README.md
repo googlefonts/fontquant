@@ -2,7 +2,7 @@
 
 Fontquant looks into a font and quantifies what’s in it, creating a machine-readable representation of font features that it has _proven_ to work. It makes heavy use of the _Harfbuzz_ shaping engine to prove the functionality of font features, rather than just looking up the feature list in the font.
 
-The purpose of Fontquant is to provide a high-level quantifiable overview of a font’s features and quality in order to make fonts’ technical quality comparable, to make their features searchable through a user interface as part of a font library, and for font quality assurance (QA).
+The purpose of Fontquant is to provide a high-level quantifiable overview of a font’s features and quality in order to make fonts’ technical quality and features comparable, to make their features searchable through a user interface as part of a font library, and for font quality assurance (QA).
 
 Examples: 
 
@@ -11,7 +11,43 @@ Examples:
 
 The individual values are described [in the documentation](Lib/fontquant/README.md) along with recommendations of how to interpret the values.
 
-# Usage
+# Installation
 
-Install tool with pip: `pip install .`, then invoke tool with: `fontquant font.ttf`.
-Currently prints formatted JSON to the screen.
+Install tool with pip: `pip install .`
+
+# Invoke From Command Line
+
+`fontquant font.ttf`.
+Currently prints formatted JSON to the screen:
+
+```
+{
+  "casing": {
+    "smcp": 0.0,
+    "c2sc": 0.0,
+    "case": 0.24444444444444444
+  },
+  "numerals": {
+    "proportional_oldstyle": false,
+    "tabular_oldstyle": false,
+    "proportional_lining": true,
+    "tabular_lining": true,
+    "default_numerals": "proportional_lining",
+    "superiors": 0.4,
+    "inferiors": 0.0,
+    "encoded_fractions": 0.15,
+    "arbitrary_fractions": false,
+    "slashed_zero": 0.0
+  }
+}
+```
+
+# Invoke In Python
+
+```python
+from fontquant import quantify
+
+# Returns dictionary:
+results = quantify("font.ttf")
+default_numerals = results["numerals"]["default_numerals"]
+```
