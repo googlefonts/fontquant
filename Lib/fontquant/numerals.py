@@ -236,7 +236,7 @@ def default_numerals(ttFont, vhb):
 
 class DEFAULT_NUMERALS(Check):
     """\
-    Returns the default numeral set (out of proportional_oldstyle, tabular_oldstyle, proportional_lining, tabular_lining).
+    Returns the default numeral set (out of `proportional_oldstyle`, `tabular_oldstyle`, `proportional_lining`, `tabular_lining`).
     """
 
     name = "Default Numerals"

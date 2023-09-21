@@ -33,7 +33,7 @@ Returns a boolean of whether or not the font has functioning set of _proportiona
 Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals, either by default or activatable by the `lnum`/`tnum` features. 
 ### Default Numerals (`numerals/default_numerals`)
 
-Returns the default numeral set (out of proportional_oldstyle, tabular_oldstyle, proportional_lining, tabular_lining). 
+Returns the default numeral set (out of `proportional_oldstyle`, `tabular_oldstyle`, `proportional_lining`, `tabular_lining`). 
 ### Superior Numerals (`numerals/superiors`)
 
 Returns the percentage (as float 0—1) of numerals that get shaped by the `sups` feature. 
