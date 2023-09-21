@@ -2,21 +2,6 @@ from vharfbuzz import Vharfbuzz
 import uharfbuzz as hb
 from fontTools import ttLib
 
-from casing import case, c2sc, smcp
-from numerals import (
-    osf,
-    tosf,
-    lf,
-    tf,
-    default_numerals,
-    slashed_zero,
-    default_fractions,
-    extended_fractions,
-    inferiors,
-    superiors,
-)
-from alternates import ss, salt, calt
-
 
 class CustomHarfbuzz(Vharfbuzz):
     def setup_points_draw_funcs(self, buffer_list):
@@ -47,9 +32,7 @@ class CustomHarfbuzz(Vharfbuzz):
 
     def glyph_to_points(self, gid):
         if not hasattr(hb, "DrawFuncs"):
-            raise ValueError(
-                "glyph_to_points_path requires uharfbuzz with draw function support"
-            )
+            raise ValueError("glyph_to_points_path requires uharfbuzz with draw function support")
 
         buffer_list = []
         self.setup_points_draw_funcs(buffer_list)
@@ -78,10 +61,7 @@ class CustomHarfbuzz(Vharfbuzz):
 
         for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
             dx, dy = pos.position[0], pos.position[1]
-            glyph_path = [
-                (x + x_cursor, y + y_cursor)
-                for x, y in self.glyph_to_points(info.codepoint)
-            ]
+            glyph_path = [(x + x_cursor, y + y_cursor) for x, y in self.glyph_to_points(info.codepoint)]
             for x, y in glyph_path:
                 if x_min is None or x < x_min:
                     x_min = x
@@ -118,10 +98,7 @@ class CustomHarfbuzz(Vharfbuzz):
 
         for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
             dx, dy = pos.position[0], pos.position[1]
-            glyph_path = [
-                (x + x_cursor, y + y_cursor)
-                for x, y in self.glyph_to_points(info.codepoint)
-            ]
+            glyph_path = [(x + x_cursor, y + y_cursor) for x, y in self.glyph_to_points(info.codepoint)]
             for x, y in glyph_path:
                 if x_min is None or x < x_min:
                     x_min = x
@@ -149,43 +126,75 @@ class CustomHarfbuzz(Vharfbuzz):
 
 class CustomTTFont(ttLib.TTFont):
     def has_feature(self, tag):
-        return tag in [
-            FeatureRecord.FeatureTag
-            for FeatureRecord in self["GSUB"].table.FeatureList.FeatureRecord
-        ]
+        return tag in [FeatureRecord.FeatureTag for FeatureRecord in self["GSUB"].table.FeatureList.FeatureRecord]
 
 
-if __name__ == "__main__":
-    import sys
+class Check(object):
+    name = None
+    keyword = None
+    children = []
+    interpretation_hint = None
 
-    ttFont = CustomTTFont(sys.argv[1])
-    vhb = CustomHarfbuzz(sys.argv[1])
+    def __init__(self, ttFont, vhb, parent=None) -> None:
+        self.ttFont = ttFont
+        self.vhb = vhb
+        self.parent = parent
 
-    print()
-    print("### ALTERNATES")
-    print("stylistic sets:", ss(ttFont, vhb))
-    print("stylistic alternates:", salt(ttFont, vhb))
-    print("contextual alternates:", calt(ttFont, vhb))
+    def JSON(self):
+        dictionary = {}
+        for child in self.children:
+            instance = child(self.ttFont, self.vhb, parent=self)
+            dictionary[instance.keyword] = instance.JSON()
+        return dictionary
 
-    print()
-    print("### NUMERALS")
-    print("osf:", osf(ttFont, vhb))
-    print("tosf:", tosf(ttFont, vhb))
-    print("lf:", lf(ttFont, vhb))
-    print("tf:", tf(ttFont, vhb))
-    print("default numerals:", default_numerals(ttFont, vhb))
-    print("default fractions (1/4):", default_fractions(ttFont, vhb))
-    print("extended fractions (1234/5678):", extended_fractions(ttFont, vhb))
-    print("slashed zero:", slashed_zero(ttFont, vhb))
-    print("inferiors:", inferiors(ttFont, vhb))
-    print("superiors:", superiors(ttFont, vhb))
+    def path(self):
+        if self.parent:
+            return self.parent.path() + [self.keyword]
+        else:
+            return [self.keyword] if self.keyword else []
 
-    print()
-    print("### CASING")
-    print(f"small caps: {smcp(ttFont, vhb):.2f} coverage of unicodedata's Ll glyphs")
-    print(
-        f"caps to small caps: {c2sc(ttFont, vhb):.2f} coverage of unicodedata's Lu glyphs"
-    )
-    print(
-        f"case-sensitive punctuation: {case(ttFont, vhb):.2f} coverage of unicodedata's P* glyphs"
-    )
+    def index(self):
+        if self.__doc__:
+            return "/".join(self.path()), self.name
+        else:
+            check_list = []
+            for child in self.children:
+                instance = child(self.ttFont, self.vhb, parent=self)
+                new_list = instance.index()
+                if new_list:
+                    check_list += new_list
+            return check_list
+
+    def documentation(self):
+        LB = "\n"
+        if self.__doc__:
+            markdown = f"""\
+### {self.name} (`{"/".join(self.path())}`)
+
+{" ".join([line.strip() for line in self.__doc__.splitlines()])}
+"""
+            if self.interpretation_hint:
+                markdown += "\n_Interpretation Hint:_ " + (
+                    " ".join([line.strip() for line in self.interpretation_hint.splitlines()]) + "\n\n"
+                )
+
+            return markdown
+
+        else:
+            markdown = ""
+
+            if self.name:
+                markdown += f"## {self.name}\n\n"
+
+            for child in self.children:
+                instance = child(self.ttFont, self.vhb, parent=self)
+                markdown += instance.documentation()
+            return markdown
+
+
+from .casing import Casing
+from .numerals import Numerals
+
+
+class Base(Check):
+    children = [Casing, Numerals]

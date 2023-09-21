@@ -1,21 +1,51 @@
+from fontquant import Check
+
 # Settings:
 
 # How much of the height of an "x" must the upper and lower bbox variance of numerals
-# be to be considered OSF?
-OSF_THRESHOLD = 0.1
+# be to be considered PON?
+PON_THRESHOLD = 0.1
 
-# How much may the width variance of table figures be to be considered TF?
+# How much may the width variance of table figures be to be considered TLN_MATRIX?
 # Measured in variance / UPM.
-TF_THRESHOLD = 0.005
+TLN_THRESHOLD = 0.005
 
 # Constants:
 NUMERALS = "0123456789"
+ENCODED_FRACTIONS = (
+    "1/4",
+    "1/2",
+    "3/4",
+    "1/7",
+    "1/9",
+    "1/10",
+    "1/3",
+    "2/3",
+    "1/5",
+    "2/5",
+    "3/5",
+    "4/5",
+    "1/6",
+    "5/6",
+    "1/8",
+    "3/8",
+    "5/8",
+    "7/8",
+    "1/",
+    "0/3",
+)
+
+# Numeral sets:
+PON = "proportional_oldstyle"
+TON = "tabular_oldstyle"
+PLN = "proportional_lining"
+TLN = "tabular_lining"
 
 # Activation matrix
-OSF = ("onum", "pnum")
-TOSF = ("onum", "tnum")
-LF = ("lnum", "pnum")
-TF = ("lnum", "tnum")
+PON_MATRIX = ("onum", "pnum")
+TON_MATRIX = ("onum", "tnum")
+PLN_MATRIX = ("lnum", "pnum")
+TLN_MATRIX = ("lnum", "tnum")
 
 
 def vertical_variance(ttFont, vhb, features=[]):
@@ -50,16 +80,6 @@ def horizontal_variance(ttFont, vhb, features=[]):
     return max(widths) - min(widths)
 
 
-# Problem:
-#
-# The below code doesn not (yet) check whether numerals shaped by certain features
-# are actually different from numerals shaped by other features.
-# So it doesn't compare tnum and tosf to see of they're different.
-# It only checks whether numerals activated by one combination of features
-# are different from the default numerals.
-# So it's not 100% accurate for non-standard fonts, but should work for standard fonts.
-
-
 def differs(vhb, string, features1, features2):
     """Return True if the two featuresets differ."""
     feature_dict_1 = {}
@@ -68,65 +88,95 @@ def differs(vhb, string, features1, features2):
         feature_dict_1[feature] = True
     for feature in features2:
         feature_dict_2[feature] = True
-    return vhb.str(string, {"features": feature_dict_1}) != vhb.str(
-        string, {"features": feature_dict_2}
-    )
+    return vhb.str(string, {"features": feature_dict_1}) != vhb.str(string, {"features": feature_dict_2})
 
 
 def same(vhb, string, features1, features2):
     return not differs(vhb, string, features1, features2)
 
 
-def osf_matrix(ttFont, vhb):
-    return differs(vhb, NUMERALS, OSF, [])
+def pon_matrix(ttFont, vhb):
+    return differs(vhb, NUMERALS, PON_MATRIX, [])
 
 
-def osf(ttFont, vhb):
-    return (
-        osf_matrix(ttFont, vhb)
-        and numeral_style_heuristics(ttFont, vhb, OSF) == "osf"
-        or default_numerals(ttFont, vhb) == "osf"
-    )
+class PON_CHECK(Check):
+    """\
+    Returns a boolean of whether or not the font has functioning set of _proportional oldstyle_ numerals, either by default or activatable by the `onum`/`pnum` features.
+    """
+
+    name = "Proportional Oldstyle Numerals"
+    keyword = PON
+
+    def JSON(self):
+        return (
+            pon_matrix(self.ttFont, self.vhb)
+            and numeral_style_heuristics(self.ttFont, self.vhb, PON_MATRIX) == PON
+            or default_numerals(self.ttFont, self.vhb) == PON
+        )
 
 
-def tosf_matrix(ttFont, vhb):
-    return differs(vhb, NUMERALS, TOSF, [])
+def ton_matrix(ttFont, vhb):
+    return differs(vhb, NUMERALS, TON_MATRIX, [])
 
 
-def tosf(ttFont, vhb):
-    return (
-        tosf_matrix(ttFont, vhb)
-        and numeral_style_heuristics(ttFont, vhb, TOSF) == "tosf"
-        or default_numerals(ttFont, vhb) == "tosf"
-    )
+class TON_CHECK(Check):
+    """\
+    Returns a boolean of whether or not the font has functioning set of _tabular oldstyle_ numerals, either by default or activatable by the `onum`/`tnum` features.
+    """
+
+    name = "Tabular Oldstyle Numerals"
+    keyword = TON
+
+    def JSON(self):
+        return (
+            ton_matrix(self.ttFont, self.vhb)
+            and numeral_style_heuristics(self.ttFont, self.vhb, TON_MATRIX) == TON
+            or default_numerals(self.ttFont, self.vhb) == TON
+        )
 
 
-def lf_matrix(ttFont, vhb):
-    return differs(vhb, NUMERALS, LF, [])
+def pln_matrix(ttFont, vhb):
+    return differs(vhb, NUMERALS, PLN_MATRIX, [])
 
 
-def lf(ttFont, vhb):
-    return (
-        lf_matrix(ttFont, vhb)
-        and numeral_style_heuristics(ttFont, vhb, LF) == "lf"
-        or default_numerals(ttFont, vhb) == "lf"
-    )
+class PLN_CHECK(Check):
+    """\
+    Returns a boolean of whether or not the font has functioning set of _proportional lining_ numerals, either by default or activatable by the `lnum`/`pnum` features.
+    """
+
+    name = "Proportional Lining Numerals"
+    keyword = PLN
+
+    def JSON(self):
+        return (
+            pln_matrix(self.ttFont, self.vhb)
+            and numeral_style_heuristics(self.ttFont, self.vhb, PLN_MATRIX) == PLN
+            or default_numerals(self.ttFont, self.vhb) == PLN
+        )
 
 
-def tf_matrix(ttFont, vhb):
-    return differs(vhb, NUMERALS, TF, [])
+def tln_matrix(ttFont, vhb):
+    return differs(vhb, NUMERALS, TLN_MATRIX, [])
 
 
-def tf(ttFont, vhb):
-    return (
-        tf_matrix(ttFont, vhb)
-        and numeral_style_heuristics(ttFont, vhb, TF) == "tf"
-        or default_numerals(ttFont, vhb) == "tf"
-    )
+class TLN_CHECK(Check):
+    """\
+    Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals, either by default or activatable by the `lnum`/`tnum` features.
+    """
+
+    name = "Tabular Lining Numerals"
+    keyword = TLN
+
+    def JSON(self):
+        return (
+            tln_matrix(self.ttFont, self.vhb)
+            and numeral_style_heuristics(self.ttFont, self.vhb, TLN_MATRIX) == TLN
+            or default_numerals(self.ttFont, self.vhb) == TLN
+        )
 
 
-def sc(ttFont, vhb):
-    return vhb.str(NUMERALS) != vhb.str(NUMERALS, {"features": {"smcp": True}})
+# def sc(ttFont, vhb):
+#     return vhb.str(NUMERALS) != vhb.str(NUMERALS, {"features": {"smcp": True}})
 
 
 def numeral_style_heuristics(ttFont, vhb, features=[]):
@@ -136,46 +186,44 @@ def numeral_style_heuristics(ttFont, vhb, features=[]):
 
     # Vertical:
     # Compare upper and lower bbox variance to x-height
-    if (
-        upper_variance > x_height * OSF_THRESHOLD
-        and lower_variance > x_height * OSF_THRESHOLD
-    ):
+    if upper_variance > x_height * PON_THRESHOLD and lower_variance > x_height * PON_THRESHOLD:
         vertical = "onum"
     else:
         vertical = "lnum"
 
     # Allow some variance in width
-    if (
-        horizontal_variance(ttFont, vhb, features) / ttFont["head"].unitsPerEm
-        < TF_THRESHOLD
-    ):
+    if horizontal_variance(ttFont, vhb, features) / ttFont["head"].unitsPerEm < TLN_THRESHOLD:
         horizontal = "tnum"
     else:
         horizontal = "pnum"
 
-    if (vertical, horizontal) == OSF:
-        return "osf"
-    elif (vertical, horizontal) == TOSF:
-        return "tosf"
-    elif (vertical, horizontal) == LF:
-        return "lf"
-    elif (vertical, horizontal) == TF:
-        return "tf"
+    if (vertical, horizontal) == PON_MATRIX:
+        return PON
+    elif (vertical, horizontal) == TON_MATRIX:
+        return TON
+    elif (vertical, horizontal) == PLN_MATRIX:
+        return PLN
+    elif (vertical, horizontal) == TLN_MATRIX:
+        return TLN
 
 
 def default_numerals(ttFont, vhb):
-    """Determine font's default numerals"""
-    numeralsets = ["osf", "tosf", "lf", "tf"]
+    numeralsets = [
+        PON,
+        TON,
+        PLN,
+        TLN,
+    ]
 
     # Remove numeralsets from the full list that are available
-    if osf_matrix(ttFont, vhb):
-        numeralsets.remove("osf")
-    if tosf_matrix(ttFont, vhb):
-        numeralsets.remove("tosf")
-    if lf_matrix(ttFont, vhb):
-        numeralsets.remove("lf")
-    if tf_matrix(ttFont, vhb):
-        numeralsets.remove("tf")
+    if pon_matrix(ttFont, vhb):
+        numeralsets.remove(PON)
+    if ton_matrix(ttFont, vhb):
+        numeralsets.remove(TON)
+    if pln_matrix(ttFont, vhb):
+        numeralsets.remove(PLN)
+    if tln_matrix(ttFont, vhb):
+        numeralsets.remove(TLN)
 
     # If only one numeral set remains, return it
     if len(numeralsets) == 1:
@@ -186,35 +234,122 @@ def default_numerals(ttFont, vhb):
         return numeral_style_heuristics(ttFont, vhb)
 
 
-def slashed_zero(ttFont, vhb):
-    return ttFont.has_feature("zero") and vhb.str("0") != vhb.str(
-        "0", {"features": {"zero": True}}
-    )
+class DEFAULT_NUMERALS(Check):
+    """\
+    Returns the default numeral set (out of proportional_oldstyle, tabular_oldstyle, proportional_lining, tabular_lining).
+    """
+
+    name = "Default Numerals"
+    keyword = "default_numerals"
+
+    def JSON(self):
+        return default_numerals(self.ttFont, self.vhb)
 
 
-def default_fractions(ttFont, vhb):
-    return ttFont.has_feature("frac") and vhb.str("1/4 1/2 3/4") != vhb.str(
-        "1/4 1/2 3/4", {"features": {"frac": True}}
-    )
+class SLASHED_ZERO(Check):
+    """\
+    Returns percentage of feature combinations that shape the slashed zero.
+    Here, the `zero` feature is used alone and in combination with other numeral-related features, currently `subs` and `sinf`.
+    """
+
+    name = "Slashed Zero"
+    keyword = "slashed_zero"
+
+    def JSON(self):
+        # TODO:
+        # These aren't all useful combinations yet.
+        # Add more here in the future.
+        features = [
+            [["zero"], []],
+            [["zero", "subs"], ["zero"]],
+            [["zero", "sinf"], ["zero"]],
+        ]
+        return sum([differs(self.vhb, "0", off, on) for off, on in features]) / len(features)
 
 
-def extended_fractions(ttFont, vhb):
-    return ttFont.has_feature("frac") and vhb.str("1234/5678") != vhb.str(
-        "1234/5678", {"features": {"frac": True}}
-    )
+class ENCODED_FRACTIONS_CHECK(Check):
+    """\
+    Returns percentage of encoded default fractions (e.g. ½) that are shaped by the `frac` feature.
+    """
+
+    name = "Encoded Fractions"
+    keyword = "encoded_fractions"
+    interpretation_hint = "Consider encoded fractions to be inferior to arbitrary fractions as checked by the `numerals/arbitrary_fractions` check."
+
+    def JSON(self):
+        return self.ttFont.has_feature("frac") and sum(
+            [
+                self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
+                for string in ENCODED_FRACTIONS
+            ]
+        ) / len(ENCODED_FRACTIONS)
 
 
-def inferiors(ttFont, vhb):
-    covered = 0
-    for numeral in NUMERALS:
-        if vhb.str(numeral) != vhb.str(numeral, {"features": {"sinf": True}}):
-            covered += 1
-    return covered / len(NUMERALS)
+class EXTENDED_FRACTIONS(Check):
+    """\
+    Returns boolean of whether or not arbitrary fractions (e.g. 12/99) can be shaped by the `frac` feature.
+    """
+
+    name = "Arbitrary Fractions"
+    keyword = "arbitrary_fractions"
+    interpretation_hint = "Consider arbitrary fractions to be superior to encoded fractions as checked by the `numerals/encoded_fractions` check."
+
+    def JSON(self):
+        return all(
+            [
+                self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
+                for string in ("12/99", "1/3", "1234/9876", "1/1234567890")
+            ]
+        )
 
 
-def superiors(ttFont, vhb):
-    covered = 0
-    for numeral in NUMERALS:
-        if vhb.str(numeral) != vhb.str(numeral, {"features": {"sups": True}}):
-            covered += 1
-    return covered / len(NUMERALS)
+class SINF(Check):
+    """\
+    Returns the amount of numerals that get shaped by the `sinf` feature.
+    """
+
+    name = "Inferior Numerals"
+    keyword = "inferiors"
+    interpretation_hint = "Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). A partial support is useless in practice."
+
+    def JSON(self):
+        covered = 0
+        for numeral in NUMERALS:
+            if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sinf": True}}):
+                covered += 1
+        return covered / len(NUMERALS)
+
+
+class SUPS(Check):
+    """\
+    Returns the amount of numerals that get shaped by the `sups` feature.
+    """
+
+    name = "Superior Numerals"
+    keyword = "superiors"
+    interpretation_hint = "Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). A partial support is useless in practice."
+
+    def JSON(self):
+        covered = 0
+        for numeral in NUMERALS:
+            if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sups": True}}):
+                covered += 1
+        return covered / len(NUMERALS)
+
+
+class Numerals(Check):
+    name = "Numerals"
+    keyword = "numerals"
+
+    children = [
+        PON_CHECK,
+        TON_CHECK,
+        PLN_CHECK,
+        TLN_CHECK,
+        DEFAULT_NUMERALS,
+        SUPS,
+        SINF,
+        ENCODED_FRACTIONS_CHECK,
+        EXTENDED_FRACTIONS,
+        SLASHED_ZERO,
+    ]

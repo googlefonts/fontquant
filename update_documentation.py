@@ -1,0 +1,16 @@
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/Lib")
+doc_path = os.path.dirname(os.path.realpath(__file__)) + "/Lib/fontquant/README.md"
+header_path = (
+    os.path.dirname(os.path.realpath(__file__)) + "/Lib/fontquant/README.header.md"
+)
+
+from fontquant import Base
+
+base = Base(None, None)
+
+with open(header_path, "r") as header:
+    with open(doc_path, "w") as out:
+        out.write(header.read() + base.documentation())

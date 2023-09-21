@@ -1,5 +1,5 @@
 def ss(ttFont, vhb):
-    """Return True if the font has a functioning stylistic set feature."""
+    """Return number of ssXX features."""
     return sum([ttFont.has_feature(f"ss{str(i).zfill(2)}") for i in range(1, 21)])
 
 
