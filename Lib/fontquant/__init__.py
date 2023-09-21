@@ -24,11 +24,11 @@ class CustomHarfbuzz(Vharfbuzz):
             pass
 
         self.drawfuncs = hb.DrawFuncs()
-        self.drawfuncs.set_move_to_func(move_to, buffer_list)
-        self.drawfuncs.set_line_to_func(line_to, buffer_list)
-        self.drawfuncs.set_cubic_to_func(cubic_to, buffer_list)
-        self.drawfuncs.set_quadratic_to_func(quadratic_to, buffer_list)
-        self.drawfuncs.set_close_path_func(close_path, buffer_list)
+        self.drawfuncs.set_move_to_func(move_to)
+        self.drawfuncs.set_line_to_func(line_to)
+        self.drawfuncs.set_cubic_to_func(cubic_to)
+        self.drawfuncs.set_quadratic_to_func(quadratic_to)
+        self.drawfuncs.set_close_path_func(close_path)
 
     def glyph_to_points(self, gid):
         if not hasattr(hb, "DrawFuncs"):
@@ -36,7 +36,8 @@ class CustomHarfbuzz(Vharfbuzz):
 
         buffer_list = []
         self.setup_points_draw_funcs(buffer_list)
-        self.drawfuncs.get_glyph_shape(self.hbfont, gid)
+        self.hbfont.draw_glyph(gid, self.drawfuncs, buffer_list)
+
         return buffer_list
 
     def buf_to_bbox(self, buf):
