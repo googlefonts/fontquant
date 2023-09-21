@@ -4,6 +4,8 @@ Fontquant looks into a font and quantifies what’s in it, creating a machine-re
 
 The purpose of Fontquant is to provide a high-level quantifiable overview of a font’s features and quality in order to make fonts’ technical quality and features comparable, to make their features searchable through a user interface as part of a font library, and for font quality assurance (QA).
 
+If you will, the results returned by Fontquant are a kind of fingerprint of what a font can do.
+
 Examples: 
 
 * `smcp` and `c2sc` features are checked by applying the features to all encoded lowercase or uppercase characters in the font, using Python’s own `unicodetata` library to check for a character’s category to be `Ll` or `Lu` (lowercase letter or uppercase letter), and seeing whether the shaping changes after applying `smcp` or `c2sc`. The resulting value is a percentage expressed as a floating point number (0—1) that represents the total number of qualifying characters that got shaped successfully. A professional font should reach a value of `1.0` here (100%).
