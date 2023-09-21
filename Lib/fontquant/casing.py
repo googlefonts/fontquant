@@ -14,7 +14,7 @@ exceptions_smcp = [
 
 class SMCP(Check):
     """\
-    Returns the amount of characters that are lowercase letters (`Ll`) and get shaped by the `smcp` feature.
+    Returns the percentage (as float 0—1) of characters that are lowercase letters (`Ll`) and get shaped by the `smcp` feature.
     """
 
     name = "SmallCaps"
@@ -40,7 +40,7 @@ class SMCP(Check):
 
 class C2SC(Check):
     """\
-    Returns the amount of characters that are uppercase letters (`Lu`) and get shaped by the `c2sc` feature.
+    Returns the percentage (as float 0—1) of characters that are uppercase letters (`Lu`) and get shaped by the `c2sc` feature.
     """
 
     name = "Caps-To-SmallCaps"
@@ -66,7 +66,7 @@ class C2SC(Check):
 
 class CASE(Check):
     """\
-    Returns the amount of characters that are punctuation (`P*`) and get shaped by the `case` feature.
+    Returns the percentage (as float 0—1) of characters that are punctuation (`P*`) and get shaped by the `case` feature.
     """
 
     name = "Case-Sensitive Punctuation"
