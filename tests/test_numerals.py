@@ -29,7 +29,7 @@ def test_numerals():
     assert results["numerals"]["proportional_oldstyle"] == False
     assert results["numerals"]["tabular_oldstyle"] == False
     # Foldit has tabular_lining numerals by default and an additional .lf set
-    # but they look identical to the tabular_lining set, so False is reported here.
+    # but they look identical to the tabular_lining set, so False is reported here:
     assert results["numerals"]["proportional_lining"] == False
     assert results["numerals"]["tabular_lining"] == True
     assert results["numerals"]["default_numerals"] == "tabular_lining"
