@@ -79,38 +79,10 @@ class CustomHarfbuzz(Vharfbuzz):
 
     def buf_to_width(self, buf):
         x_cursor = 0
-        if "hhea" in self.ttfont:
-            ascender = self.ttfont["hhea"].ascender + 500
-            descender = self.ttfont["hhea"].descender - 500
-            fullheight = ascender - descender
-        elif "OS/2":
-            ascender = self.ttfont["OS/2"].sTypoAscender + 500
-            descender = self.ttfont["OS/2"].sTypoDescender - 500
-            fullheight = ascender - descender
-        else:
-            fullheight = 1500
-            descender = 500
-        y_cursor = 0
-
-        x_min = None
-        x_max = None
-        y_min = None
-        y_max = None
 
         for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
             dx, dy = pos.position[0], pos.position[1]
-            glyph_path = [(x + x_cursor, y + y_cursor) for x, y in self.glyph_to_points(info.codepoint)]
-            for x, y in glyph_path:
-                if x_min is None or x < x_min:
-                    x_min = x
-                if x_max is None or x > x_max:
-                    x_max = x
-                if y_min is None or y < y_min:
-                    y_min = y
-                if y_max is None or y > y_max:
-                    y_max = y
             x_cursor += pos.position[2]
-            y_cursor += pos.position[3]
 
         return x_cursor
 
