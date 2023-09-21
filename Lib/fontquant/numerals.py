@@ -102,6 +102,7 @@ def pon_matrix(ttFont, vhb):
 class PON_CHECK(Check):
     """\
     Returns a boolean of whether or not the font has functioning set of _proportional oldstyle_ numerals, either by default or activatable by the `onum`/`pnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
     """
 
     name = "Proportional Oldstyle Numerals"
@@ -122,6 +123,7 @@ def ton_matrix(ttFont, vhb):
 class TON_CHECK(Check):
     """\
     Returns a boolean of whether or not the font has functioning set of _tabular oldstyle_ numerals, either by default or activatable by the `onum`/`tnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
     """
 
     name = "Tabular Oldstyle Numerals"
@@ -142,6 +144,7 @@ def pln_matrix(ttFont, vhb):
 class PLN_CHECK(Check):
     """\
     Returns a boolean of whether or not the font has functioning set of _proportional lining_ numerals, either by default or activatable by the `lnum`/`pnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
     """
 
     name = "Proportional Lining Numerals"
@@ -162,6 +165,7 @@ def tln_matrix(ttFont, vhb):
 class TLN_CHECK(Check):
     """\
     Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals, either by default or activatable by the `lnum`/`tnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
     """
 
     name = "Tabular Lining Numerals"
