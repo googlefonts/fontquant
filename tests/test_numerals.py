@@ -1,4 +1,3 @@
-import sys
 import os
 from fontquant import CustomHarfbuzz, CustomTTFont, Base
 
@@ -19,17 +18,17 @@ def get_result(filename):
 
 def test_numerals():
     results = get_result("Farro-Regular.ttf")
-    assert results["numerals"]["proportional_oldstyle"] == False
-    assert results["numerals"]["tabular_oldstyle"] == False
-    assert results["numerals"]["proportional_lining"] == True
-    assert results["numerals"]["tabular_lining"] == True
+    assert results["numerals"]["proportional_oldstyle"] is False
+    assert results["numerals"]["tabular_oldstyle"] is False
+    assert results["numerals"]["proportional_lining"] is True
+    assert results["numerals"]["tabular_lining"] is True
     assert results["numerals"]["default_numerals"] == "proportional_lining"
 
     results = get_result("Foldit-VariableFont_wght.ttf")
-    assert results["numerals"]["proportional_oldstyle"] == False
-    assert results["numerals"]["tabular_oldstyle"] == False
+    assert results["numerals"]["proportional_oldstyle"] is False
+    assert results["numerals"]["tabular_oldstyle"] is False
     # Foldit has tabular_lining numerals by default and an additional .lf set
     # but they look identical to the tabular_lining set, so False is reported here:
-    assert results["numerals"]["proportional_lining"] == False
-    assert results["numerals"]["tabular_lining"] == True
+    assert results["numerals"]["proportional_lining"] is False
+    assert results["numerals"]["tabular_lining"] is True
     assert results["numerals"]["default_numerals"] == "tabular_lining"

@@ -42,17 +42,17 @@ class CustomHarfbuzz(Vharfbuzz):
 
     def buf_to_bbox(self, buf):
         x_cursor = 0
-        if "hhea" in self.ttfont:
-            ascender = self.ttfont["hhea"].ascender + 500
-            descender = self.ttfont["hhea"].descender - 500
-            fullheight = ascender - descender
-        elif "OS/2":
-            ascender = self.ttfont["OS/2"].sTypoAscender + 500
-            descender = self.ttfont["OS/2"].sTypoDescender - 500
-            fullheight = ascender - descender
-        else:
-            fullheight = 1500
-            descender = 500
+        # if "hhea" in self.ttfont:
+        #     # ascender = self.ttfont["hhea"].ascender + 500
+        #     # descender = self.ttfont["hhea"].descender - 500
+        #     # fullheight = ascender - descender
+        # elif "OS/2":
+        #     ascender = self.ttfont["OS/2"].sTypoAscender + 500
+        #     descender = self.ttfont["OS/2"].sTypoDescender - 500
+        #     # fullheight = ascender - descender
+        # else:
+        #     # fullheight = 1500
+        #     descender = 500
         y_cursor = 0
 
         x_min = None
@@ -61,7 +61,7 @@ class CustomHarfbuzz(Vharfbuzz):
         y_max = None
 
         for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
-            dx, dy = pos.position[0], pos.position[1]
+            # dx, dy = pos.position[0], pos.position[1]
             glyph_path = [(x + x_cursor, y + y_cursor) for x, y in self.glyph_to_points(info.codepoint)]
             for x, y in glyph_path:
                 if x_min is None or x < x_min:
@@ -80,20 +80,20 @@ class CustomHarfbuzz(Vharfbuzz):
     def buf_to_width(self, buf):
         x_cursor = 0
 
-        for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
-            dx, dy = pos.position[0], pos.position[1]
+        for _info, pos in zip(buf.glyph_infos, buf.glyph_positions):
+            # dx, dy = pos.position[0], pos.position[1]
             x_cursor += pos.position[2]
 
         return x_cursor
 
-    def str(self, string, options={}):
+    def str(self, string, options):
         """Return the shaped string buffer as a string."""
-        buf = self.shape(string, options)
+        buf = self.shape(string, options or {})
         return self.serialize_buf(buf)
 
-    def bbox(self, string, options={}):
+    def bbox(self, string, options):
         """Return the shaped string buffer's  bbox."""
-        buf = self.shape(string, options)
+        buf = self.shape(string, options or {})
         return self.buf_to_bbox(buf)
 
 
@@ -139,7 +139,6 @@ class Check(object):
             return check_list
 
     def documentation(self):
-        LB = "\n"
         if self.__doc__:
             markdown = f"""\
 ### {self.name} (`{"/".join(self.path())}`)
@@ -165,8 +164,8 @@ class Check(object):
             return markdown
 
 
-from .casing import Casing
-from .numerals import Numerals
+from .casing import Casing  # noqa E402 (Circular import)
+from .numerals import Numerals  # noqa E402 (Circular import)
 
 
 class Base(Check):

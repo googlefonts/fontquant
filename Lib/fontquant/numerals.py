@@ -48,12 +48,12 @@ PLN_MATRIX = ("lnum", "pnum")
 TLN_MATRIX = ("lnum", "tnum")
 
 
-def vertical_variance(ttFont, vhb, features=[]):
+def vertical_variance(ttFont, vhb, features):
     """Determine numerals' upper and lower bbox variance"""
     upper = []
     lower = []
     feature_dict = {}
-    for feature in features:
+    for feature in features or []:
         feature_dict[feature] = True
     for numeral in NUMERALS:
         x_min, x_max, y_min, y_max = vhb.bbox(numeral, {"features": feature_dict})
@@ -69,11 +69,11 @@ def width(vhb, string):
     return x_max + x_min
 
 
-def horizontal_variance(ttFont, vhb, features=[]):
+def horizontal_variance(ttFont, vhb, features):
     """Determine numerals' horizontal bbox variance"""
     widths = []
     feature_dict = {}
-    for feature in features:
+    for feature in features or []:
         feature_dict[feature] = True
     for numeral in NUMERALS:
         widths.append(vhb.buf_to_width(vhb.shape(numeral, {"features": feature_dict})))
@@ -101,8 +101,10 @@ def pon_matrix(ttFont, vhb):
 
 class PON_CHECK(Check):
     """\
-    Returns a boolean of whether or not the font has functioning set of _proportional oldstyle_ numerals, either by default or activatable by the `onum`/`pnum` features.
-    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
+    Returns a boolean of whether or not the font has functioning set of _proportional oldstyle_ numerals,
+    either by default or activatable by the `onum`/`pnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common
+    expectations on width/height variance and returns `False` if it doesn't.
     """
 
     name = "Proportional Oldstyle Numerals"
@@ -122,8 +124,10 @@ def ton_matrix(ttFont, vhb):
 
 class TON_CHECK(Check):
     """\
-    Returns a boolean of whether or not the font has functioning set of _tabular oldstyle_ numerals, either by default or activatable by the `onum`/`tnum` features.
-    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
+    Returns a boolean of whether or not the font has functioning set of _tabular oldstyle_ numerals,
+    either by default or activatable by the `onum`/`tnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common
+    expectations on width/height variance and returns `False` if it doesn't.
     """
 
     name = "Tabular Oldstyle Numerals"
@@ -143,8 +147,10 @@ def pln_matrix(ttFont, vhb):
 
 class PLN_CHECK(Check):
     """\
-    Returns a boolean of whether or not the font has functioning set of _proportional lining_ numerals, either by default or activatable by the `lnum`/`pnum` features.
-    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
+    Returns a boolean of whether or not the font has functioning set of _proportional lining_ numerals,
+    either by default or activatable by the `lnum`/`pnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common
+    expectations on width/height variance and returns `False` if it doesn't.
     """
 
     name = "Proportional Lining Numerals"
@@ -164,8 +170,10 @@ def tln_matrix(ttFont, vhb):
 
 class TLN_CHECK(Check):
     """\
-    Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals, either by default or activatable by the `lnum`/`tnum` features.
-    This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
+    Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals,
+    either by default or activatable by the `lnum`/`tnum` features.
+    This check also performs heuristics to see whether the activated numeral set matches the common
+    expectations on width/height variance and returns `False` if it doesn't.
     """
 
     name = "Tabular Lining Numerals"
@@ -183,7 +191,7 @@ class TLN_CHECK(Check):
 #     return vhb.str(NUMERALS) != vhb.str(NUMERALS, {"features": {"smcp": True}})
 
 
-def numeral_style_heuristics(ttFont, vhb, features=[]):
+def numeral_style_heuristics(ttFont, vhb, features):
     x_bbox = vhb.bbox("x")
     x_height = x_bbox[3] - x_bbox[2]
     upper_variance, lower_variance = vertical_variance(ttFont, vhb, features)
@@ -240,7 +248,8 @@ def default_numerals(ttFont, vhb):
 
 class DEFAULT_NUMERALS(Check):
     """\
-    Returns the default numeral set (out of `proportional_oldstyle`, `tabular_oldstyle`, `proportional_lining`, `tabular_lining`).
+    Returns the default numeral set
+    (out of `proportional_oldstyle`, `tabular_oldstyle`, `proportional_lining`, `tabular_lining`).
     """
 
     name = "Default Numerals"
@@ -253,7 +262,8 @@ class DEFAULT_NUMERALS(Check):
 class SLASHED_ZERO(Check):
     """\
     Returns percentage (as float 0—1) of feature combinations that shape the slashed zero.
-    Here, the `zero` feature is used alone and in combination with other numeral-related features, currently `subs` and `sinf`.
+    Here, the `zero` feature is used alone and in combination with other numeral-related features,
+    currently `subs` and `sinf`.
     """
 
     name = "Slashed Zero"
@@ -278,7 +288,9 @@ class ENCODED_FRACTIONS_CHECK(Check):
 
     name = "Encoded Fractions"
     keyword = "encoded_fractions"
-    interpretation_hint = "Consider encoded fractions to be inferior to arbitrary fractions as checked by the `numerals/arbitrary_fractions` check."
+    interpretation_hint = """\
+        Consider encoded fractions to be inferior to arbitrary fractions
+        as checked by the `numerals/arbitrary_fractions` check."""
 
     def JSON(self):
         return self.ttFont.has_feature("frac") and sum(
@@ -296,7 +308,9 @@ class EXTENDED_FRACTIONS(Check):
 
     name = "Arbitrary Fractions"
     keyword = "arbitrary_fractions"
-    interpretation_hint = "Consider arbitrary fractions to be superior to encoded fractions as checked by the `numerals/encoded_fractions` check."
+    interpretation_hint = """\
+        Consider arbitrary fractions to be superior to encoded fractions
+        as checked by the `numerals/encoded_fractions` check."""
 
     def JSON(self):
         return all(
@@ -314,7 +328,9 @@ class SINF(Check):
 
     name = "Inferior Numerals"
     keyword = "inferiors"
-    interpretation_hint = "Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). A partial support is useless in practice."
+    interpretation_hint = """\
+        Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%).
+        A partial support is useless in practice."""
 
     def JSON(self):
         covered = 0
@@ -331,7 +347,9 @@ class SUPS(Check):
 
     name = "Superior Numerals"
     keyword = "superiors"
-    interpretation_hint = "Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). A partial support is useless in practice."
+    interpretation_hint = """\
+        Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%).
+        A partial support is useless in practice."""
 
     def JSON(self):
         covered = 0
