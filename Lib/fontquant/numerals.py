@@ -1,4 +1,4 @@
-from fontquant import Check
+from fontquant import Check, Percentage, Boolean, String
 
 # Settings:
 
@@ -109,6 +109,7 @@ class PON_CHECK(Check):
 
     name = "Proportional Oldstyle Numerals"
     keyword = PON
+    data_type = Boolean
 
     def JSON(self):
         dictionary = {
@@ -136,6 +137,7 @@ class TON_CHECK(Check):
 
     name = "Tabular Oldstyle Numerals"
     keyword = TON
+    data_type = Boolean
 
     def JSON(self):
         dictionary = {
@@ -162,6 +164,7 @@ class PLN_CHECK(Check):
 
     name = "Proportional Lining Numerals"
     keyword = PLN
+    data_type = Boolean
 
     def JSON(self):
         dictionary = {
@@ -188,6 +191,7 @@ class TLN_CHECK(Check):
 
     name = "Tabular Lining Numerals"
     keyword = TLN
+    data_type = Boolean
 
     def JSON(self):
         dictionary = {
@@ -267,6 +271,8 @@ class DEFAULT_NUMERALS(Check):
 
     name = "Default Numerals"
     keyword = "default_numerals"
+    data_type = String
+    example_value = "proportional_lining"
 
     def JSON(self):
         dictionary = {"value": default_numerals(self.ttFont, self.vhb)}
@@ -282,6 +288,7 @@ class SLASHED_ZERO(Check):
 
     name = "Slashed Zero"
     keyword = "slashed_zero"
+    data_type = Percentage
 
     def JSON(self):
         # TODO:
@@ -303,6 +310,7 @@ class ENCODED_FRACTIONS_CHECK(Check):
 
     name = "Encoded Fractions"
     keyword = "encoded_fractions"
+    data_type = Percentage
     interpretation_hint = """\
         Consider encoded fractions to be inferior to arbitrary fractions
         as checked by the `numerals/arbitrary_fractions` check."""
@@ -328,6 +336,7 @@ class EXTENDED_FRACTIONS(Check):
 
     name = "Arbitrary Fractions"
     keyword = "arbitrary_fractions"
+    data_type = Percentage
     interpretation_hint = """\
         Consider arbitrary fractions to be superior to encoded fractions
         as checked by the `numerals/encoded_fractions` check."""
@@ -351,6 +360,7 @@ class SINF(Check):
 
     name = "Inferior Numerals"
     keyword = "inferiors"
+    data_type = Percentage
     interpretation_hint = """\
         Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%).
         A partial support is useless in practice."""
@@ -371,6 +381,7 @@ class SUPS(Check):
 
     name = "Superior Numerals"
     keyword = "superiors"
+    data_type = Percentage
     interpretation_hint = """\
         Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%).
         A partial support is useless in practice."""

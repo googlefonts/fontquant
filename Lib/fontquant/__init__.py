@@ -102,11 +102,33 @@ class CustomTTFont(ttLib.TTFont):
         return tag in [FeatureRecord.FeatureTag for FeatureRecord in self["GSUB"].table.FeatureList.FeatureRecord]
 
 
+class BaseDataType(object):
+    def example_value(self, default_example_value):
+        return default_example_value or None
+
+
+class Percentage(BaseDataType):
+    def example_value(self, default_example_value):
+        return default_example_value or 0.5
+
+
+class Boolean(BaseDataType):
+    def example_value(self, default_example_value):
+        return default_example_value or True
+
+
+class String(BaseDataType):
+    def example_value(self, default_example_value):
+        return default_example_value or "abc..."
+
+
 class Check(object):
     name = None
     keyword = None
     children = []
     interpretation_hint = None
+    data_type = None
+    example_value = None
 
     def __init__(self, ttFont, vhb, parent=None) -> None:
         self.ttFont = ttFont
@@ -139,6 +161,8 @@ class Check(object):
             return check_list
 
     def documentation(self):
+        join_sequence = '"]["'
+
         if self.__doc__:
             markdown = f"""\
 ### {self.name} (`{"/".join(self.path())}`)
@@ -149,6 +173,18 @@ class Check(object):
                 markdown += "\n_Interpretation Hint:_ " + (
                     " ".join([line.strip() for line in self.interpretation_hint.splitlines()]) + "\n\n"
                 )
+
+            if self.data_type:
+                markdown += f"""\\n_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["{join_sequence.join(self.path())}"]["value"]
+print(value)
+>>> {self.data_type().example_value(self.example_value)}
+```
+
+"""
 
             return markdown
 

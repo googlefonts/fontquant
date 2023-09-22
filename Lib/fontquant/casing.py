@@ -1,4 +1,4 @@
-from fontquant import Check
+from fontquant import Check, Percentage
 import unicodedata
 
 exceptions_c2sc = [
@@ -20,6 +20,7 @@ class SMCP(Check):
 
     name = "SmallCaps"
     keyword = "smcp"
+    data_type = Percentage
     interpretation_hint = """\
     Consider fonts to have a functioning `smcp` feature if the value is above 0.95 (95%),
     as there are some characters that are lowercase letters but don't get shaped by the `smcp` feature, e.g. `florin`.
@@ -49,6 +50,7 @@ class C2SC(Check):
 
     name = "Caps-To-SmallCaps"
     keyword = "c2sc"
+    data_type = Percentage
     interpretation_hint = """\
     Consider fonts to have a functioning `c2sc` feature if the value is above 0.95 (95%),
     as there are some characters that are uppercase letters but don't typically get shaped by the `c2sc` feature,
@@ -79,6 +81,7 @@ class CASE(Check):
 
     name = "Case-Sensitive Punctuation"
     keyword = "case"
+    data_type = Percentage
 
     def JSON(self):
         cmap = self.ttFont.getBestCmap()
