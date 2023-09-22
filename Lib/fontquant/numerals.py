@@ -337,7 +337,7 @@ class EXTENDED_FRACTIONS(Check):
 
     name = "Arbitrary Fractions"
     keyword = "arbitrary_fractions"
-    data_type = Percentage
+    data_type = Boolean
     interpretation_hint = """\
         Consider arbitrary fractions to be _superior_ to encoded fractions
         as checked by the `numerals/encoded_fractions` check."""

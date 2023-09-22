@@ -191,7 +191,7 @@ Returns boolean of whether or not arbitrary fractions (e.g. 12/99) can be shaped
 _Interpretation Hint:_ Consider arbitrary fractions to be _superior_ to encoded fractions as checked by the `numerals/encoded_fractions` check.
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Boolean (`True`or `False`)
 
 _Example:_
 ```python
