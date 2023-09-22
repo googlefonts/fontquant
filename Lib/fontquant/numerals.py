@@ -283,7 +283,7 @@ class SLASHED_ZERO(Check):
     """\
     Returns percentage of feature combinations that shape the slashed zero.
     Here, the `zero` feature is used alone and in combination with other numeral-related features,
-    if supported by the font, currently `subs`, `sinf`, `frac`. If so, the additional features are listed
+    if supported by the font, currently `sups`, `sinf`, `frac`. If so, the additional features are listed
     in the `checked_additional_features` key.
     """
 
@@ -301,12 +301,12 @@ class SLASHED_ZERO(Check):
             ["0", ["zero"], []],
         ]
         checked_additional_features = []
-        # Add subs if supported
-        if differs(self.vhb, "0", ["subs"], []):
-            features.append(["0", ["zero", "subs"], ["subs"]])
-            checked_additional_features.append("subs")
+        # Add sups if supported
+        if differs(self.vhb, "0", ["sups"], []):
+            features.append(["0", ["zero", "sups"], ["sups"]])
+            checked_additional_features.append("sups")
         # Add sinf if supported
-        if differs(self.vhb, "0", ["subs"], []):
+        if differs(self.vhb, "0", ["sinf"], []):
             features.append(["0", ["zero", "sinf"], ["sinf"]])
             checked_additional_features.append("sinf")
         # Add arbitrary_fractions if supported
@@ -321,6 +321,7 @@ class SLASHED_ZERO(Check):
         }
         if checked_additional_features:
             dictionary["checked_additional_features"] = checked_additional_features
+            print(features)
         return dictionary
 
 
