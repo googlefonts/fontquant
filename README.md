@@ -27,27 +27,52 @@ Install tool with pip: `pip install .`
 `fontquant font.ttf`.
 Currently prints formatted JSON to the screen:
 
-```
+```json
 {
   "casing": {
-    "smcp": 0.0,
-    "c2sc": 0.0,
-    "case": 0.24444444444444444
+    "smcp": {
+      "value": 0.0
+    },
+    "c2sc": {
+      "value": 0.0
+    },
+    "case": {
+      "value": 0.24444444444444444
+    }
   },
   "numerals": {
-    "proportional_oldstyle": false,
-    "tabular_oldstyle": false,
-    "proportional_lining": true,
-    "tabular_lining": true,
-    "default_numerals": "proportional_lining",
-    "superiors": 0.4,
-    "inferiors": 0.0,
-    "encoded_fractions": 0.15,
-    "arbitrary_fractions": false,
-    "slashed_zero": 0.0
+    "proportional_oldstyle": {
+      "value": false
+    },
+    "tabular_oldstyle": {
+      "value": false
+    },
+    "proportional_lining": {
+      "value": true
+    },
+    "tabular_lining": {
+      "value": true
+    },
+    "default_numerals": {
+      "value": "proportional_lining"
+    },
+    "superiors": {
+      "value": 0.4
+    },
+    "inferiors": {
+      "value": 0.0
+    },
+    "encoded_fractions": {
+      "value": 0.15
+    },
+    "arbitrary_fractions": {
+      "value": false
+    },
+    "slashed_zero": {
+      "value": 0.0
+    }
   }
-}
-```
+}```
 
 # Invoke In Python
 
@@ -56,5 +81,7 @@ from fontquant import quantify
 
 # Returns dictionary:
 results = quantify("font.ttf")
-default_numerals = results["numerals"]["default_numerals"]
+default_numerals = results["numerals"]["default_numerals"]["value"]
+print(default_numerals)
+>>> proportional_lining
 ```

@@ -37,7 +37,8 @@ class SMCP(Check):
                 if self.vhb.str(char) != self.vhb.str(char, {"features": {"smcp": True}}):
                     covered_glyphs += 1
 
-        return covered_glyphs / eligible_glyphs
+        dictionary = {"value": covered_glyphs / eligible_glyphs}
+        return dictionary
 
 
 class C2SC(Check):
@@ -66,7 +67,8 @@ class C2SC(Check):
                 if self.vhb.str(char) != self.vhb.str(char, {"features": {"c2sc": True}}):
                     covered_glyphs += 1
 
-        return covered_glyphs / eligible_glyphs
+        dictionary = {"value": covered_glyphs / eligible_glyphs}
+        return dictionary
 
 
 class CASE(Check):
@@ -93,7 +95,8 @@ class CASE(Check):
                 if self.vhb.serialize_buf(buf1) != self.vhb.serialize_buf(buf2):
                     covered_glyphs += 1
 
-        return covered_glyphs / eligible_glyphs
+        dictionary = {"value": covered_glyphs / eligible_glyphs}
+        return dictionary
 
 
 class Casing(Check):

@@ -111,11 +111,15 @@ class PON_CHECK(Check):
     keyword = PON
 
     def JSON(self):
-        return (
-            pon_matrix(self.ttFont, self.vhb)
-            and numeral_style_heuristics(self.ttFont, self.vhb, PON_MATRIX) == PON
-            or default_numerals(self.ttFont, self.vhb) == PON
-        )
+        dictionary = {
+            "value": (
+                pon_matrix(self.ttFont, self.vhb)
+                and numeral_style_heuristics(self.ttFont, self.vhb, PON_MATRIX) == PON
+                or default_numerals(self.ttFont, self.vhb) == PON
+            )
+        }
+
+        return dictionary
 
 
 def ton_matrix(ttFont, vhb):
@@ -134,11 +138,14 @@ class TON_CHECK(Check):
     keyword = TON
 
     def JSON(self):
-        return (
-            ton_matrix(self.ttFont, self.vhb)
-            and numeral_style_heuristics(self.ttFont, self.vhb, TON_MATRIX) == TON
-            or default_numerals(self.ttFont, self.vhb) == TON
-        )
+        dictionary = {
+            "value": (
+                ton_matrix(self.ttFont, self.vhb)
+                and numeral_style_heuristics(self.ttFont, self.vhb, TON_MATRIX) == TON
+                or default_numerals(self.ttFont, self.vhb) == TON
+            )
+        }
+        return dictionary
 
 
 def pln_matrix(ttFont, vhb):
@@ -157,11 +164,14 @@ class PLN_CHECK(Check):
     keyword = PLN
 
     def JSON(self):
-        return (
-            pln_matrix(self.ttFont, self.vhb)
-            and numeral_style_heuristics(self.ttFont, self.vhb, PLN_MATRIX) == PLN
-            or default_numerals(self.ttFont, self.vhb) == PLN
-        )
+        dictionary = {
+            "value": (
+                pln_matrix(self.ttFont, self.vhb)
+                and numeral_style_heuristics(self.ttFont, self.vhb, PLN_MATRIX) == PLN
+                or default_numerals(self.ttFont, self.vhb) == PLN
+            )
+        }
+        return dictionary
 
 
 def tln_matrix(ttFont, vhb):
@@ -180,11 +190,14 @@ class TLN_CHECK(Check):
     keyword = TLN
 
     def JSON(self):
-        return (
-            tln_matrix(self.ttFont, self.vhb)
-            and numeral_style_heuristics(self.ttFont, self.vhb, TLN_MATRIX) == TLN
-            or default_numerals(self.ttFont, self.vhb) == TLN
-        )
+        dictionary = {
+            "value": (
+                tln_matrix(self.ttFont, self.vhb)
+                and numeral_style_heuristics(self.ttFont, self.vhb, TLN_MATRIX) == TLN
+                or default_numerals(self.ttFont, self.vhb) == TLN
+            )
+        }
+        return dictionary
 
 
 # def sc(ttFont, vhb):
@@ -256,7 +269,8 @@ class DEFAULT_NUMERALS(Check):
     keyword = "default_numerals"
 
     def JSON(self):
-        return default_numerals(self.ttFont, self.vhb)
+        dictionary = {"value": default_numerals(self.ttFont, self.vhb)}
+        return dictionary
 
 
 class SLASHED_ZERO(Check):
@@ -278,7 +292,8 @@ class SLASHED_ZERO(Check):
             [["zero", "subs"], ["zero"]],
             [["zero", "sinf"], ["zero"]],
         ]
-        return sum([differs(self.vhb, "0", off, on) for off, on in features]) / len(features)
+        dictionary = {"value": sum([differs(self.vhb, "0", off, on) for off, on in features]) / len(features)}
+        return dictionary
 
 
 class ENCODED_FRACTIONS_CHECK(Check):
@@ -293,12 +308,17 @@ class ENCODED_FRACTIONS_CHECK(Check):
         as checked by the `numerals/arbitrary_fractions` check."""
 
     def JSON(self):
-        return self.ttFont.has_feature("frac") and sum(
-            [
-                self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
-                for string in ENCODED_FRACTIONS
-            ]
-        ) / len(ENCODED_FRACTIONS)
+        dictionary = {
+            "value": self.ttFont.has_feature("frac")
+            and sum(
+                [
+                    self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
+                    for string in ENCODED_FRACTIONS
+                ]
+            )
+            / len(ENCODED_FRACTIONS)
+        }
+        return dictionary
 
 
 class EXTENDED_FRACTIONS(Check):
@@ -313,12 +333,15 @@ class EXTENDED_FRACTIONS(Check):
         as checked by the `numerals/encoded_fractions` check."""
 
     def JSON(self):
-        return all(
-            [
-                self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
-                for string in ("12/99", "1/3", "1234/9876", "1/1234567890")
-            ]
-        )
+        dictionary = {
+            "value": all(
+                [
+                    self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
+                    for string in ("12/99", "1/3", "1234/9876", "1/1234567890")
+                ]
+            )
+        }
+        return dictionary
 
 
 class SINF(Check):
@@ -337,7 +360,8 @@ class SINF(Check):
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sinf": True}}):
                 covered += 1
-        return covered / len(NUMERALS)
+        dictionary = {"value": covered / len(NUMERALS)}
+        return dictionary
 
 
 class SUPS(Check):
@@ -356,7 +380,8 @@ class SUPS(Check):
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sups": True}}):
                 covered += 1
-        return covered / len(NUMERALS)
+        dictionary = {"value": covered / len(NUMERALS)}
+        return dictionary
 
 
 class Numerals(Check):
