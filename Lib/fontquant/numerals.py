@@ -301,6 +301,12 @@ class SLASHED_ZERO(Check):
             ["0", ["zero", "subs"], ["zero"]],
             ["0", ["zero", "sinf"], ["zero"]],
         ]
+        # Add arbitrary_fractions if supported
+        arbitrary_fractions_check = self.base().find_children("numerals/arbitrary_fractions")
+        if arbitrary_fractions_check.value()["value"]:
+            features.append(["0/1", ["zero", "frac"], ["frac"]])
+            features.append(["1/0", ["zero", "frac"], ["frac"]])
+
         dictionary = {
             "value": sum([differs(self.vhb, string, off, on) for string, off, on in features]) / len(features)
         }
