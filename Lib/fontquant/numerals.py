@@ -283,7 +283,7 @@ class SLASHED_ZERO(Check):
     """\
     Returns percentage of feature combinations that shape the slashed zero.
     Here, the `zero` feature is used alone and in combination with other numeral-related features,
-    currently `subs` and `sinf`.
+    if supported by the font, currently `subs`, `sinf`, `frac`.
     """
 
     name = "Slashed Zero"
