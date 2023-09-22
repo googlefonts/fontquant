@@ -147,6 +147,17 @@ class Check(object):
         self.vhb = vhb
         self.parent = parent
 
+    def find_children(self, path):
+        for child in self.children:
+            instance = child(self.ttFont, self.vhb, parent=self)
+            if instance.path() == path.split("/"):
+                return instance
+            else:
+                found = instance.find_children(path)
+                if found:
+                    return found
+        return None
+
     def JSON(self):
         dictionary = {}
         for child in self.children:
@@ -159,6 +170,12 @@ class Check(object):
             return self.parent.path() + [self.keyword]
         else:
             return [self.keyword] if self.keyword else []
+
+    def base(self):
+        if self.parent:
+            return self.parent.base()
+        else:
+            return self
 
     def index(self):
         if self.__doc__:
