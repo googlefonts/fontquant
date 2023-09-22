@@ -147,13 +147,13 @@ class Check(object):
         self.vhb = vhb
         self.parent = parent
 
-    def find_children(self, path):
+    def find_check(self, path):
         for child in self.children:
             instance = child(self.ttFont, self.vhb, parent=self)
             if instance.path() == path.split("/"):
                 return instance
             else:
-                found = instance.find_children(path)
+                found = instance.find_check(path)
                 if found:
                     return found
         return None

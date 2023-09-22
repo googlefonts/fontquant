@@ -310,7 +310,7 @@ class SLASHED_ZERO(Check):
             features.append(["0", ["zero", "sinf"], ["sinf"]])
             checked_additional_features.append("sinf")
         # Add arbitrary_fractions if supported
-        arbitrary_fractions_check = self.base().find_children("numerals/arbitrary_fractions")
+        arbitrary_fractions_check = self.base().find_check("numerals/arbitrary_fractions")
         if arbitrary_fractions_check.value()["value"]:
             features.append(["0/1", ["zero", "frac"], ["frac"]])
             features.append(["1/0", ["zero", "frac"], ["frac"]])
