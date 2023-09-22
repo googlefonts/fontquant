@@ -3,9 +3,9 @@
 Fontquant looks into a font and quantifies what’s in it, creating a machine-readable representation of font features **that it has _proven_ to work**. It makes heavy use of the _Harfbuzz_ shaping engine to prove the functionality of font features, rather than just looking up the feature list in the font.
 
 The purpose of Fontquant is to:
-* provide a high-level quantifiable overview of features and technical quality in order to make fonts comparable
-* to make their features searchable through a user interface as part of a font library
-* and for font quality assurance (QA).
+* provide a high-level quantifiable overview of features and technical quality in order to make fonts **comparable**
+* to make their features **searchable** through a user interface as part of a font library
+* and for font **quality assurance** (QA).
 
 If you will, the results returned by Fontquant are a kind of _fingerprint_ of what a font can do.
 
