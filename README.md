@@ -86,3 +86,8 @@ default_numerals = results["numerals"]["default_numerals"]["value"]
 print(default_numerals)
 >>> proportional_lining
 ```
+
+# To Do
+
+* Add filter to check for individual branches or single checks only
+* Add debug messages to each check to aid font QA
