@@ -6,7 +6,7 @@
 
 Returns the percentage of characters that are lowercase letters (`Ll`) and get shaped by the `smcp` feature. 
 
-_Interpretation Hint:_ Consider fonts to have a functioning `smcp` feature if the value is above 0.95 (95%), as there are some characters that are lowercase letters but don't get shaped by the `smcp` feature, e.g. `florin`. Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your values rise.
+_Interpretation Hint:_ Consider fonts to have a functioning `smcp` feature if the value is above `0.95` (95%), as there are some characters that are lowercase letters but don't get shaped by the `smcp` feature, e.g. `florin`. Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your values rise.
 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
@@ -24,7 +24,7 @@ print(value)
 
 Returns the percentage of characters that are uppercase letters (`Lu`) and get shaped by the `c2sc` feature. 
 
-_Interpretation Hint:_ Consider fonts to have a functioning `c2sc` feature if the value is above 0.95 (95%), as there are some characters that are uppercase letters but don't typically get shaped by the `c2sc` feature, e.g. `Ohm`. Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your values rise.
+_Interpretation Hint:_ Consider fonts to have a functioning `c2sc` feature if the value is above `0.95` (95%), as there are some characters that are uppercase letters but don't typically get shaped by the `c2sc` feature, e.g. `Ohm`. Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your values rise.
 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)

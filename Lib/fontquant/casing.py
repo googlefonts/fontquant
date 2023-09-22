@@ -22,7 +22,7 @@ class SMCP(Check):
     keyword = "smcp"
     data_type = Percentage
     interpretation_hint = """\
-    Consider fonts to have a functioning `smcp` feature if the value is above 0.95 (95%),
+    Consider fonts to have a functioning `smcp` feature if the value is above `0.95` (95%),
     as there are some characters that are lowercase letters but don't get shaped by the `smcp` feature, e.g. `florin`.
     Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your
     values rise."""
@@ -52,7 +52,7 @@ class C2SC(Check):
     keyword = "c2sc"
     data_type = Percentage
     interpretation_hint = """\
-    Consider fonts to have a functioning `c2sc` feature if the value is above 0.95 (95%),
+    Consider fonts to have a functioning `c2sc` feature if the value is above `0.95` (95%),
     as there are some characters that are uppercase letters but don't typically get shaped by the `c2sc` feature,
     e.g. `Ohm`.
     Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your
