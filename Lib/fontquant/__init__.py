@@ -187,7 +187,7 @@ class Check(object):
                 )
 
             if self.data_type:
-                markdown += f"""\n_Return Value:_ `{self.data_type().return_value_description()}`
+                markdown += f"""\n_Return Value:_ {self.data_type().return_value_description()}
 
 _Example:_
 ```python
