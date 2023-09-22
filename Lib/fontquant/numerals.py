@@ -289,6 +289,8 @@ class SLASHED_ZERO(Check):
     name = "Slashed Zero"
     keyword = "slashed_zero"
     data_type = Percentage
+    interpretation_hint = """\
+        A professional font should reach a value of `1.0` here."""
 
     def JSON(self):
         # TODO:
@@ -364,7 +366,7 @@ class SINF(Check):
     data_type = Percentage
     interpretation_hint = """\
         Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%).
-        A partial support is useless in practice."""
+        _A partial support is useless in practice._"""
 
     def JSON(self):
         covered = 0
@@ -385,7 +387,7 @@ class SUPS(Check):
     data_type = Percentage
     interpretation_hint = """\
         Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%).
-        A partial support is useless in practice."""
+        _A partial support is useless in practice._"""
 
     def JSON(self):
         covered = 0

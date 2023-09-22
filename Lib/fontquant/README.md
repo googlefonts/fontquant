@@ -134,7 +134,7 @@ print(value)
 
 Returns the percentage of numerals that get shaped by the `sups` feature. 
 
-_Interpretation Hint:_ Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). A partial support is useless in practice.
+_Interpretation Hint:_ Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). _A partial support is useless in practice._
 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
@@ -152,7 +152,7 @@ print(value)
 
 Returns the percentage of numerals that get shaped by the `sinf` feature. 
 
-_Interpretation Hint:_ Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). A partial support is useless in practice.
+_Interpretation Hint:_ Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). _A partial support is useless in practice._
 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
@@ -199,12 +199,15 @@ from fontquant import quantify
 results = quantify("path/to/font.ttf")
 value = results["numerals"]["arbitrary_fractions"]["value"]
 print(value)
->>> 0.5
+>>> True
 ```
 
 ### Slashed Zero (`numerals/slashed_zero`)
 
 Returns percentage of feature combinations that shape the slashed zero. Here, the `zero` feature is used alone and in combination with other numeral-related features, currently `subs` and `sinf`. 
+
+_Interpretation Hint:_ A professional font should reach a value of `1.0` here.
+
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
 
