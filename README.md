@@ -92,5 +92,5 @@ print(default_numerals)
 
 # To Do
 
-* Add filter to check for individual branches or single checks only
-* Add debug messages to each check to aid font QA
+* Add optional filter to check for individual branches or single checks only
+* Add optional debug messages to each check to aid font QA
