@@ -170,7 +170,7 @@ print(value)
 
 Returns percentage of encoded default fractions (e.g. ½) that are shaped by the `frac` feature. 
 
-_Interpretation Hint:_ Consider encoded fractions to be inferior to arbitrary fractions as checked by the `numerals/arbitrary_fractions` check.
+_Interpretation Hint:_ Consider encoded fractions to be _inferior_ to arbitrary fractions as checked by the `numerals/arbitrary_fractions` check. For a professional font, ignore this check.
 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
@@ -188,7 +188,7 @@ print(value)
 
 Returns boolean of whether or not arbitrary fractions (e.g. 12/99) can be shaped by the `frac` feature. 
 
-_Interpretation Hint:_ Consider arbitrary fractions to be superior to encoded fractions as checked by the `numerals/encoded_fractions` check.
+_Interpretation Hint:_ Consider arbitrary fractions to be _superior_ to encoded fractions as checked by the `numerals/encoded_fractions` check.
 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)

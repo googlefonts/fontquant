@@ -312,8 +312,9 @@ class ENCODED_FRACTIONS_CHECK(Check):
     keyword = "encoded_fractions"
     data_type = Percentage
     interpretation_hint = """\
-        Consider encoded fractions to be inferior to arbitrary fractions
-        as checked by the `numerals/arbitrary_fractions` check."""
+        Consider encoded fractions to be _inferior_ to arbitrary fractions
+        as checked by the `numerals/arbitrary_fractions` check.
+        For a professional font, ignore this check."""
 
     def JSON(self):
         dictionary = {
@@ -338,7 +339,7 @@ class EXTENDED_FRACTIONS(Check):
     keyword = "arbitrary_fractions"
     data_type = Percentage
     interpretation_hint = """\
-        Consider arbitrary fractions to be superior to encoded fractions
+        Consider arbitrary fractions to be _superior_ to encoded fractions
         as checked by the `numerals/encoded_fractions` check."""
 
     def JSON(self):
