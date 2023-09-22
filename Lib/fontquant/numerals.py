@@ -382,7 +382,7 @@ class SINF(Check):
     """
 
     name = "Inferior Numerals"
-    keyword = "inferiors"
+    keyword = "inferior_numerals"
     data_type = Percentage
     interpretation_hint = """\
         Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%).
@@ -403,7 +403,7 @@ class SUPS(Check):
     """
 
     name = "Superior Numerals"
-    keyword = "superiors"
+    keyword = "superior_numerals"
     data_type = Percentage
     interpretation_hint = """\
         Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%).

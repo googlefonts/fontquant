@@ -2,7 +2,7 @@
 
 ## Casing
 
-### SmallCaps (`casing/smcp`)
+### SmallCaps (`casing/smallcaps`)
 
 Returns the percentage of characters that are lowercase letters (`Ll`) and get shaped by the `smcp` feature. 
 
@@ -15,12 +15,12 @@ _Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
-value = results["casing"]["smcp"]["value"]
+value = results["casing"]["smallcaps"]["value"]
 print(value)
 >>> 0.5
 ```
 
-### Caps-To-SmallCaps (`casing/c2sc`)
+### Caps-To-SmallCaps (`casing/caps-to-smallcaps`)
 
 Returns the percentage of characters that are uppercase letters (`Lu`) and get shaped by the `c2sc` feature. 
 
@@ -33,12 +33,12 @@ _Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
-value = results["casing"]["c2sc"]["value"]
+value = results["casing"]["caps-to-smallcaps"]["value"]
 print(value)
 >>> 0.5
 ```
 
-### Case-Sensitive Punctuation (`casing/case`)
+### Case-Sensitive Punctuation (`casing/case_sensitive_punctuation`)
 
 Returns the percentage of characters that are punctuation (`P*`) and get shaped by the `case` feature. 
 
@@ -48,7 +48,7 @@ _Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
-value = results["casing"]["case"]["value"]
+value = results["casing"]["case_sensitive_punctuation"]["value"]
 print(value)
 >>> 0.5
 ```
@@ -130,7 +130,7 @@ print(value)
 >>> proportional_lining
 ```
 
-### Superior Numerals (`numerals/superiors`)
+### Superior Numerals (`numerals/superior_numerals`)
 
 Returns the percentage of numerals that get shaped by the `sups` feature. 
 
@@ -143,12 +143,12 @@ _Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
-value = results["numerals"]["superiors"]["value"]
+value = results["numerals"]["superior_numerals"]["value"]
 print(value)
 >>> 0.5
 ```
 
-### Inferior Numerals (`numerals/inferiors`)
+### Inferior Numerals (`numerals/inferior_numerals`)
 
 Returns the percentage of numerals that get shaped by the `sinf` feature. 
 
@@ -161,7 +161,7 @@ _Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
-value = results["numerals"]["inferiors"]["value"]
+value = results["numerals"]["inferior_numerals"]["value"]
 print(value)
 >>> 0.5
 ```

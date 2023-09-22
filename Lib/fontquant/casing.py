@@ -19,7 +19,7 @@ class SMCP(Check):
     """
 
     name = "SmallCaps"
-    keyword = "smcp"
+    keyword = "smallcaps"
     data_type = Percentage
     interpretation_hint = """\
     Consider fonts to have a functioning `smcp` feature if the value is above `0.95` (95%),
@@ -49,7 +49,7 @@ class C2SC(Check):
     """
 
     name = "Caps-To-SmallCaps"
-    keyword = "c2sc"
+    keyword = "caps-to-smallcaps"
     data_type = Percentage
     interpretation_hint = """\
     Consider fonts to have a functioning `c2sc` feature if the value is above `0.95` (95%),
@@ -80,7 +80,7 @@ class CASE(Check):
     """
 
     name = "Case-Sensitive Punctuation"
-    keyword = "case"
+    keyword = "case_sensitive_punctuation"
     data_type = Percentage
 
     def value(self):
