@@ -175,7 +175,7 @@ class Check(object):
                 )
 
             if self.data_type:
-                markdown += f"""\\n_Example:_
+                markdown += f"""\n_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")

@@ -8,7 +8,8 @@ Returns the percentage (as float 0—1) of characters that are lowercase letters
 
 _Interpretation Hint:_ Consider fonts to have a functioning `smcp` feature if the value is above 0.95 (95%), as there are some characters that are lowercase letters but don't get shaped by the `smcp` feature, e.g. `florin`. Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your values rise.
 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -23,7 +24,8 @@ Returns the percentage (as float 0—1) of characters that are uppercase letters
 
 _Interpretation Hint:_ Consider fonts to have a functioning `c2sc` feature if the value is above 0.95 (95%), as there are some characters that are uppercase letters but don't typically get shaped by the `c2sc` feature, e.g. `Ohm`. Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your values rise.
 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -35,7 +37,8 @@ print(value)
 ### Case-Sensitive Punctuation (`casing/case`)
 
 Returns the percentage (as float 0—1) of characters that are punctuation (`P*`) and get shaped by the `case` feature. 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -49,7 +52,8 @@ print(value)
 ### Proportional Oldstyle Numerals (`numerals/proportional_oldstyle`)
 
 Returns a boolean of whether or not the font has functioning set of _proportional oldstyle_ numerals, either by default or activatable by the `onum`/`pnum` features. This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -61,7 +65,8 @@ print(value)
 ### Tabular Oldstyle Numerals (`numerals/tabular_oldstyle`)
 
 Returns a boolean of whether or not the font has functioning set of _tabular oldstyle_ numerals, either by default or activatable by the `onum`/`tnum` features. This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -73,7 +78,8 @@ print(value)
 ### Proportional Lining Numerals (`numerals/proportional_lining`)
 
 Returns a boolean of whether or not the font has functioning set of _proportional lining_ numerals, either by default or activatable by the `lnum`/`pnum` features. This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -85,7 +91,8 @@ print(value)
 ### Tabular Lining Numerals (`numerals/tabular_lining`)
 
 Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals, either by default or activatable by the `lnum`/`tnum` features. This check also performs heuristics to see whether the activated numeral set matches the common expectations on width/height variance and returns `False` if it doesn't. 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -97,7 +104,8 @@ print(value)
 ### Default Numerals (`numerals/default_numerals`)
 
 Returns the default numeral set (out of `proportional_oldstyle`, `tabular_oldstyle`, `proportional_lining`, `tabular_lining`). 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -112,7 +120,8 @@ Returns the percentage (as float 0—1) of numerals that get shaped by the `sups
 
 _Interpretation Hint:_ Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). A partial support is useless in practice.
 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -127,7 +136,8 @@ Returns the percentage (as float 0—1) of numerals that get shaped by the `sinf
 
 _Interpretation Hint:_ Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). A partial support is useless in practice.
 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -142,7 +152,8 @@ Returns percentage (as float 0—1) of encoded default fractions (e.g. ½) that 
 
 _Interpretation Hint:_ Consider encoded fractions to be inferior to arbitrary fractions as checked by the `numerals/arbitrary_fractions` check.
 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -157,7 +168,8 @@ Returns boolean of whether or not arbitrary fractions (e.g. 12/99) can be shaped
 
 _Interpretation Hint:_ Consider arbitrary fractions to be superior to encoded fractions as checked by the `numerals/encoded_fractions` check.
 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -169,7 +181,8 @@ print(value)
 ### Slashed Zero (`numerals/slashed_zero`)
 
 Returns percentage (as float 0—1) of feature combinations that shape the slashed zero. Here, the `zero` feature is used alone and in combination with other numeral-related features, currently `subs` and `sinf`. 
-\n_Example:_
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
