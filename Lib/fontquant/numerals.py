@@ -297,11 +297,13 @@ class SLASHED_ZERO(Check):
         # These aren't all useful combinations yet.
         # Add more here in the future.
         features = [
-            [["zero"], []],
-            [["zero", "subs"], ["zero"]],
-            [["zero", "sinf"], ["zero"]],
+            ["0", ["zero"], []],
+            ["0", ["zero", "subs"], ["zero"]],
+            ["0", ["zero", "sinf"], ["zero"]],
         ]
-        dictionary = {"value": sum([differs(self.vhb, "0", off, on) for off, on in features]) / len(features)}
+        dictionary = {
+            "value": sum([differs(self.vhb, string, off, on) for string, off, on in features]) / len(features)
+        }
         return dictionary
 
 
