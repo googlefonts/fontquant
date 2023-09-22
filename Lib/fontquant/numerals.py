@@ -281,7 +281,7 @@ class DEFAULT_NUMERALS(Check):
 
 class SLASHED_ZERO(Check):
     """\
-    Returns percentage (as float 0—1) of feature combinations that shape the slashed zero.
+    Returns percentage of feature combinations that shape the slashed zero.
     Here, the `zero` feature is used alone and in combination with other numeral-related features,
     currently `subs` and `sinf`.
     """
@@ -305,7 +305,7 @@ class SLASHED_ZERO(Check):
 
 class ENCODED_FRACTIONS_CHECK(Check):
     """\
-    Returns percentage (as float 0—1) of encoded default fractions (e.g. ½) that are shaped by the `frac` feature.
+    Returns percentage of encoded default fractions (e.g. ½) that are shaped by the `frac` feature.
     """
 
     name = "Encoded Fractions"
@@ -355,7 +355,7 @@ class EXTENDED_FRACTIONS(Check):
 
 class SINF(Check):
     """\
-    Returns the percentage (as float 0—1) of numerals that get shaped by the `sinf` feature.
+    Returns the percentage of numerals that get shaped by the `sinf` feature.
     """
 
     name = "Inferior Numerals"
@@ -376,7 +376,7 @@ class SINF(Check):
 
 class SUPS(Check):
     """\
-    Returns the percentage (as float 0—1) of numerals that get shaped by the `sups` feature.
+    Returns the percentage of numerals that get shaped by the `sups` feature.
     """
 
     name = "Superior Numerals"

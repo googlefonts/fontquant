@@ -106,20 +106,32 @@ class BaseDataType(object):
     def example_value(self, default_example_value):
         return default_example_value or None
 
+    def return_value_description(self):
+        return None
+
 
 class Percentage(BaseDataType):
     def example_value(self, default_example_value):
         return default_example_value or 0.5
+
+    def return_value_description(self):
+        return "Percentage expressed as float 0—1 (e.g. `0.5`)"
 
 
 class Boolean(BaseDataType):
     def example_value(self, default_example_value):
         return default_example_value or True
 
+    def return_value_description(self):
+        return "Boolean (`True`or `False`)"
+
 
 class String(BaseDataType):
     def example_value(self, default_example_value):
         return default_example_value or "abc..."
+
+    def return_value_description(self):
+        return "String"
 
 
 class Check(object):
@@ -175,7 +187,9 @@ class Check(object):
                 )
 
             if self.data_type:
-                markdown += f"""\n_Example:_
+                markdown += f"""\n_Return Value:_ `{self.data_type().return_value_description()}`
+
+_Example:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
