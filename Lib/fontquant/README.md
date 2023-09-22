@@ -204,7 +204,7 @@ print(value)
 
 ### Slashed Zero (`numerals/slashed_zero`)
 
-Returns percentage of feature combinations that shape the slashed zero. Here, the `zero` feature is used alone and in combination with other numeral-related features, currently `subs` and `sinf`. 
+Returns percentage of feature combinations that shape the slashed zero. Here, the `zero` feature is used alone and in combination with other numeral-related features, if supported by the font, currently `subs`, `sinf`, `frac`. 
 
 _Interpretation Hint:_ A professional font should reach a value of `1.0` here.
 
