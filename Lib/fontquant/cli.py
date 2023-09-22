@@ -9,5 +9,5 @@ def cli():
     vhb = CustomHarfbuzz(sys.argv[-1])
 
     base = Base(ttFont, vhb)
-    formatted = json.dumps(base.JSON(), indent=2)
+    formatted = json.dumps(base.value(), indent=2)
     print(formatted)

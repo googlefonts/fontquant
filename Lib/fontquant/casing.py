@@ -27,7 +27,7 @@ class SMCP(Check):
     Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your
     values rise."""
 
-    def JSON(self):
+    def value(self):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0
@@ -58,7 +58,7 @@ class C2SC(Check):
     Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your
     values rise."""
 
-    def JSON(self):
+    def value(self):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0
@@ -83,7 +83,7 @@ class CASE(Check):
     keyword = "case"
     data_type = Percentage
 
-    def JSON(self):
+    def value(self):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0

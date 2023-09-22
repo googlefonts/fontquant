@@ -13,7 +13,7 @@ def get_result(filename):
     vhb = CustomHarfbuzz(font_path)
 
     base = Base(ttFont, vhb)
-    return base.JSON()
+    return base.value()
 
 
 def test_numerals():

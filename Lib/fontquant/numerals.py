@@ -111,7 +111,7 @@ class PON_CHECK(Check):
     keyword = PON
     data_type = Boolean
 
-    def JSON(self):
+    def value(self):
         dictionary = {
             "value": (
                 pon_matrix(self.ttFont, self.vhb)
@@ -139,7 +139,7 @@ class TON_CHECK(Check):
     keyword = TON
     data_type = Boolean
 
-    def JSON(self):
+    def value(self):
         dictionary = {
             "value": (
                 ton_matrix(self.ttFont, self.vhb)
@@ -166,7 +166,7 @@ class PLN_CHECK(Check):
     keyword = PLN
     data_type = Boolean
 
-    def JSON(self):
+    def value(self):
         dictionary = {
             "value": (
                 pln_matrix(self.ttFont, self.vhb)
@@ -193,7 +193,7 @@ class TLN_CHECK(Check):
     keyword = TLN
     data_type = Boolean
 
-    def JSON(self):
+    def value(self):
         dictionary = {
             "value": (
                 tln_matrix(self.ttFont, self.vhb)
@@ -274,7 +274,7 @@ class DEFAULT_NUMERALS(Check):
     data_type = String
     example_value = "proportional_lining"
 
-    def JSON(self):
+    def value(self):
         dictionary = {"value": default_numerals(self.ttFont, self.vhb)}
         return dictionary
 
@@ -292,7 +292,7 @@ class SLASHED_ZERO(Check):
     interpretation_hint = """\
         A professional font should reach a value of `1.0` here."""
 
-    def JSON(self):
+    def value(self):
         # TODO:
         # These aren't all useful combinations yet.
         # Add more here in the future.
@@ -320,7 +320,7 @@ class ENCODED_FRACTIONS_CHECK(Check):
         as checked by the `numerals/arbitrary_fractions` check.
         For a professional font, ignore this check."""
 
-    def JSON(self):
+    def value(self):
         dictionary = {
             "value": self.ttFont.has_feature("frac")
             and sum(
@@ -346,7 +346,7 @@ class EXTENDED_FRACTIONS(Check):
         Consider arbitrary fractions to be _superior_ to encoded fractions
         as checked by the `numerals/encoded_fractions` check."""
 
-    def JSON(self):
+    def value(self):
         dictionary = {
             "value": all(
                 [
@@ -370,7 +370,7 @@ class SINF(Check):
         Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%).
         _A partial support is useless in practice._"""
 
-    def JSON(self):
+    def value(self):
         covered = 0
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sinf": True}}):
@@ -391,7 +391,7 @@ class SUPS(Check):
         Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%).
         _A partial support is useless in practice._"""
 
-    def JSON(self):
+    def value(self):
         covered = 0
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sups": True}}):

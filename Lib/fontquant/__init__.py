@@ -158,11 +158,11 @@ class Check(object):
                     return found
         return None
 
-    def JSON(self):
+    def value(self):
         dictionary = {}
         for child in self.children:
             instance = child(self.ttFont, self.vhb, parent=self)
-            dictionary[instance.keyword] = instance.JSON()
+            dictionary[instance.keyword] = instance.value()
         return dictionary
 
     def path(self):
@@ -244,4 +244,4 @@ def quantify(font_path):
     vhb = CustomHarfbuzz(font_path)
 
     base = Base(ttFont, vhb)
-    return base.JSON()
+    return base.value()
