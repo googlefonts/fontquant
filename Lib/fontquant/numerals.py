@@ -300,27 +300,27 @@ class SLASHED_ZERO(Check):
         features = [
             ["0", ["zero"], []],
         ]
-        tested_features = []
+        checked_additional_features = []
         # Add subs if supported
         if differs(self.vhb, "0", ["subs"], []):
             features.append(["0", ["zero", "subs"], ["subs"]])
-            tested_features.append("subs")
+            checked_additional_features.append("subs")
         # Add sinf if supported
         if differs(self.vhb, "0", ["subs"], []):
             features.append(["0", ["zero", "sinf"], ["sinf"]])
-            tested_features.append("sinf")
+            checked_additional_features.append("sinf")
         # Add arbitrary_fractions if supported
         arbitrary_fractions_check = self.base().find_children("numerals/arbitrary_fractions")
         if arbitrary_fractions_check.value()["value"]:
             features.append(["0/1", ["zero", "frac"], ["frac"]])
             features.append(["1/0", ["zero", "frac"], ["frac"]])
-            tested_features.append("frac")
+            checked_additional_features.append("frac")
 
         dictionary = {
             "value": sum([differs(self.vhb, string, off, on) for string, on, off in features]) / len(features)
         }
-        if tested_features:
-            dictionary["checked_additional_features"] = tested_features
+        if checked_additional_features:
+            dictionary["checked_additional_features"] = checked_additional_features
         return dictionary
 
 
