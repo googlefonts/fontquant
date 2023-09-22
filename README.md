@@ -80,9 +80,12 @@ Currently prints formatted JSON to the screen:
 ```python
 from fontquant import quantify
 
-# Returns dictionary:
+# Get results as dictionary
 results = quantify("font.ttf")
+
+# Access individual check’s value
 default_numerals = results["numerals"]["default_numerals"]["value"]
+
 print(default_numerals)
 >>> proportional_lining
 ```
