@@ -18,6 +18,12 @@ Examples:
 
 The individual values are described [in the documentation](Lib/fontquant/README.md) along with recommendations of how to interpret them for user interfaces.
 
+# Development Status
+
+The project in **Alpha** stage, which means that features and implementations may change without notice.
+
+Once we've reached Beta, we will keep a log of API changes.
+
 # Installation
 
 Install tool with pip: `pip install .`
