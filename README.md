@@ -1,3 +1,5 @@
+[![Fontquant CI](https://github.com/googlefonts/fontquant/actions/workflows/main.yaml/badge.svg)](https://github.com/googlefonts/fontquant/actions/workflows/main.yaml)
+
 # Fontquant
 
 Fontquant looks into a font and quantifies what’s in it, creating a machine-readable representation of font features **that it has _proven_ to work**. It makes heavy use of the _Harfbuzz_ shaping engine to prove the functionality of font features, rather than just looking up the feature list in the font.

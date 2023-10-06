@@ -2,6 +2,7 @@ import logging
 from fontquant import Check, Percentage, Integer
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
+import github_action_utils as gha_utils
 
 
 class StrokeContrastRatio(Check):
@@ -27,8 +28,7 @@ class StrokeContrastRatio(Check):
             try:
                 self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
             except Exception as e:
-                logging.error(str(e))
-                print(e)
+                gha_utils.debug(str(e))
                 return {"value": None, "error": str(e)}
 
         return {"value": self.parent.stroke_values[0]}
@@ -57,8 +57,7 @@ class StrokeContrastAngle(Check):
             try:
                 self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
             except Exception as e:
-                logging.error(str(e))
-                print(e)
+                gha_utils.debug(str(e))
                 return {"value": None, "error": str(e)}
 
         return {"value": self.parent.stroke_values[1]}
