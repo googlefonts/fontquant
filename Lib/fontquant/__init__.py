@@ -187,9 +187,8 @@ class Check(object):
 
     def link_list(self):
         if self.__doc__:
-            return [
-                f'  * [{self.name}](#{self.name.lower().replace(" ", "-")}-{"/".join(self.path()).replace("/", "").replace(" ", "-")})'
-            ]
+            link = "/".join(self.path()).replace("/", "").replace(" ", "-")
+            return [f'  * [{self.name}](#{self.name.lower().replace(" ", "-")}-{link})']
         else:
             check_list = []
             if self.name:
