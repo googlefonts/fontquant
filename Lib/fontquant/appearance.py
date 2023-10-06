@@ -28,8 +28,7 @@ class StrokeContrastRatio(Check):
             try:
                 self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
             except Exception as e:
-                gha_utils.error(str(e), use_subprocess=False)
-                return {"value": None, "error": str(e)}
+                return {"value": str(e)}
 
         return {"value": self.parent.stroke_values[0]}
 
@@ -57,8 +56,7 @@ class StrokeContrastAngle(Check):
             try:
                 self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
             except Exception as e:
-                gha_utils.error(str(e), use_subprocess=False)
-                return {"value": None, "error": str(e)}
+                return {"value": str(e)}
 
         return {"value": self.parent.stroke_values[1]}
 
