@@ -249,6 +249,9 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     strokes.sort_values(by=["thickness"], inplace=True)
     other_min = None
     for ind in strokes.index:
+        # TODO:
+        # The 0.75/0.25 approach is a crutch. Make sure this point can be found going around the path's origin
+        # like an unsigned integer
         if 0.75 > abs(strokes["position"][ind] - min_row["position"]) > 0.25:
             other_min = strokes.loc[ind]
             break
