@@ -1,3 +1,12 @@
 fontTools
 vharfbuzz
 uharfbuzz
+
+# stroke:
+pandas
+numpy
+svglib
+matplotlib
+seaborn
+pillow
+beziers
