@@ -3,6 +3,8 @@ vharfbuzz
 uharfbuzz
 
 # stroke:
+skimage
+skan
 pandas
 numpy
 svglib
