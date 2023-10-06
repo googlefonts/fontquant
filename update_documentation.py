@@ -11,4 +11,4 @@ base = Base(None, None)
 
 with open(header_path, "r") as header:
     with open(doc_path, "w") as out:
-        out.write(header.read() + "\n".join(base.link_list()) + "\n\n" + base.documentation())
+        out.write(header.read() + "\n\n" + "\n\n".join(base.link_list()) + "\n\n" + base.documentation())
