@@ -249,7 +249,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     strokes.sort_values(by=["thickness"], inplace=True)
     other_min = None
     for ind in strokes.index:
-        if abs(strokes["position"][ind] - min_row["position"]) > 0.25:
+        if 0.75 > abs(strokes["position"][ind] - min_row["position"]) > 0.25:
             other_min = strokes.loc[ind]
             break
 
@@ -291,4 +291,4 @@ if __name__ == "__main__":
     ascender = ttFont["hhea"].ascender
     assert descender <= 0
 
-    stroke_contrast(paths, width, ascender, descender, show=True)
+    print(stroke_contrast(paths, width, ascender, descender, show=True))
