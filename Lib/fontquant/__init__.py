@@ -134,6 +134,14 @@ class String(BaseDataType):
         return "String"
 
 
+class Integer(BaseDataType):
+    def example_value(self, default_example_value):
+        return default_example_value or 5
+
+    def return_value_description(self):
+        return "Integer number (e.g. `5`)"
+
+
 class Check(object):
     name = None
     keyword = None
@@ -233,10 +241,11 @@ print(value)
 
 from .casing import Casing  # noqa E402 (Circular import)
 from .numerals import Numerals  # noqa E402 (Circular import)
+from .appearance import Appearance  # noqa E402 (Circular import)
 
 
 class Base(Check):
-    children = [Casing, Numerals]
+    children = [Casing, Numerals, Appearance]
 
 
 def quantify(font_path):
