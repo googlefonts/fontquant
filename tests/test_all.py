@@ -20,6 +20,7 @@ farro = get_result("Farro-Regular.ttf")
 foldit = get_result("Foldit-VariableFont_wght.ttf")
 youngserif = get_result("YoungSerif-Regular.ttf")
 robotoflex = get_result("RobotoFlex-Var.ttf")
+bodonimoda = get_result("BodoniModa_18pt-Italic.ttf")
 
 
 def test_numerals():
@@ -47,3 +48,5 @@ def test_appearance():
     assert youngserif["appearance"]["stroke_contrast_angle"]["value"] == 25
     assert robotoflex["appearance"]["stroke_contrast_ratio"]["value"] == 0.8
     assert robotoflex["appearance"]["stroke_contrast_angle"]["value"] == 0
+    assert bodonimoda["appearance"]["stroke_contrast_ratio"]["value"] == 0.15
+    assert bodonimoda["appearance"]["stroke_contrast_angle"]["value"] == -18
