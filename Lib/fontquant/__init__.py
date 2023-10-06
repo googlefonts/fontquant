@@ -188,12 +188,12 @@ class Check(object):
     def link_list(self):
         if self.__doc__:
             return [
-                f'[{self.name}](#{self.name.lower().replace(" ", "-")}-{"/".join(self.path()).replace("/", "").replace(" ", "-")})'
+                f'  * [{self.name}](#{self.name.lower().replace(" ", "-")}-{"/".join(self.path()).replace("/", "").replace(" ", "-")})'
             ]
         else:
             check_list = []
             if self.name:
-                check_list.append(self.name + ":")
+                check_list.append("* " + self.name + ":")
             for child in self.children:
                 instance = child(self.ttFont, self.vhb, parent=self)
                 new_list = instance.link_list()
