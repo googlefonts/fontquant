@@ -1,5 +1,24 @@
 # Fontquant Documentation
 
+Casing:
+(SmallCaps)[#smallcaps-casingsmallcaps]
+(Caps-To-SmallCaps)[#caps-to-smallcaps-casingcaps-to-smallcaps]
+(Case-Sensitive Punctuation)[#case-sensitive-punctuation-casingcase_sensitive_punctuation]
+Numerals:
+(Proportional Oldstyle Numerals)[#proportional-oldstyle-numerals-numeralsproportional_oldstyle]
+(Tabular Oldstyle Numerals)[#tabular-oldstyle-numerals-numeralstabular_oldstyle]
+(Proportional Lining Numerals)[#proportional-lining-numerals-numeralsproportional_lining]
+(Tabular Lining Numerals)[#tabular-lining-numerals-numeralstabular_lining]
+(Default Numerals)[#default-numerals-numeralsdefault_numerals]
+(Superior Numerals)[#superior-numerals-numeralssuperior_numerals]
+(Inferior Numerals)[#inferior-numerals-numeralsinferior_numerals]
+(Encoded Fractions)[#encoded-fractions-numeralsencoded_fractions]
+(Arbitrary Fractions)[#arbitrary-fractions-numeralsarbitrary_fractions]
+(Slashed Zero)[#slashed-zero-numeralsslashed_zero]
+Appearance:
+(Stroke Contrast Ratio)[#stroke-contrast-ratio-appearancestroke_contrast_ratio]
+(Stroke Contrast Angle)[#stroke-contrast-angle-appearancestroke_contrast_angle]
+
 ## Casing
 
 ### SmallCaps (`casing/smallcaps`)
