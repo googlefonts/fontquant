@@ -321,7 +321,6 @@ class SLASHED_ZERO(Check):
         }
         if checked_additional_features:
             dictionary["checked_additional_features"] = checked_additional_features
-            print(features)
         return dictionary
 
 
