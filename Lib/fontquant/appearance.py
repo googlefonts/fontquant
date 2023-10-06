@@ -28,6 +28,7 @@ class StrokeContrastRatio(Check):
                 self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
             except Exception as e:
                 logging.error(str(e))
+                print(e)
                 return {"value": None, "error": str(e)}
 
         return {"value": self.parent.stroke_values[0]}
@@ -57,6 +58,7 @@ class StrokeContrastAngle(Check):
                 self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
             except Exception as e:
                 logging.error(str(e))
+                print(e)
                 return {"value": None, "error": str(e)}
 
         return {"value": self.parent.stroke_values[1]}
