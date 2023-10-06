@@ -28,7 +28,7 @@ Once we've reached Beta, we will keep a log of API changes.
 
 # Installation
 
-Install tool with pip: `pip install .`
+Install tool with pip: `pip install .` on your local repository clone. A PyPI-hosted version will be added later once things are more stable.
 
 # Invoke From Command Line
 
