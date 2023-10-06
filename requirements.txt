@@ -14,4 +14,4 @@ pillow
 beziers
 
 # Github Actions:
-gha_utils
+github_action_utils
