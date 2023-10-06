@@ -12,6 +12,7 @@ matplotlib
 seaborn
 pillow
 beziers
+rlPyCairo
 
 # Github Actions:
 github_action_utils
