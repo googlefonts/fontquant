@@ -3,7 +3,7 @@ vharfbuzz
 uharfbuzz
 
 # stroke:
-skimage
+scikit-image
 skan
 pandas
 numpy
