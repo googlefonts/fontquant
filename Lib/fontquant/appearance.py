@@ -1,8 +1,6 @@
-import logging
 from fontquant import Check, Percentage, Integer
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
-import github_action_utils as gha_utils
 
 
 class StrokeContrastRatio(Check):
