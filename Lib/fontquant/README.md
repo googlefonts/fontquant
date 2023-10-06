@@ -220,3 +220,35 @@ print(value)
 >>> 0.5
 ```
 
+## Appearance
+
+### Stroke Contrast Ratio (`appearance/stroke_contrast_ratio`)
+
+Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke. For now, the lowercase "o" is used for the calculation. 
+
+_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["stroke_contrast_ratio"]["value"]
+print(value)
+>>> 0.5
+```
+
+### Stroke Contrast Angle (`appearance/stroke_contrast_angle`)
+
+Calculates the angle of the stroke contrast. An angle of 0° means vertical contrast, with positive angles being counter-clockwise. For now, the lowercase "o" is used for the calculation. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["stroke_contrast_angle"]["value"]
+print(value)
+>>> 5
+```
+
