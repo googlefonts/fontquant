@@ -15,7 +15,7 @@ class StrokeContrastRatio(Check):
     data_type = Percentage
 
     def value(self):
-        character = "o" if "o" in self.ttFont.getGlyphSet() else "uni006F"
+        character = self.ttFont.glyphname_for_char("o")
         width = self.ttFont.getGlyphSet()[character].width
         paths = BezierPath.fromFonttoolsGlyph(self.ttFont, character)
         descender = self.ttFont["hhea"].descender
@@ -43,7 +43,7 @@ class StrokeContrastAngle(Check):
     data_type = Integer
 
     def value(self):
-        character = "o" if "o" in self.ttFont.getGlyphSet() else "uni006F"
+        character = self.ttFont.glyphname_for_char("o")
         width = self.ttFont.getGlyphSet()[character].width
         paths = BezierPath.fromFonttoolsGlyph(self.ttFont, character)
         descender = self.ttFont["hhea"].descender

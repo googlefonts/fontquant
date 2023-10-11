@@ -287,7 +287,7 @@ if __name__ == "__main__":
     import sys
 
     ttFont = CustomTTFont(sys.argv[-1])
-    character = "o" if "o" in ttFont.getGlyphSet() else "uni006F"
+    character = ttFont.glyphname_for_char("o")
     width = ttFont.getGlyphSet()[character].width
     paths = BezierPath.fromFonttoolsGlyph(ttFont, character)
     descender = ttFont["hhea"].descender
