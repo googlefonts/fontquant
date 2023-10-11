@@ -101,6 +101,10 @@ class CustomTTFont(ttLib.TTFont):
     def has_feature(self, tag):
         return tag in [FeatureRecord.FeatureTag for FeatureRecord in self["GSUB"].table.FeatureList.FeatureRecord]
 
+    def glyphname_for_char(self, char):
+        """Convert a character to a glyph name."""
+        return self.getBestCmap()[ord(char)]
+
 
 class BaseDataType(object):
     def example_value(self, default_example_value):
