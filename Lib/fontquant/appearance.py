@@ -29,9 +29,9 @@ class StrokeContrastRatio(Metric, StrokeContrastBase):
     """\
     Calculates the ratio of the stroke contrast,
     calculated in thinnest/thickest stroke.
-    For now, the lowercase "o" is used for the calculation.
 
-    TODO: Choose test letter based on primary_script
+    One representative character is measured for the font's primary script,
+    such as the "o" for Latin.
     """
 
     name = "Stroke Contrast Ratio"
@@ -52,7 +52,9 @@ class StrokeContrastAngle(Metric, StrokeContrastBase):
     """\
     Calculates the angle of the stroke contrast. An angle of 0° means
     vertical contrast, with positive angles being counter-clockwise.
-    For now, the lowercase "o" is used for the calculation.
+
+    One representative character is measured for the font's primary script,
+    such as the "o" for Latin.
     """
 
     name = "Stroke Contrast Angle"
