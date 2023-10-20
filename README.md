@@ -95,6 +95,8 @@ results = quantify("font.ttf")
 results = quantify("font.ttf", includes=["numerals"])
 # or, exclude one category, running all but that one:
 results = quantify("font.ttf", excludes=["appearance"])
+# or, run specific check only:
+results = quantify("font.ttf", includes=["numerals/default_numerals"])
 
 # Access individual check’s value
 default_numerals = results["numerals"]["default_numerals"]["value"]
