@@ -19,7 +19,9 @@
   * [Slashed Zero](#slashed-zero-numeralsslashed_zero)  
 * Appearance:  
   * [Stroke Contrast Ratio](#stroke-contrast-ratio-appearancestroke_contrast_ratio)  
-  * [Stroke Contrast Angle](#stroke-contrast-angle-appearancestroke_contrast_angle)
+  * [Stroke Contrast Angle](#stroke-contrast-angle-appearancestroke_contrast_angle)  
+  * [Weight](#weight-appearanceweight)  
+  * [Width](#width-appearancewidth)
 
 ## Casing
 
@@ -245,7 +247,7 @@ print(value)
 
 ### Stroke Contrast Ratio (`appearance/stroke_contrast_ratio`)
 
-Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke. For now, the lowercase "o" is used for the calculation. 
+Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke. For now, the lowercase "o" is used for the calculation.  TODO: Choose test letter based on primary_script 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
 
@@ -271,5 +273,35 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["stroke_contrast_angle"]["value"]
 print(value)
 >>> 5
+```
+
+### Weight (`appearance/weight`)
+
+Measures the weight of all letters in the primary script of the font. This metric measures the amount of ink per glyph as a percentage of an em square and returns the average of all glyphs measured.  Based on fontTools.pens.statisticsPen.StatisticsPen 
+
+_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["weight"]["value"]
+print(value)
+>>> 0.5
+```
+
+### Width (`appearance/width`)
+
+Measures the width of all letters in the primary script of the font. This metric measures the width of all glyphs as a percentage of the UPM.  Based on fontTools.pens.statisticsPen.StatisticsPen 
+
+_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["width"]["value"]
+print(value)
+>>> 0.5
 ```
 

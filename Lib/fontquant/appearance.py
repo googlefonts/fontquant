@@ -1,6 +1,7 @@
 from fontquant import Check, Percentage, Integer
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
+from fontquant.helpers.pens import CustomStatisticsPen
 
 
 class StrokeContrastRatio(Check):
@@ -8,6 +9,8 @@ class StrokeContrastRatio(Check):
     Calculates the ratio of the stroke contrast,
     calculated in thinnest/thickest stroke.
     For now, the lowercase "o" is used for the calculation.
+
+    TODO: Choose test letter based on primary_script
     """
 
     name = "Stroke Contrast Ratio"
@@ -59,7 +62,46 @@ class StrokeContrastAngle(Check):
         return {"value": self.parent.stroke_values[1]}
 
 
+class Weight(Check):
+    """\
+    Measures the weight of all letters in the primary script of the font.
+    This metric measures the amount of ink per glyph as a percentage of an em square
+    and returns the average of all glyphs measured.
+
+    Based on fontTools.pens.statisticsPen.StatisticsPen
+    """
+
+    name = "Weight"
+    keyword = "weight"
+    data_type = Percentage
+
+    def value(self):
+        pen = CustomStatisticsPen()
+        stats = pen.measure(self.ttFont)
+
+        return {"value": stats["weight"]}
+
+
+class Width(Check):
+    """\
+    Measures the width of all letters in the primary script of the font.
+    This metric measures the width of all glyphs as a percentage of the UPM.
+
+    Based on fontTools.pens.statisticsPen.StatisticsPen
+    """
+
+    name = "Width"
+    keyword = "width"
+    data_type = Percentage
+
+    def value(self):
+        pen = CustomStatisticsPen()
+        stats = pen.measure(self.ttFont)
+
+        return {"value": stats["width"]}
+
+
 class Appearance(Check):
     name = "Appearance"
     keyword = "appearance"
-    children = [StrokeContrastRatio, StrokeContrastAngle]
+    children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width]

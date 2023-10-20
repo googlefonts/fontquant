@@ -7,9 +7,11 @@ scikit-image
 skan
 pandas
 numpy
-svglib
 matplotlib
 seaborn
 pillow
 beziers
+
+# png to svg
+svglib
 rlPyCairo
