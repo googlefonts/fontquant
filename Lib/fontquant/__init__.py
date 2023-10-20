@@ -134,7 +134,7 @@ class Percentage(BaseDataType):
         return "Percentage expressed as float 0—1 (e.g. `0.5`)"
 
     def shape_value(self, value):
-        return round(value * 1000) / 1000 if value else None
+        return round(value * 1000) / 1000 if value != 0 else 0.0
 
 
 class Boolean(BaseDataType):
