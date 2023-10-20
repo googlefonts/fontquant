@@ -1,4 +1,4 @@
-from fontquant import Check, Percentage, Boolean, String
+from fontquant import Metric, Percentage, Boolean, String
 
 # Settings:
 
@@ -99,7 +99,7 @@ def pon_matrix(ttFont, vhb):
     return differs(vhb, NUMERALS, PON_MATRIX, [])
 
 
-class PON_CHECK(Check):
+class PON_CHECK(Metric):
     """\
     Returns a boolean of whether or not the font has functioning set of _proportional oldstyle_ numerals,
     either by default or activatable by the `onum`/`pnum` features.
@@ -127,7 +127,7 @@ def ton_matrix(ttFont, vhb):
     return differs(vhb, NUMERALS, TON_MATRIX, [])
 
 
-class TON_CHECK(Check):
+class TON_CHECK(Metric):
     """\
     Returns a boolean of whether or not the font has functioning set of _tabular oldstyle_ numerals,
     either by default or activatable by the `onum`/`tnum` features.
@@ -154,7 +154,7 @@ def pln_matrix(ttFont, vhb):
     return differs(vhb, NUMERALS, PLN_MATRIX, [])
 
 
-class PLN_CHECK(Check):
+class PLN_CHECK(Metric):
     """\
     Returns a boolean of whether or not the font has functioning set of _proportional lining_ numerals,
     either by default or activatable by the `lnum`/`pnum` features.
@@ -181,7 +181,7 @@ def tln_matrix(ttFont, vhb):
     return differs(vhb, NUMERALS, TLN_MATRIX, [])
 
 
-class TLN_CHECK(Check):
+class TLN_CHECK(Metric):
     """\
     Returns a boolean of whether or not the font has functioning set of _tabular lining_ numerals,
     either by default or activatable by the `lnum`/`tnum` features.
@@ -263,7 +263,7 @@ def default_numerals(ttFont, vhb):
         return numeral_style_heuristics(ttFont, vhb)
 
 
-class DEFAULT_NUMERALS(Check):
+class DEFAULT_NUMERALS(Metric):
     """\
     Returns the default numeral set
     (out of `proportional_oldstyle`, `tabular_oldstyle`, `proportional_lining`, `tabular_lining`).
@@ -279,7 +279,7 @@ class DEFAULT_NUMERALS(Check):
         return dictionary
 
 
-class SLASHED_ZERO(Check):
+class SLASHED_ZERO(Metric):
     """\
     Returns percentage of feature combinations that shape the slashed zero.
     Here, the `zero` feature is used alone and in combination with other numeral-related features,
@@ -324,7 +324,7 @@ class SLASHED_ZERO(Check):
         return dictionary
 
 
-class ENCODED_FRACTIONS_CHECK(Check):
+class ENCODED_FRACTIONS_CHECK(Metric):
     """\
     Returns percentage of encoded default fractions (e.g. ½) that are shaped by the `frac` feature.
     """
@@ -351,7 +351,7 @@ class ENCODED_FRACTIONS_CHECK(Check):
         return dictionary
 
 
-class EXTENDED_FRACTIONS(Check):
+class EXTENDED_FRACTIONS(Metric):
     """\
     Returns boolean of whether or not arbitrary fractions (e.g. 12/99) can be shaped by the `frac` feature.
     """
@@ -375,7 +375,7 @@ class EXTENDED_FRACTIONS(Check):
         return dictionary
 
 
-class SINF(Check):
+class SINF(Metric):
     """\
     Returns the percentage of numerals that get shaped by the `sinf` feature.
     """
@@ -396,7 +396,7 @@ class SINF(Check):
         return dictionary
 
 
-class SUPS(Check):
+class SUPS(Metric):
     """\
     Returns the percentage of numerals that get shaped by the `sups` feature.
     """
@@ -417,7 +417,7 @@ class SUPS(Check):
         return dictionary
 
 
-class Numerals(Check):
+class Numerals(Metric):
     name = "Numerals"
     keyword = "numerals"
 

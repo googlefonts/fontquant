@@ -1,10 +1,10 @@
-from fontquant import Check, Percentage, Integer
+from fontquant import Metric, Percentage, Integer
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
 
 
-class StrokeContrastRatio(Check):
+class StrokeContrastRatio(Metric):
     """\
     Calculates the ratio of the stroke contrast,
     calculated in thinnest/thickest stroke.
@@ -34,7 +34,7 @@ class StrokeContrastRatio(Check):
         return {"value": self.parent.stroke_values[0]}
 
 
-class StrokeContrastAngle(Check):
+class StrokeContrastAngle(Metric):
     """\
     Calculates the angle of the stroke contrast. An angle of 0° means
     vertical contrast, with positive angles being counter-clockwise.
@@ -62,7 +62,7 @@ class StrokeContrastAngle(Check):
         return {"value": self.parent.stroke_values[1]}
 
 
-class Weight(Check):
+class Weight(Metric):
     """\
     Measures the weight of all letters in the primary script of the font.
     This metric measures the amount of ink per glyph as a percentage of an em square
@@ -82,7 +82,7 @@ class Weight(Check):
         return {"value": stats["weight"]}
 
 
-class Width(Check):
+class Width(Metric):
     """\
     Measures the width of all letters in the primary script of the font.
     This metric measures the width of all glyphs as a percentage of the UPM.
@@ -101,7 +101,7 @@ class Width(Check):
         return {"value": stats["width"]}
 
 
-class Appearance(Check):
+class Appearance(Metric):
     name = "Appearance"
     keyword = "appearance"
     children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width]

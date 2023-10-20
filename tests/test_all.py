@@ -50,3 +50,6 @@ def test_appearance():
     assert robotoflex["appearance"]["stroke_contrast_angle"]["value"] == 0
     assert bodonimoda["appearance"]["stroke_contrast_ratio"]["value"] == 0.15
     assert bodonimoda["appearance"]["stroke_contrast_angle"]["value"] == -18
+
+    assert farro["appearance"]["weight"]["value"] == 0.26559655539803406
+    assert farro["appearance"]["width"]["value"] == 0.5405654205607476

@@ -146,7 +146,7 @@ class Integer(BaseDataType):
         return "Integer number (e.g. `5`)"
 
 
-class Check(object):
+class Metric(object):
     name = None
     keyword = None
     children = []
@@ -263,7 +263,7 @@ from .numerals import Numerals  # noqa E402 (Circular import)
 from .appearance import Appearance  # noqa E402 (Circular import)
 
 
-class Base(Check):
+class Base(Metric):
     children = [Casing, Numerals, Appearance]
 
 

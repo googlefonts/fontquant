@@ -1,4 +1,4 @@
-from fontquant import Check, Percentage
+from fontquant import Metric, Percentage
 import unicodedata
 
 exceptions_c2sc = [
@@ -12,7 +12,7 @@ exceptions_smcp = [
 ]
 
 
-class SMCP(Check):
+class SMCP(Metric):
     """\
     Returns the percentage of characters that are lowercase letters (`Ll`)
     and get shaped by the `smcp` feature.
@@ -42,7 +42,7 @@ class SMCP(Check):
         return dictionary
 
 
-class C2SC(Check):
+class C2SC(Metric):
     """\
     Returns the percentage of characters that are uppercase letters (`Lu`)
     and get shaped by the `c2sc` feature.
@@ -73,7 +73,7 @@ class C2SC(Check):
         return dictionary
 
 
-class CASE(Check):
+class CASE(Metric):
     """\
     Returns the percentage of characters that are punctuation (`P*`)
     and get shaped by the `case` feature.
@@ -102,7 +102,7 @@ class CASE(Check):
         return dictionary
 
 
-class Casing(Check):
+class Casing(Metric):
     name = "Casing"
     keyword = "casing"
     children = [SMCP, C2SC, CASE]
