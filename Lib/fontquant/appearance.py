@@ -68,8 +68,6 @@ class Weight(Metric):
     This metric measures the amount of ink per glyph as a percentage of an em square
     and returns the average of all glyphs measured.
 
-    TO DO: Base the glyphs to measure on the font's primary script.
-
     Based on fontTools.pens.statisticsPen.StatisticsPen
     """
 
@@ -79,7 +77,7 @@ class Weight(Metric):
 
     def value(self):
         pen = CustomStatisticsPen()
-        stats = pen.measure(self.ttFont)
+        stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
 
         return {"value": self.shape_value(stats["weight"])}
 
@@ -89,9 +87,7 @@ class Width(Metric):
     Measures the width of all letters in the primary script of the font.
     This metric measures the average width of all glyphs as a percentage of the UPM.
 
-    TO DO: Base the glyphs to measure on the font's primary script.
-
-        Based on fontTools.pens.statisticsPen.StatisticsPen
+    Based on fontTools.pens.statisticsPen.StatisticsPen
     """
 
     name = "Width"
@@ -100,7 +96,7 @@ class Width(Metric):
 
     def value(self):
         pen = CustomStatisticsPen()
-        stats = pen.measure(self.ttFont)
+        stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
 
         return {"value": self.shape_value(stats["width"])}
 

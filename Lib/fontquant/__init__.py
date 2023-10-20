@@ -1,6 +1,7 @@
 from vharfbuzz import Vharfbuzz
 import uharfbuzz as hb
 from fontTools import ttLib
+from fontquant.helpers.fontcontent import get_primary_script, get_glyphs_for_script
 
 
 class CustomHarfbuzz(Vharfbuzz):
@@ -104,6 +105,14 @@ class CustomTTFont(ttLib.TTFont):
     def glyphname_for_char(self, char):
         """Convert a character to a glyph name."""
         return self.getBestCmap()[ord(char)]
+
+    def get_primary_script(self):
+        """Retrieve font's primary script."""
+        return get_primary_script(self)
+
+    def get_glyphs_for_primary_script(self):
+        """Retrieve list of glyph names of font's primary_script."""
+        return get_glyphs_for_script(self, self.get_primary_script())
 
 
 class BaseDataType(object):
