@@ -108,23 +108,29 @@ class CustomTTFont(ttLib.TTFont):
 
 class BaseDataType(object):
     def example_value(self, default_example_value):
-        return default_example_value or None
+        return self.shape_value(default_example_value) or None
 
     def return_value_description(self):
         return None
 
+    def shape_value(self, value):
+        return value
+
 
 class Percentage(BaseDataType):
     def example_value(self, default_example_value):
-        return default_example_value or 0.5
+        return self.shape_value(default_example_value) or 0.5
 
     def return_value_description(self):
         return "Percentage expressed as float 0—1 (e.g. `0.5`)"
 
+    def shape_value(self, value):
+        return round(value * 1000) / 1000
+
 
 class Boolean(BaseDataType):
     def example_value(self, default_example_value):
-        return default_example_value or True
+        return self.shape_value(default_example_value) or True
 
     def return_value_description(self):
         return "Boolean (`True`or `False`)"
@@ -132,7 +138,7 @@ class Boolean(BaseDataType):
 
 class String(BaseDataType):
     def example_value(self, default_example_value):
-        return default_example_value or "abc..."
+        return self.shape_value(default_example_value) or "abc..."
 
     def return_value_description(self):
         return "String"
@@ -140,7 +146,7 @@ class String(BaseDataType):
 
 class Integer(BaseDataType):
     def example_value(self, default_example_value):
-        return default_example_value or 5
+        return self.shape_value(default_example_value) or 5
 
     def return_value_description(self):
         return "Integer number (e.g. `5`)"
@@ -158,6 +164,9 @@ class Metric(object):
         self.ttFont = ttFont
         self.vhb = vhb
         self.parent = parent
+
+    def shape_value(self, value):
+        return self.data_type().shape_value(value)
 
     def find_check(self, path):
         for child in self.children:

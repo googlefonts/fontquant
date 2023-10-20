@@ -31,7 +31,7 @@ class StrokeContrastRatio(Metric):
             except Exception as e:
                 return {"value": str(e)}
 
-        return {"value": self.parent.stroke_values[0]}
+        return {"value": self.shape_value(self.parent.stroke_values[0])}
 
 
 class StrokeContrastAngle(Metric):
@@ -59,7 +59,7 @@ class StrokeContrastAngle(Metric):
             except Exception as e:
                 return {"value": str(e)}
 
-        return {"value": self.parent.stroke_values[1]}
+        return {"value": self.shape_value(self.parent.stroke_values[1])}
 
 
 class Weight(Metric):
@@ -81,7 +81,7 @@ class Weight(Metric):
         pen = CustomStatisticsPen()
         stats = pen.measure(self.ttFont)
 
-        return {"value": stats["weight"]}
+        return {"value": self.shape_value(stats["weight"])}
 
 
 class Width(Metric):
@@ -102,7 +102,7 @@ class Width(Metric):
         pen = CustomStatisticsPen()
         stats = pen.measure(self.ttFont)
 
-        return {"value": stats["width"]}
+        return {"value": self.shape_value(stats["width"])}
 
 
 class Appearance(Metric):

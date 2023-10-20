@@ -38,7 +38,7 @@ class SMCP(Metric):
                 if self.vhb.str(char) != self.vhb.str(char, {"features": {"smcp": True}}):
                     covered_glyphs += 1
 
-        dictionary = {"value": covered_glyphs / eligible_glyphs}
+        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs)}
         return dictionary
 
 
@@ -69,7 +69,7 @@ class C2SC(Metric):
                 if self.vhb.str(char) != self.vhb.str(char, {"features": {"c2sc": True}}):
                     covered_glyphs += 1
 
-        dictionary = {"value": covered_glyphs / eligible_glyphs}
+        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs)}
         return dictionary
 
 
@@ -98,7 +98,7 @@ class CASE(Metric):
                 if self.vhb.serialize_buf(buf1) != self.vhb.serialize_buf(buf2):
                     covered_glyphs += 1
 
-        dictionary = {"value": covered_glyphs / eligible_glyphs}
+        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs)}
         return dictionary
 
 

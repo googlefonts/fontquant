@@ -275,7 +275,7 @@ class DEFAULT_NUMERALS(Metric):
     example_value = "proportional_lining"
 
     def value(self):
-        dictionary = {"value": default_numerals(self.ttFont, self.vhb)}
+        dictionary = {"value": self.shape_value(default_numerals(self.ttFont, self.vhb))}
         return dictionary
 
 
@@ -317,7 +317,9 @@ class SLASHED_ZERO(Metric):
             checked_additional_features.append("frac")
 
         dictionary = {
-            "value": sum([differs(self.vhb, string, off, on) for string, on, off in features]) / len(features)
+            "value": self.shape_value(
+                sum([differs(self.vhb, string, off, on) for string, on, off in features]) / len(features)
+            )
         }
         if checked_additional_features:
             dictionary["checked_additional_features"] = checked_additional_features
@@ -339,14 +341,15 @@ class ENCODED_FRACTIONS_CHECK(Metric):
 
     def value(self):
         dictionary = {
-            "value": self.ttFont.has_feature("frac")
-            and sum(
-                [
-                    self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
-                    for string in ENCODED_FRACTIONS
-                ]
+            "value": self.shape_value(
+                sum(
+                    [
+                        self.vhb.str(string) != self.vhb.str(string, {"features": {"frac": True}})
+                        for string in ENCODED_FRACTIONS
+                    ]
+                )
+                / len(ENCODED_FRACTIONS)
             )
-            / len(ENCODED_FRACTIONS)
         }
         return dictionary
 
@@ -392,7 +395,7 @@ class SINF(Metric):
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sinf": True}}):
                 covered += 1
-        dictionary = {"value": covered / len(NUMERALS)}
+        dictionary = {"value": self.shape_value(covered / len(NUMERALS))}
         return dictionary
 
 
@@ -413,7 +416,7 @@ class SUPS(Metric):
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sups": True}}):
                 covered += 1
-        dictionary = {"value": covered / len(NUMERALS)}
+        dictionary = {"value": self.shape_value(covered / len(NUMERALS))}
         return dictionary
 
 
