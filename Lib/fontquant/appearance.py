@@ -5,7 +5,7 @@ from fontquant.helpers.pens import CustomStatisticsPen
 
 
 class StrokeContrastBase(object):
-    measure_characters = {"fallback": "o", "Latn": "o"}
+    measure_characters = {"fallback": "o", "Latn": "o", "Arab": "ه"}
 
     def get_character_to_measure(self):
         primary_script = self.ttFont.get_primary_script()
