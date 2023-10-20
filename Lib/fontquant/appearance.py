@@ -4,7 +4,28 @@ from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
 
 
-class StrokeContrastRatio(Metric):
+class StrokeContrastBase(object):
+    measure_characters = {"fallback": "o", "Latn": "o"}
+
+    def get_character_to_measure(self):
+        primary_script = self.ttFont.get_primary_script()
+        if primary_script in self.measure_characters:
+            return self.ttFont.glyphname_for_char(self.measure_characters[primary_script])
+        else:
+            return self.ttFont.glyphname_for_char(self.measure_characters["fallback"])
+
+    def measure(self):
+        character = self.get_character_to_measure()
+        width = self.ttFont.getGlyphSet()[character].width
+        paths = BezierPath.fromFonttoolsGlyph(self.ttFont, character)
+        descender = self.ttFont["hhea"].descender
+        ascender = self.ttFont["hhea"].ascender
+        assert descender <= 0
+
+        self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
+
+
+class StrokeContrastRatio(Metric, StrokeContrastBase):
     """\
     Calculates the ratio of the stroke contrast,
     calculated in thinnest/thickest stroke.
@@ -18,23 +39,16 @@ class StrokeContrastRatio(Metric):
     data_type = Percentage
 
     def value(self):
-        character = self.ttFont.glyphname_for_char("o")
-        width = self.ttFont.getGlyphSet()[character].width
-        paths = BezierPath.fromFonttoolsGlyph(self.ttFont, character)
-        descender = self.ttFont["hhea"].descender
-        ascender = self.ttFont["hhea"].ascender
-        assert descender <= 0
-
         if not hasattr(self.parent, "stroke_values"):
             try:
-                self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
+                self.measure()
             except Exception as e:
                 return {"value": str(e)}
 
         return {"value": self.shape_value(self.parent.stroke_values[0])}
 
 
-class StrokeContrastAngle(Metric):
+class StrokeContrastAngle(Metric, StrokeContrastBase):
     """\
     Calculates the angle of the stroke contrast. An angle of 0° means
     vertical contrast, with positive angles being counter-clockwise.
@@ -46,16 +60,9 @@ class StrokeContrastAngle(Metric):
     data_type = Integer
 
     def value(self):
-        character = self.ttFont.glyphname_for_char("o")
-        width = self.ttFont.getGlyphSet()[character].width
-        paths = BezierPath.fromFonttoolsGlyph(self.ttFont, character)
-        descender = self.ttFont["hhea"].descender
-        ascender = self.ttFont["hhea"].ascender
-        assert descender <= 0
-
         if not hasattr(self.parent, "stroke_values"):
             try:
-                self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
+                self.measure()
             except Exception as e:
                 return {"value": str(e)}
 
