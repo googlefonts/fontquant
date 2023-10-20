@@ -32,7 +32,8 @@ Install tool with pip: `pip install .` on your local repository clone, or with `
 
 # Invoke From Command Line
 
-`fontquant font.ttf`.
+`fontquant font.ttf`. For command line options run `fontquant -h`.
+
 Currently prints formatted JSON to the screen:
 
 ```json
@@ -90,6 +91,10 @@ from fontquant import quantify
 
 # Get results as dictionary
 results = quantify("font.ttf")
+# or, include/run only one category:
+results = quantify("font.ttf", includes=["numerals"])
+# or, exclude one category, running all but that one:
+results = quantify("font.ttf", excludes=["appearance"])
 
 # Access individual check’s value
 default_numerals = results["numerals"]["default_numerals"]["value"]
