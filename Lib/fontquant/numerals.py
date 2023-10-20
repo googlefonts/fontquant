@@ -111,7 +111,7 @@ class PON_CHECK(Metric):
     keyword = PON
     data_type = Boolean
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {
             "value": (
                 pon_matrix(self.ttFont, self.vhb)
@@ -139,7 +139,7 @@ class TON_CHECK(Metric):
     keyword = TON
     data_type = Boolean
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {
             "value": (
                 ton_matrix(self.ttFont, self.vhb)
@@ -166,7 +166,7 @@ class PLN_CHECK(Metric):
     keyword = PLN
     data_type = Boolean
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {
             "value": (
                 pln_matrix(self.ttFont, self.vhb)
@@ -193,7 +193,7 @@ class TLN_CHECK(Metric):
     keyword = TLN
     data_type = Boolean
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {
             "value": (
                 tln_matrix(self.ttFont, self.vhb)
@@ -274,7 +274,7 @@ class DEFAULT_NUMERALS(Metric):
     data_type = String
     example_value = "proportional_lining"
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {"value": self.shape_value(default_numerals(self.ttFont, self.vhb))}
         return dictionary
 
@@ -293,7 +293,7 @@ class SLASHED_ZERO(Metric):
     interpretation_hint = """\
         A professional font should reach a value of `1.0` here."""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         # TODO:
         # These aren't all useful combinations yet.
         # Add more here in the future.
@@ -339,7 +339,7 @@ class ENCODED_FRACTIONS_CHECK(Metric):
         as checked by the `numerals/arbitrary_fractions` check.
         For a professional font, ignore this check."""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {
             "value": self.shape_value(
                 sum(
@@ -366,7 +366,7 @@ class EXTENDED_FRACTIONS(Metric):
         Consider arbitrary fractions to be _superior_ to encoded fractions
         as checked by the `numerals/encoded_fractions` check."""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         dictionary = {
             "value": all(
                 [
@@ -390,7 +390,7 @@ class SINF(Metric):
         Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%).
         _A partial support is useless in practice._"""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         covered = 0
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sinf": True}}):
@@ -411,7 +411,7 @@ class SUPS(Metric):
         Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%).
         _A partial support is useless in practice._"""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         covered = 0
         for numeral in NUMERALS:
             if self.vhb.str(numeral) != self.vhb.str(numeral, {"features": {"sups": True}}):

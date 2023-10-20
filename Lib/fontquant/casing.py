@@ -27,7 +27,7 @@ class SMCP(Metric):
     Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your
     values rise."""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0
@@ -58,7 +58,7 @@ class C2SC(Metric):
     Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your
     values rise."""
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0
@@ -83,7 +83,7 @@ class CASE(Metric):
     keyword = "case_sensitive_punctuation"
     data_type = Percentage
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0

@@ -38,7 +38,7 @@ class StrokeContrastRatio(Metric, StrokeContrastBase):
     keyword = "stroke_contrast_ratio"
     data_type = Percentage
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         if not hasattr(self.parent, "stroke_values"):
             try:
                 self.measure()
@@ -61,7 +61,7 @@ class StrokeContrastAngle(Metric, StrokeContrastBase):
     keyword = "stroke_contrast_angle"
     data_type = Integer
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         if not hasattr(self.parent, "stroke_values"):
             try:
                 self.measure()
@@ -84,7 +84,7 @@ class Weight(Metric):
     keyword = "weight"
     data_type = Percentage
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         pen = CustomStatisticsPen()
         stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
 
@@ -103,7 +103,7 @@ class Width(Metric):
     keyword = "width"
     data_type = Percentage
 
-    def value(self):
+    def value(self, includes=None, excludes=None):
         pen = CustomStatisticsPen()
         stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
 

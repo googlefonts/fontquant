@@ -188,11 +188,53 @@ class Metric(object):
                     return found
         return None
 
-    def value(self):
+    def is_included(self, includes):
+        path = "/".join(self.path())
+        # We are at root
+        if path == "":
+            return True
+        if includes:
+            for include in includes:
+                include_root = include.split("/")[0]
+                path_root = path.split("/")[0]
+                # We are category root
+                if include_root == path_root == path:
+                    return True
+                # We are normal metric
+                elif path.startswith(include):
+                    return True
+            return False
+        else:
+            return True
+
+    def is_excluded(self, excludes):
+        path = "/".join(self.path())
+        # We are at root
+        if path == "":
+            return False
+        if excludes:
+            for exclude in excludes:
+                exclude_root = exclude.split("/")[0]
+                path_root = path.split("/")[0]
+                # We are category root
+                if exclude_root == path_root == path:
+                    return True
+                # We are normal metric
+                elif path.startswith(exclude):
+                    return True
+            return False
+        else:
+            return False
+
+    def value(self, includes=None, excludes=None):
         dictionary = {}
         for child in self.children:
             instance = child(self.ttFont, self.vhb, parent=self)
-            dictionary[instance.keyword] = instance.value()
+            if instance.is_included(includes) and not instance.is_excluded(excludes):
+                dictionary[instance.keyword] = instance.value(includes, excludes)
+            elif not includes and not excludes:
+                dictionary[instance.keyword] = instance.value(includes, excludes)
+
         return dictionary
 
     def path(self):
@@ -285,9 +327,9 @@ class Base(Metric):
     children = [Casing, Numerals, Appearance]
 
 
-def quantify(font_path):
+def quantify(font_path, includes=None, excludes=None):
     ttFont = CustomTTFont(font_path)
     vhb = CustomHarfbuzz(font_path)
 
     base = Base(ttFont, vhb)
-    return base.value()
+    return base.value(includes, excludes)
