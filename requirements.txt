@@ -1,6 +1,8 @@
 fontTools
 vharfbuzz
 uharfbuzz
+booleanOperations
+fontParts
 
 # stroke:
 scikit-image
@@ -16,4 +18,3 @@ beziers
 svglib
 rlPyCairo
 
-booleanOperations
