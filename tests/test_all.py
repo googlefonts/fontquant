@@ -44,16 +44,25 @@ def test_appearance():
     assert farro["appearance"]["width"]["value"] == 0.589
     assert farro["appearance"]["lowercase_a_style"]["value"] == "double_story"
     assert farro["appearance"]["lowercase_g_style"]["value"] == "single_story"
+    assert farro["appearance"]["stencil"]["value"] is False
 
     youngserif = get_result("YoungSerif-Regular.ttf", includes=["appearance"])
     assert youngserif["appearance"]["stroke_contrast_ratio"]["value"] == 0.55
     assert youngserif["appearance"]["stroke_contrast_angle"]["value"] == 25
+    assert youngserif["appearance"]["stencil"]["value"] is False
 
     bodonimoda = get_result("BodoniModa_18pt-Italic.ttf", includes=["appearance"])
     assert bodonimoda["appearance"]["stroke_contrast_ratio"]["value"] == 0.15
     assert bodonimoda["appearance"]["stroke_contrast_angle"]["value"] == -18
     assert bodonimoda["appearance"]["lowercase_a_style"]["value"] == "single_story"
     assert bodonimoda["appearance"]["lowercase_g_style"]["value"] == "double_story"
+    assert bodonimoda["appearance"]["stencil"]["value"] is False
+
+    allertastencil = get_result("AllertaStencil-Regular.ttf", includes=["appearance/stencil"])
+    assert allertastencil["appearance"]["stencil"]["value"] is True
+
+    bigshouldersstencil = get_result("BigShouldersStencilText[wght].ttf", includes=["appearance/stencil"])
+    assert bigshouldersstencil["appearance"]["stencil"]["value"] is True
 
 
 def test_helpers():

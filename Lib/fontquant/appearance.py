@@ -1,8 +1,36 @@
-from fontquant import Metric, Percentage, Integer, String
+from fontquant import Metric, Percentage, Integer, String, Boolean
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.beziers import removeOverlaps
+
+
+class Stencil(Metric):
+    """\
+    Reports whether or not a font is a stencil font.
+    """
+
+    name = "Stencil"
+    keyword = "stencil"
+    data_type = Boolean
+
+    def value(self, includes=None, excludes=None):
+        glyph = self.ttFont.glyphname_for_char("a")
+        if glyph:
+            paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
+            paths = removeOverlaps(paths)
+
+            if paths:
+                path0 = paths[0]
+                for path in paths[1:]:
+                    if path0.intersection(path):
+                        return {"value": False}
+                    if path0.intersection(path.reverse()):
+                        return {"value": False}
+
+                return {"value": True}
+
+        return {"value": False}
 
 
 class LowercaseAStyle(Metric):
@@ -22,10 +50,13 @@ class LowercaseAStyle(Metric):
 
     def value(self, includes=None, excludes=None):
         # TO DO:
-        # Run this metric only if not unicase, not stencil
+        # Run this metric only if not unicase
+
+        stencil_metric = Stencil(self.ttFont, self.vhb)
+        stencil = stencil_metric.value()["value"]
 
         glyph = self.ttFont.glyphname_for_char("a")
-        if glyph:
+        if glyph and not stencil:
             paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
             paths = removeOverlaps(paths)
 
@@ -91,10 +122,13 @@ class LowercaseGStyle(Metric):
 
     def value(self, includes=None, excludes=None):
         # TO DO:
-        # Run this metric only if not unicase, not stencil
+        # Run this metric only if not unicase
+
+        stencil_metric = Stencil(self.ttFont, self.vhb)
+        stencil = stencil_metric.value()["value"]
 
         glyph = self.ttFont.glyphname_for_char("g")
-        if glyph:
+        if glyph and not stencil:
             paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
             paths = removeOverlaps(paths)
 
@@ -217,4 +251,4 @@ class Width(Metric):
 class Appearance(Metric):
     name = "Appearance"
     keyword = "appearance"
-    children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width, LowercaseAStyle, LowercaseGStyle]
+    children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width, LowercaseAStyle, LowercaseGStyle, Stencil]

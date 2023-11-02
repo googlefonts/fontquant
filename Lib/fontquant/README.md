@@ -23,7 +23,8 @@
   * [Weight](#weight-appearanceweight)  
   * [Width](#width-appearancewidth)  
   * [Lowercase a style](#lowercase-a-style-appearancelowercase_a_style)  
-  * [Lowercase g style](#lowercase-g-style-appearancelowercase_g_style)
+  * [Lowercase g style](#lowercase-g-style-appearancelowercase_g_style)  
+  * [Stencil](#stencil-appearancestencil)
 
 ## Casing
 
@@ -335,5 +336,20 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["lowercase_g_style"]["value"]
 print(value)
 >>> single_story
+```
+
+### Stencil (`appearance/stencil`)
+
+Reports whether or not a font is a stencil font. 
+
+_Return Value:_ Boolean (`True`or `False`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["stencil"]["value"]
+print(value)
+>>> True
 ```
 
