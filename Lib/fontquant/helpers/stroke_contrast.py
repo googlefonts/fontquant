@@ -9,6 +9,7 @@ import numpy as np
 import seaborn as sns
 import tempfile
 import os
+import threading
 
 from skimage.morphology import skeletonize
 from skan import Skeleton
@@ -115,12 +116,12 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     svg += '" /></svg>'
 
     temp_folder = tempfile.gettempdir()
-    svg_path = os.path.join(temp_folder, "fontquant_strokecontrast.svg")
+    svg_path = os.path.join(temp_folder, f"fontquant_strokecontrast.{os.getpid()}.{threading.get_ident()}.svg")
     with open(svg_path, "w") as f:
         f.write(svg)
 
     # Convert to PNG
-    png_path = os.path.join(temp_folder, "fontquant_strokecontrast.png")
+    png_path = os.path.join(temp_folder, f"fontquant_strokecontrast.{os.getpid()}.{threading.get_ident()}.png")
 
     drawing = svg2rlg(svg_path)
     renderPM.drawToFile(drawing, png_path, fmt="PNG")
