@@ -15,3 +15,5 @@ beziers
 # png to svg
 svglib
 rlPyCairo
+
+booleanOperations
