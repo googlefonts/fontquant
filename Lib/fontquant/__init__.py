@@ -104,7 +104,11 @@ class CustomTTFont(ttLib.TTFont):
 
     def glyphname_for_char(self, char):
         """Convert a character to a glyph name."""
-        return self.getBestCmap()[ord(char)]
+        cmap = self.getBestCmap()
+        if ord(char) in cmap:
+            return cmap[ord(char)]
+        else:
+            return None
 
     def get_primary_script(self):
         """Retrieve font's primary script."""
