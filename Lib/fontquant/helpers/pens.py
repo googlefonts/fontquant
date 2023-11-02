@@ -21,8 +21,8 @@ class CustomStatisticsPen(StatisticsPen):
         wght_sum = 0
         wght_sum_perceptual = 0
         wdth_sum = 0
-        # slnt_sum = 0
-        # slnt_sum_perceptual = 0
+        slnt_sum = 0
+        slnt_sum_perceptual = 0
         for glyph_name in glyphs:
             if glyph_name in glyphset:
                 # I don't know why but even though I check for glyph names in glypset,
@@ -38,8 +38,8 @@ class CustomStatisticsPen(StatisticsPen):
                     wght_sum += abs(pen.area)
                     wght_sum_perceptual += abs(pen.area) * glyph.width
                     wdth_sum += glyph.width
-                    # slnt_sum += pen.slant
-                    # slnt_sum_perceptual += pen.slant * glyph.width
+                    slnt_sum += pen.slant
+                    slnt_sum_perceptual += pen.slant * glyph.width
                 except KeyError:
                     pass
 
@@ -47,4 +47,5 @@ class CustomStatisticsPen(StatisticsPen):
             "weight": wght_sum * upem / wdth_sum,
             "weight_perceptual": wght_sum_perceptual / wdth_sum,
             "width": wdth_sum / upem / len(glyphs),
+            "slant": slnt_sum / len(glyphs),
         }
