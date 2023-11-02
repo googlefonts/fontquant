@@ -21,7 +21,9 @@
   * [Stroke Contrast Ratio](#stroke-contrast-ratio-appearancestroke_contrast_ratio)  
   * [Stroke Contrast Angle](#stroke-contrast-angle-appearancestroke_contrast_angle)  
   * [Weight](#weight-appearanceweight)  
-  * [Width](#width-appearancewidth)
+  * [Width](#width-appearancewidth)  
+  * [Lowercase a style](#lowercase-a-style-appearancelowercase_a_style)  
+  * [Lowercase g style](#lowercase-g-style-appearancelowercase_g_style)
 
 ## Casing
 
@@ -303,5 +305,35 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["width"]["value"]
 print(value)
 >>> 0.5
+```
+
+### Lowercase a style (`appearance/lowercase_a_style`)
+
+Attempts to determine the style of the lowercase "a" to be single or double story.  Only the most sturdy routines are used here. If the results are not conclusive, the metric will return None and you need to determine it manually.  The error margin for recognizing the single story "a" is 0-2%, and for the double story "a" 4-7%. 
+
+_Return Value:_ String
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["lowercase_a_style"]["value"]
+print(value)
+>>> single_story
+```
+
+### Lowercase g style (`appearance/lowercase_g_style`)
+
+Attempts to determine the style of the lowercase "g" to be single or double story.  Only the most sturdy routines are used here. If the results are not conclusive, the metric will return None and you need to determine it manually.  This metric is based on contour counting, which is not very reliable. A "g" which generally looks like a double story "g" but has an open lower bowl will be counted as single story, and a "g" in cursive writing that looks like a single story "g" but has a closed loop as part of an upstroke will be counted as double story. 
+
+_Return Value:_ String
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["lowercase_g_style"]["value"]
+print(value)
+>>> single_story
 ```
 

@@ -42,6 +42,8 @@ def test_appearance():
     assert farro["appearance"]["stroke_contrast_angle"]["value"] == 0
     assert farro["appearance"]["weight"]["value"] == 0.295
     assert farro["appearance"]["width"]["value"] == 0.589
+    assert farro["appearance"]["lowercase_a_style"]["value"] == "double_story"
+    assert farro["appearance"]["lowercase_g_style"]["value"] == "single_story"
 
     youngserif = get_result("YoungSerif-Regular.ttf", includes=["appearance"])
     assert youngserif["appearance"]["stroke_contrast_ratio"]["value"] == 0.55
@@ -50,6 +52,8 @@ def test_appearance():
     bodonimoda = get_result("BodoniModa_18pt-Italic.ttf", includes=["appearance"])
     assert bodonimoda["appearance"]["stroke_contrast_ratio"]["value"] == 0.15
     assert bodonimoda["appearance"]["stroke_contrast_angle"]["value"] == -18
+    assert bodonimoda["appearance"]["lowercase_a_style"]["value"] == "single_story"
+    assert bodonimoda["appearance"]["lowercase_g_style"]["value"] == "double_story"
 
 
 def test_helpers():

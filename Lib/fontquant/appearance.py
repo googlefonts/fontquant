@@ -1,7 +1,111 @@
-from fontquant import Metric, Percentage, Integer
+from fontquant import Metric, Percentage, Integer, String
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
+from fontquant.helpers.beziers import removeOverlaps
+
+
+class LowercaseAStyle(Metric):
+    """\
+    Attempts to determine the style of the lowercase "a" to be single or double story.
+
+    Only the most sturdy routines are used here. If the results are not conclusive,
+    the metric will return None and you need to determine it manually.
+
+    The error margin for recognizing the single story "a" is 0-2%, and for the double story "a" 4-7%.
+    """
+
+    name = "Lowercase a style"
+    keyword = "lowercase_a_style"
+    data_type = String
+    example_value = "single_story"
+
+    def value(self, includes=None, excludes=None):
+        # TO DO:
+        # Run this metric only if not unicase, not stencil
+
+        glyph = self.ttFont.glyphname_for_char("a")
+        if glyph:
+            paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
+            paths = removeOverlaps(paths)
+
+            # Two segments is valid for either single or double story
+            if paths and len(paths) == 2:
+                # Weight
+                pen = CustomStatisticsPen()
+                stats = pen.measure(self.ttFont, glyphs=[glyph])
+                weight = stats["weight"]
+                lower = (0.1, 1.7)
+                higher = (0.3, 3.0)
+                if weight < lower[0]:
+                    threshold = lower[1]
+                elif weight > higher[0]:
+                    threshold = higher[1]
+                else:
+                    threshold = (weight - lower[0]) / (higher[0] - lower[0]) * (higher[1] - lower[1]) + lower[1]
+
+                paths = sorted(paths, key=lambda path: path.length)
+                path0_length = paths[0].length
+                path1_length = paths[1].length
+                ratio = path1_length / path0_length
+
+                # Italic
+                # Account for long tail of cursive single-story a
+                slant_glyph = self.ttFont.glyphname_for_char("H")
+                slant_stats = pen.measure(self.ttFont, glyphs=[slant_glyph])
+                slant = slant_stats["slant"]
+                if slant > 0.1:
+                    threshold *= 1.2
+
+                if ratio > threshold:
+                    return {
+                        "value": "double_story",
+                        "debug": (weight, threshold, ratio),
+                    }
+                else:
+                    return {
+                        "value": "single_story",
+                        "debug": (threshold, ratio),
+                    }
+
+        return {"value": None}
+
+
+class LowercaseGStyle(Metric):
+    """\
+    Attempts to determine the style of the lowercase "g" to be single or double story.
+
+    Only the most sturdy routines are used here. If the results are not conclusive,
+    the metric will return None and you need to determine it manually.
+
+    This metric is based on contour counting, which is not very reliable.
+    A "g" which generally looks like a double story "g" but has an open lower bowl
+    will be counted as single story, and a "g" in cursive writing that looks like
+    a single story "g" but has a closed loop as part of an upstroke will be counted as double story.
+    """
+
+    name = "Lowercase g style"
+    keyword = "lowercase_g_style"
+    data_type = String
+    example_value = "single_story"
+
+    def value(self, includes=None, excludes=None):
+        # TO DO:
+        # Run this metric only if not unicase, not stencil
+
+        glyph = self.ttFont.glyphname_for_char("g")
+        if glyph:
+            paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
+            paths = removeOverlaps(paths)
+
+            # Two or three segments are valid
+            if paths and len(paths) == 2:
+                return {"value": "single_story"}
+
+            elif paths and len(paths) == 3:
+                return {"value": "double_story"}
+
+        return {"value": None}
 
 
 class StrokeContrastBase(object):
@@ -113,4 +217,4 @@ class Width(Metric):
 class Appearance(Metric):
     name = "Appearance"
     keyword = "appearance"
-    children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width]
+    children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width, LowercaseAStyle, LowercaseGStyle]
