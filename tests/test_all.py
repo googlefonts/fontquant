@@ -16,6 +16,17 @@ def get_result(filename, includes=None, excludes=None):
     return base.value(includes, excludes)
 
 
+def test_casing():
+    farro = get_result("Farro-Regular.ttf", includes=["casing"])
+    assert farro["casing"]["unicase"]["value"] is False
+    youngserif = get_result("YoungSerif-Regular.ttf", includes=["casing"])
+    assert youngserif["casing"]["unicase"]["value"] is False
+    unica = get_result("UnicaOne-Regular.ttf", includes=["casing"])
+    assert unica["casing"]["unicase"]["value"] is True
+    delius = get_result("DeliusUnicase-Regular.ttf", includes=["casing"])
+    assert delius["casing"]["unicase"]["value"] is True
+
+
 def test_numerals():
     farro = get_result("Farro-Regular.ttf", includes=["numerals"])
     assert farro["numerals"]["proportional_oldstyle"]["value"] is False

@@ -1,4 +1,5 @@
-from fontquant import Metric, Percentage
+from fontquant import Metric, Percentage, Boolean
+from beziers.path import BezierPath
 import unicodedata
 
 exceptions_c2sc = [
@@ -10,6 +11,96 @@ exceptions_smcp = [
     0x1FBE,  # prosgegrammeni
     0x192,  # florin
 ]
+
+
+class Unicase(Metric):
+    """\
+    Reports whether or not a font is unicase (lowercase and uppercase letters being of the same height).
+    """
+
+    name = "Unicase"
+    keyword = "unicase"
+    data_type = Boolean
+    exclude_uppercase = ["Q", "J", "Ŋ"]
+    exclude_lowercase = ["μ", "ŋ", "ƒ"]
+
+    def value(self, includes=None, excludes=None):
+        cmap = self.ttFont.getBestCmap()
+
+        highest_list = []
+        lowest_list = []
+
+        unicase = []
+        height_threshold = self.ttFont["head"].unitsPerEm * 0.1
+        chars = []
+
+        for unicode in cmap:
+            lowest = self.ttFont["head"].unitsPerEm * 2
+            highest = -self.ttFont["head"].unitsPerEm
+            char = chr(unicode)
+
+            if (
+                unicodedata.category(char) == "Lu"
+                and not unicodedata.decomposition(char)
+                and char not in self.exclude_uppercase
+            ):
+                # Go through all characters and find the highest and lowest point
+                try:
+                    paths = BezierPath.fromFonttoolsGlyph(self.ttFont, cmap[ord(char)])
+                    for path in paths:
+                        bounds = path.bounds()
+                        if bounds and bounds.bl and bounds.tr:
+                            lowest = min(lowest, bounds.bl.y)
+                            highest = max(highest, bounds.tr.y)
+
+                    highest_list.append(highest)
+                    lowest_list.append(lowest)
+                except IndexError:
+                    pass
+
+        # Averages
+        if highest_list and lowest_list:
+            highest_average = sum(highest_list) / len(highest_list)
+            lowest_average = sum(lowest_list) / len(lowest_list)
+
+            # Go through all characters again to see if the are within the average
+            for unicode in cmap:
+                char = chr(unicode)
+                if (
+                    unicodedata.category(char) in ("Lu", "Ll")
+                    and not unicodedata.decomposition(char)
+                    and char not in self.exclude_uppercase
+                    and char not in self.exclude_lowercase
+                ):
+                    chars.append(char)
+
+                    try:
+                        paths = BezierPath.fromFonttoolsGlyph(self.ttFont, cmap[ord(char)])
+
+                        in_bounds = []
+                        lowest = self.ttFont["head"].unitsPerEm * 2
+                        highest = -self.ttFont["head"].unitsPerEm
+                        for path in paths:
+                            if path.length:
+                                bounds = path.bounds()
+                                if bounds and bounds.bl and bounds.tr:
+                                    lowest = min(lowest, bounds.bl.y)
+                                    highest = max(highest, bounds.tr.y)
+                        if (
+                            abs(lowest - lowest_average) < height_threshold
+                            and abs(highest - highest_average) < height_threshold
+                        ):
+                            in_bounds.append(True)
+                        else:
+                            in_bounds.append(False)
+                        if all(in_bounds):
+                            unicase.append(char)
+                    except IndexError:
+                        pass
+
+            return {"value": len(unicase) / len(chars) > 0.95}
+
+        return {"value": False}
 
 
 class SMCP(Metric):
@@ -105,4 +196,4 @@ class CASE(Metric):
 class Casing(Metric):
     name = "Casing"
     keyword = "casing"
-    children = [SMCP, C2SC, CASE]
+    children = [SMCP, C2SC, CASE, Unicase]

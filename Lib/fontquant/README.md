@@ -6,6 +6,7 @@
   * [SmallCaps](#smallcaps-casingsmallcaps)  
   * [Caps-To-SmallCaps](#caps-to-smallcaps-casingcaps-to-smallcaps)  
   * [Case-Sensitive Punctuation](#case-sensitive-punctuation-casingcase_sensitive_punctuation)  
+  * [Unicase](#unicase-casingunicase)  
 * Numerals:  
   * [Proportional Oldstyle Numerals](#proportional-oldstyle-numerals-numeralsproportional_oldstyle)  
   * [Tabular Oldstyle Numerals](#tabular-oldstyle-numerals-numeralstabular_oldstyle)  
@@ -77,6 +78,21 @@ results = quantify("path/to/font.ttf")
 value = results["casing"]["case_sensitive_punctuation"]["value"]
 print(value)
 >>> 0.5
+```
+
+### Unicase (`casing/unicase`)
+
+Reports whether or not a font is unicase (lowercase and uppercase letters being of the same height). 
+
+_Return Value:_ Boolean (`True`or `False`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["casing"]["unicase"]["value"]
+print(value)
+>>> True
 ```
 
 ## Numerals
