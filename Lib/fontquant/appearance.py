@@ -69,6 +69,7 @@ class LowercaseAStyle(Metric):
     keyword = "lowercase_a_style"
     data_type = String
     example_value = "single_story"
+    fully_automatic = False
 
     def value(self, includes=None, excludes=None):
         stencil = Stencil(self.ttFont, self.vhb).value()["value"]
@@ -140,6 +141,7 @@ class LowercaseGStyle(Metric):
     keyword = "lowercase_g_style"
     data_type = String
     example_value = "single_story"
+    fully_automatic = False
 
     def value(self, includes=None, excludes=None):
         stencil = Stencil(self.ttFont, self.vhb).value()["value"]

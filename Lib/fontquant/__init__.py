@@ -175,6 +175,7 @@ class Metric(object):
     interpretation_hint = None
     data_type = None
     example_value = None
+    fully_automatic = True
 
     def __init__(self, ttFont, vhb, parent=None) -> None:
         self.ttFont = ttFont
