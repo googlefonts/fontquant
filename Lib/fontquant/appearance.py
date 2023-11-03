@@ -16,6 +16,7 @@ class Stencil(Metric):
     name = "Stencil"
     keyword = "stencil"
     data_type = Boolean
+    # These need to be letters with counters:
     measure_characters = {
         "fallback": ["A", "O", "a", "e", "o", "p"],
         "Arab": ["ه", "و"],
@@ -167,6 +168,7 @@ class LowercaseGStyle(Metric):
 
 
 class StrokeContrastBase(object):
+    # These need to be very simple letters with counters:
     measure_characters = {"fallback": "o", "Arab": "ه"}
 
     def get_character_to_measure(self):
