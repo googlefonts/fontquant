@@ -8,29 +8,51 @@ from fontquant.helpers.beziers import removeOverlaps
 class Stencil(Metric):
     """\
     Reports whether or not a font is a stencil font.
+
+    It recognizes a stencil font correctly, but may sometimes mis-report non-stencil fonts
+    as stencil fonts because it only looks at a limited set of characters for speed optimization.
     """
 
     name = "Stencil"
     keyword = "stencil"
     data_type = Boolean
+    measure_characters = {
+        "fallback": ["A", "O", "a", "e", "o", "p"],
+        "Arab": ["ه", "و"],
+    }
 
-    def value(self, includes=None, excludes=None):
-        glyph = self.ttFont.glyphname_for_char("a")
-        if glyph:
+    def is_stencil(self, glyph):
+        try:
             paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
             paths = removeOverlaps(paths)
 
-            if paths:
-                path0 = paths[0]
-                for path in paths[1:]:
-                    if path0.intersection(path):
-                        return {"value": False}
-                    if path0.intersection(path.reverse()):
-                        return {"value": False}
+            if paths and sum([path.length for path in paths]) > 0:
+                for path1 in paths:
+                    for path2 in paths:
+                        if path1 != path2:
+                            if path1.intersection(path2):
+                                return False
+                            if path1.intersection(path2.reverse()):
+                                return False
 
-                return {"value": True}
+                return True
 
-        return {"value": False}
+            return False
+        except Exception:
+            # filename = self.ttFont.reader.file.name
+            # print("Error in is_stencil", filename, glyph, e)
+            return False
+
+    def value(self, includes=None, excludes=None):
+        glyphs = self.measure_characters["fallback"]
+        if self.ttFont.get_primary_script() in self.measure_characters:
+            glyphs = self.measure_characters[self.ttFont.get_primary_script()]
+        glyphs = [self.ttFont.glyphname_for_char(glyph) for glyph in glyphs]
+
+        if any(glyphs):
+            return {"value": all([self.is_stencil(glyph) for glyph in glyphs])}
+        else:
+            return {"value": False}
 
 
 class LowercaseAStyle(Metric):
@@ -143,7 +165,7 @@ class LowercaseGStyle(Metric):
 
 
 class StrokeContrastBase(object):
-    measure_characters = {"fallback": "o", "Latn": "o", "Arab": "ه"}
+    measure_characters = {"fallback": "o", "Arab": "ه"}
 
     def get_character_to_measure(self):
         primary_script = self.ttFont.get_primary_script()
