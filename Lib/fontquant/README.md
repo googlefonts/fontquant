@@ -340,7 +340,7 @@ print(value)
 
 ### Stencil (`appearance/stencil`)
 
-Reports whether or not a font is a stencil font. 
+Reports whether or not a font is a stencil font.  It recognizes a stencil font correctly, but may sometimes mis-report non-stencil fonts as stencil fonts because it only looks at a limited set of characters for speed optimization. 
 
 _Return Value:_ Boolean (`True`or `False`)
 
