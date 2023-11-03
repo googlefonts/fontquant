@@ -3,6 +3,7 @@ from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.beziers import removeOverlaps
+from fontquant.casing import Unicase
 
 
 class Stencil(Metric):
@@ -40,8 +41,6 @@ class Stencil(Metric):
 
             return False
         except Exception:
-            # filename = self.ttFont.reader.file.name
-            # print("Error in is_stencil", filename, glyph, e)
             return False
 
     def value(self, includes=None, excludes=None):
@@ -72,14 +71,11 @@ class LowercaseAStyle(Metric):
     example_value = "single_story"
 
     def value(self, includes=None, excludes=None):
-        # TO DO:
-        # Run this metric only if not unicase
-
-        stencil_metric = Stencil(self.ttFont, self.vhb)
-        stencil = stencil_metric.value()["value"]
+        stencil = Stencil(self.ttFont, self.vhb).value()["value"]
+        unicase = Unicase(self.ttFont, self.vhb).value()["value"]
 
         glyph = self.ttFont.glyphname_for_char("a")
-        if glyph and not stencil:
+        if glyph and not stencil and not unicase:
             paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
             paths = removeOverlaps(paths)
 
@@ -146,14 +142,11 @@ class LowercaseGStyle(Metric):
     example_value = "single_story"
 
     def value(self, includes=None, excludes=None):
-        # TO DO:
-        # Run this metric only if not unicase
-
-        stencil_metric = Stencil(self.ttFont, self.vhb)
-        stencil = stencil_metric.value()["value"]
+        stencil = Stencil(self.ttFont, self.vhb).value()["value"]
+        unicase = Unicase(self.ttFont, self.vhb).value()["value"]
 
         glyph = self.ttFont.glyphname_for_char("g")
-        if glyph and not stencil:
+        if glyph and not stencil and not unicase:
             paths = BezierPath.fromFonttoolsGlyph(self.ttFont, glyph)
             paths = removeOverlaps(paths)
 
