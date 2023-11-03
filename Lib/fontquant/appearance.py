@@ -109,6 +109,8 @@ class LowercaseAStyle(Metric):
                 slant = slant_stats["slant"]
                 if slant > 0.1:
                     threshold *= 1.2
+                elif slant > 0.2:
+                    threshold *= 1.4
 
                 if ratio > threshold:
                     return {
