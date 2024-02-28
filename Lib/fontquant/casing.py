@@ -122,14 +122,17 @@ class SMCP(Metric):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0
+        failed_glyphs = []
         for unicode in cmap:
             char = chr(unicode)
             if unicodedata.category(char) == "Ll" and unicode not in exceptions_smcp:
                 eligible_glyphs += 1
                 if self.vhb.str(char) != self.vhb.str(char, {"features": {"smcp": True}}):
                     covered_glyphs += 1
+                else:
+                    failed_glyphs.append(char)
 
-        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs)}
+        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs), "failed": failed_glyphs}
         return dictionary
 
 
@@ -153,14 +156,17 @@ class C2SC(Metric):
         cmap = self.ttFont.getBestCmap()
         eligible_glyphs = 0
         covered_glyphs = 0
+        failed_glyphs = []
         for unicode in cmap:
             char = chr(unicode)
             if unicodedata.category(char) == "Lu" and unicode not in exceptions_c2sc:
                 eligible_glyphs += 1
                 if self.vhb.str(char) != self.vhb.str(char, {"features": {"c2sc": True}}):
                     covered_glyphs += 1
+                else:
+                    failed_glyphs.append(char)
 
-        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs)}
+        dictionary = {"value": self.shape_value(covered_glyphs / eligible_glyphs), "failed": failed_glyphs}
         return dictionary
 
 
