@@ -10,6 +10,7 @@ exceptions_smcp = [
     0x2113,  # liter
     0x1FBE,  # prosgegrammeni
     0x192,  # florin
+    0x3BC,  # mu
 ]
 
 
