@@ -46,4 +46,5 @@ setup(
     package_dir={"": "Lib"},
     packages=find_packages("Lib"),
     include_package_data=True,
+    python_requires=">=3.8",
 )
