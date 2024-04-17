@@ -1,6 +1,7 @@
 from vharfbuzz import Vharfbuzz
 import uharfbuzz as hb
 from fontTools import ttLib
+from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.fontcontent import get_primary_script, get_glyphs_for_script
 
 
@@ -82,7 +83,6 @@ class CustomHarfbuzz(Vharfbuzz):
         x_cursor = 0
 
         for _info, pos in zip(buf.glyph_infos, buf.glyph_positions):
-            # dx, dy = pos.position[0], pos.position[1]
             x_cursor += pos.position[2]
 
         return x_cursor
@@ -96,6 +96,103 @@ class CustomHarfbuzz(Vharfbuzz):
         """Return the shaped string buffer's  bbox."""
         buf = self.shape(string, options)
         return self.buf_to_bbox(buf)
+
+    def buf_to_svg_plus_boxes(self, buf):
+        """Converts a buffer to SVG
+
+        Args:
+            buf (hb.Buffer): uharfbuzz ``hb.Buffer``
+
+        Returns: An SVG string containing a rendering of the buffer
+        """
+        x_cursor = 0
+        paths = []
+        svg = ""
+        if "hhea" in self.ttfont:
+            ascender = self.ttfont["hhea"].ascender + 500
+            descender = self.ttfont["hhea"].descender - 500
+            fullheight = ascender - descender
+        elif "OS/2" in self.ttfont:
+            ascender = self.ttfont["OS/2"].sTypoAscender + 500
+            descender = self.ttfont["OS/2"].sTypoDescender - 500
+            fullheight = ascender - descender
+        else:
+            fullheight = 1500
+            descender = 500
+        y_cursor = -descender
+
+        # print(buf)
+        # import pdb
+
+        # pdb.set_trace()
+        for info, pos in zip(buf.glyph_infos, buf.glyph_positions):
+            glyph_name = self.ttfont.getGlyphName(info.codepoint)
+            glyph_path = self.glyph_to_svg_path(info.codepoint)
+            dx, dy = pos.position[0], pos.position[1]
+            p = f'<path d="{glyph_path}" transform="translate({x_cursor+dx}, {y_cursor+dy})"/>'
+            paths.append(p)
+
+            x_min = None
+            x_max = None
+            y_min = None
+            y_max = None
+
+            # custom box
+            glyph_path = [(x + x_cursor, y + y_cursor) for x, y in self.glyph_to_points(info.codepoint)]
+            if glyph_path:
+                pen = CustomStatisticsPen()
+                stats = pen.measure(self.ttfont, glyphs=[glyph_name])
+
+                for x, y in glyph_path:
+                    if x_min is None or x < x_min:
+                        x_min = x
+                    if x_max is None or x > x_max:
+                        x_max = x
+                    if y_min is None or y < y_min:
+                        y_min = y
+                    if y_max is None or y > y_max:
+                        y_max = y
+
+                y_max += fullheight
+                y_min += fullheight
+
+                bottom = 500
+                top = 1500
+                left = 0
+
+                # weight
+                y_shift = 1500
+                right = pos.x_advance
+                glyph_path = (
+                    f"M{left+x_cursor} {bottom+y_shift} L{right+x_cursor} {bottom+y_shift} L{right+x_cursor} "
+                    f"{top+y_shift} L{left+x_cursor} {top+y_shift} Z"
+                )
+                p = f'<path d="{glyph_path}" fill-opacity="{stats["weight"]}" />'
+                paths.append(p)
+
+                # weight_perceptual
+                y_shift = 3000
+                right = pos.x_advance
+                glyph_path = (
+                    f"M{left+x_cursor} {bottom+y_shift} L{right+x_cursor} {bottom+y_shift} "
+                    f"L{right+x_cursor} {top+y_shift} L{left+x_cursor} {top+y_shift} Z"
+                )
+                p = f'<path d="{glyph_path}" fill-opacity="{stats["weight_perceptual"]}" />'
+                paths.append(p)
+
+            x_cursor += pos.position[2]
+            y_cursor += pos.position[3]
+
+        svg = [
+            (
+                f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {x_cursor} {fullheight*3}" '
+                'transform="matrix(1 0 0 -1 0 0)">'
+            ),
+            *paths,
+            "</svg>",
+            "",
+        ]
+        return "\n".join(svg)
 
 
 class CustomTTFont(ttLib.TTFont):
