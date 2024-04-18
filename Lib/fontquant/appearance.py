@@ -1,10 +1,11 @@
-from fontquant import Metric, Percentage, Integer, String, Boolean
+from fontquant import Metric, Percentage, Integer, String, Boolean, Degrees
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.beziers import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
 from fontquant.casing import Unicase
+from math import degrees, atan
 
 
 class Stencil(Metric):
@@ -231,7 +232,30 @@ class StrokeContrastAngle(Metric, StrokeContrastBase):
         return {"value": self.shape_value(self.parent.stroke_values[1])}
 
 
-class Weight(Metric):
+class StatisticsPenMetrics(Metric):
+    value_name = None
+
+    def value(self, includes=None, excludes=None):
+
+        if self.variable:
+            values = {}
+            for instance in self.variable:
+                pen = CustomStatisticsPen()
+                stats = pen.measure(self.ttFont, location=instance, glyphs=self.ttFont.get_glyphs_for_primary_script())
+                values[instance_dict_to_str(instance)] = self.shape_value(stats[self.value_name])
+
+            return {"value": values}
+        else:
+            pen = CustomStatisticsPen()
+            stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
+
+            return {"value": self.shape_value(self.value_adjustment(stats[self.value_name]))}
+
+    def value_adjustment(self, value):
+        return value
+
+
+class Weight(StatisticsPenMetrics):
     """\
     Measures the weight of all letters in the primary script of the font.
     This metric measures the amount of ink per glyph as a percentage of an em square
@@ -243,28 +267,13 @@ class Weight(Metric):
     keyword = "weight"
     data_type = Percentage
     variable_aware = True
-
-    def value(self, includes=None, excludes=None):
-
-        if self.variable:
-            values = {}
-            for instance in self.variable:
-                pen = CustomStatisticsPen()
-                stats = pen.measure(self.ttFont, location=instance, glyphs=self.ttFont.get_glyphs_for_primary_script())
-                values[instance_dict_to_str(instance)] = self.shape_value(stats["weight"])
-
-            return {"value": values}
-        else:
-            pen = CustomStatisticsPen()
-            stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
-
-            return {"value": self.shape_value(stats["weight"])}
+    value_name = "weight"
 
 
-class Width(Metric):
+class Width(StatisticsPenMetrics):
     """\
-    Measures the width of all letters in the primary script of the font.
-    This metric measures the average width of all glyphs as a percentage of the UPM.
+    Measures the width of all letters in the primary script of the font
+    as a percentage of the UPM.
     Based on `fontTools.pens.statisticsPen.StatisticsPen`
     """
 
@@ -272,25 +281,36 @@ class Width(Metric):
     keyword = "width"
     data_type = Percentage
     variable_aware = True
+    value_name = "width"
 
-    def value(self, includes=None, excludes=None):
 
-        if self.variable:
-            values = {}
-            for instance in self.variable:
-                pen = CustomStatisticsPen()
-                stats = pen.measure(self.ttFont, location=instance, glyphs=self.ttFont.get_glyphs_for_primary_script())
-                values[instance_dict_to_str(instance)] = self.shape_value(stats["width"])
+class Slant(StatisticsPenMetrics):
+    """\
+    Measures the slant of all letters in the primary script of the font
+    in degrees. Right-leaning shapes have negative numbers.
+    Based on `fontTools.pens.statisticsPen.StatisticsPen`
+    """
 
-            return {"value": values}
-        else:
-            pen = CustomStatisticsPen()
-            stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
+    name = "Slant"
+    keyword = "slant"
+    data_type = Degrees
+    variable_aware = True
+    value_name = "slant"
 
-            return {"value": self.shape_value(stats["width"])}
+    def value_adjustment(self, value):
+        return -degrees(atan(value))
 
 
 class Appearance(Metric):
     name = "Appearance"
     keyword = "appearance"
-    children = [StrokeContrastRatio, StrokeContrastAngle, Weight, Width, LowercaseAStyle, LowercaseGStyle, Stencil]
+    children = [
+        StrokeContrastRatio,
+        StrokeContrastAngle,
+        Weight,
+        Width,
+        Slant,
+        LowercaseAStyle,
+        LowercaseGStyle,
+        Stencil,
+    ]

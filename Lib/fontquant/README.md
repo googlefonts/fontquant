@@ -23,6 +23,7 @@
   * [Stroke Contrast Angle](#stroke-contrast-angle-appearancestroke_contrast_angle)  
   * [Weight 🎛️](#weight-appearanceweight)  
   * [Width 🎛️](#width-appearancewidth)  
+  * [Slant 🎛️](#slant-appearanceslant)  
   * [Lowercase a style](#lowercase-a-style-appearancelowercase_a_style)  
   * [Lowercase g style](#lowercase-g-style-appearancelowercase_g_style)  
   * [Stencil](#stencil-appearancestencil)
@@ -38,7 +39,7 @@ Returns the percentage of characters that are lowercase letters (`Ll`) and get s
 _Interpretation Hint:_ Consider fonts to have a functioning `smcp` feature if the value is above `0.95` (95%), as there are some characters that are lowercase letters but don't get shaped by the `smcp` feature, e.g. `florin`. Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.py` to see your values rise.
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -58,7 +59,7 @@ Returns the percentage of characters that are uppercase letters (`Lu`) and get s
 _Interpretation Hint:_ Consider fonts to have a functioning `c2sc` feature if the value is above `0.95` (95%), as there are some characters that are uppercase letters but don't typically get shaped by the `c2sc` feature, e.g. `Ohm`. Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.py` to see your values rise.
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -75,7 +76,7 @@ print(value)
 
 Returns the percentage of characters that are punctuation (`P*`) and get shaped by the `case` feature. 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -199,7 +200,7 @@ Returns the percentage of numerals that get shaped by the `sups` feature.
 _Interpretation Hint:_ Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). _A partial support is useless in practice._
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -219,7 +220,7 @@ Returns the percentage of numerals that get shaped by the `sinf` feature.
 _Interpretation Hint:_ Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). _A partial support is useless in practice._
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -239,7 +240,7 @@ Returns percentage of encoded default fractions (e.g. ½) that are shaped by the
 _Interpretation Hint:_ Consider encoded fractions to be _inferior_ to arbitrary fractions as checked by the `numerals/arbitrary_fractions` check. For a professional font, ignore this check.
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -279,7 +280,7 @@ Returns percentage of feature combinations that shape the slashed zero. Here, th
 _Interpretation Hint:_ A professional font should reach a value of `1.0` here.
 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -298,7 +299,7 @@ print(value)
 
 Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke.  One representative character is measured for the font's primary script, such as the "o" for Latin. 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example:_
 ```python
@@ -332,7 +333,7 @@ print(value)
 
 Measures the weight of all letters in the primary script of the font. This metric measures the amount of ink per glyph as a percentage of an em square and returns the average of all glyphs measured. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example with **variable locations**:_
 ```python
@@ -362,9 +363,9 @@ print(value)
 
 🎛️ _This metric is variable-aware_
 
-Measures the width of all letters in the primary script of the font. This metric measures the average width of all glyphs as a percentage of the UPM. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
+Measures the width of all letters in the primary script of the font as a percentage of the UPM. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
-_Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
+_Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
 _Example with **variable locations**:_
 ```python
@@ -388,6 +389,38 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["width"]["value"]
 print(value)
 >>> 0.5
+```
+
+### Slant (`appearance/slant`)
+
+🎛️ _This metric is variable-aware_
+
+Measures the slant of all letters in the primary script of the font in degrees. Right-leaning shapes have negative numbers. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
+
+_Return Value:_ Degrees as floating point number (e.g. `-12.5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["slant"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": -12.5, "wdth=100.0,wght=500.0": -12.5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["slant"]["value"]
+print(value)
+>>> -12.5
 ```
 
 ### Lowercase a style (`appearance/lowercase_a_style`)

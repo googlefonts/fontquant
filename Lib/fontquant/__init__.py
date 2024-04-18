@@ -233,18 +233,34 @@ class BaseDataType(object):
         return value
 
 
-class Percentage(BaseDataType):
+class Float(BaseDataType):
     def example_value(self, default_example_value):
-        return self.shape_value(default_example_value) or 0.5
+        return self.shape_value(default_example_value) or 0.1
 
     def return_value_description(self):
-        return "Percentage expressed as float 0—1 (e.g. `0.5`)"
+        return "Floating point number (e.g. `0.1`)"
 
     def shape_value(self, value):
         if value is not None:
             return round(value * 1000) / 1000
         else:
             return 0.0
+
+
+class Percentage(Float):
+    def example_value(self, default_example_value):
+        return self.shape_value(default_example_value) or 0.5
+
+    def return_value_description(self):
+        return "Percentage as floating point number 0—1 (e.g. `0.5`)"
+
+
+class Degrees(Float):
+    def example_value(self, default_example_value):
+        return self.shape_value(default_example_value) or -12.5
+
+    def return_value_description(self):
+        return "Degrees as floating point number (e.g. `-12.5`)"
 
 
 class Boolean(BaseDataType):

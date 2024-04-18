@@ -53,6 +53,7 @@ def test_appearance():
     assert farro["appearance"]["stroke_contrast_angle"]["value"] == 0
     assert farro["appearance"]["weight"]["value"] == 0.295
     assert farro["appearance"]["width"]["value"] == 0.589
+    assert farro["appearance"]["slant"]["value"] == 0.142
     assert farro["appearance"]["lowercase_a_style"]["value"] == "double_story"
     assert farro["appearance"]["lowercase_g_style"]["value"] == "single_story"
     assert farro["appearance"]["stencil"]["value"] is False
@@ -68,6 +69,7 @@ def test_appearance():
     assert bodonimoda["appearance"]["lowercase_a_style"]["value"] == "single_story"
     assert bodonimoda["appearance"]["lowercase_g_style"]["value"] == "double_story"
     assert bodonimoda["appearance"]["stencil"]["value"] is False
+    assert bodonimoda["appearance"]["slant"]["value"] == -12.23
 
     allertastencil = get_result("AllertaStencil-Regular.ttf", includes=["appearance/stencil"])
     assert allertastencil["appearance"]["stencil"]["value"] is True
