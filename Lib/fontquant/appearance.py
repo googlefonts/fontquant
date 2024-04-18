@@ -236,8 +236,7 @@ class Weight(Metric):
     Measures the weight of all letters in the primary script of the font.
     This metric measures the amount of ink per glyph as a percentage of an em square
     and returns the average of all glyphs measured.
-
-    Based on fontTools.pens.statisticsPen.StatisticsPen
+    Based on `fontTools.pens.statisticsPen.StatisticsPen`
     """
 
     name = "Weight"
@@ -266,8 +265,7 @@ class Width(Metric):
     """\
     Measures the width of all letters in the primary script of the font.
     This metric measures the average width of all glyphs as a percentage of the UPM.
-
-    Based on fontTools.pens.statisticsPen.StatisticsPen
+    Based on `fontTools.pens.statisticsPen.StatisticsPen`
     """
 
     name = "Width"
