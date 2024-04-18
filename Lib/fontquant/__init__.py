@@ -428,8 +428,8 @@ class Metric(object):
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
-values = results["{join_sequence.join(self.path())}"]["values"]
-print(values)
+value = results["{join_sequence.join(self.path())}"]["value"]
+print(value)
 >>> {{"wdth=100.0,wght=400.0": {self.data_type().example_value(self.example_value)}, "wdth=100.0,wght=500.0": {self.data_type().example_value(self.example_value)}}}
 ```
 

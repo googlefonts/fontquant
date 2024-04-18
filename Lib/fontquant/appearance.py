@@ -254,7 +254,7 @@ class Weight(Metric):
                 stats = pen.measure(self.ttFont, location=instance, glyphs=self.ttFont.get_glyphs_for_primary_script())
                 values[instance_dict_to_str(instance)] = self.shape_value(stats["weight"])
 
-            return {"values": values}
+            return {"value": values}
         else:
             pen = CustomStatisticsPen()
             stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())

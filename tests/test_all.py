@@ -97,7 +97,7 @@ def test_variable():
         == {
             "appearance": {
                 "weight": {
-                    "values": {
+                    "value": {
                         "wght=100.0": 0.139,
                         "wght=200.0": 0.179,
                         "wght=300.0": 0.239,
