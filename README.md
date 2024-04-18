@@ -100,12 +100,12 @@ results = quantify("font.ttf", excludes=["appearance"])
 
 # Access individual check’s value
 default_numerals = results["numerals"]["default_numerals"]["value"]
+print(default_numerals)
+>>> proportional_lining
 
 # For variable-aware metrics (see documentation), you may define instance locations:
 results = quantify("font.ttf", excludes=["appearance"], locations="wght=400,wdth=100;wght=500,wdth=100;")
 
-print(default_numerals)
->>> proportional_lining
 ```
 
 # To Do
