@@ -1,5 +1,4 @@
-import os
-from fontquant.helpers.var import instances_str_to_list, instances_list_to_str, sort_instance, sort_instances
+from fontquant.helpers.var import instances_str_to_list, instances_list_to_str, sort_instances
 
 
 def test_helpers():
