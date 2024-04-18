@@ -4,7 +4,6 @@ from fontTools import ttLib
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.fontcontent import get_primary_script, get_glyphs_for_script
 from fontquant.helpers.var import (
-    sort_instance,
     stat_table_combinations,
     fvar_instances,
     combined_axis_locations,
@@ -377,7 +376,10 @@ class Metric(object):
         if self.__doc__:
             link = "/".join(self.path()).replace("/", "").replace(" ", "-")
             return [
-                f'  * [{self.name}{" 🎛️" if self.variable_aware else ""}](#{self.name.lower().replace(" ", "-")}-{link})'
+                (
+                    f'  * [{self.name}{" 🎛️" if self.variable_aware else ""}]'
+                    f'(#{self.name.lower().replace(" ", "-")}-{link})'
+                )
             ]
         else:
             check_list = []
@@ -424,24 +426,27 @@ class Metric(object):
 """
 
             if self.variable_aware:
+                var = self.data_type().example_value(self.example_value)
                 markdown += f"""_Example with **variable locations**:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
 value = results["{join_sequence.join(self.path())}"]["value"]
 print(value)
->>> {{"wdth=100.0,wght=400.0": {self.data_type().example_value(self.example_value)}, "wdth=100.0,wght=500.0": {self.data_type().example_value(self.example_value)}}}
+>>> {{"wdth=100.0,wght=400.0": {var}, "wdth=100.0,wght=500.0": {var}}}
 ```
 
-**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically** and the _return values_ will be **float** _regardless of your input_.
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
 To identify them in your results, you should also sort and format your input instances accordingly.
-You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once) for this purpose.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
 
 """
             if self.variable_aware:
-                markdown += f"""_Example with **origin location**:_"""
+                markdown += """_Example with **origin location**:_"""
             else:
-                markdown += f"""_Example:_"""
+                markdown += """_Example:_"""
             markdown += f"""
 ```python
 from fontquant import quantify

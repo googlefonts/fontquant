@@ -11,7 +11,11 @@ def cli():
     arg_parser.add_argument(
         "-l",
         action="store",
-        help="Variable instances locations to measure. Either 'stat' or 'fvar' or 'all' or 'axis1=value1,axis2=value2;axis1=value1,axis2=value2;...'. With no input, only the origin location is measured.",
+        help=(
+            "Variable instances locations to measure. Either 'stat' or 'fvar' or 'all' or "
+            "'axis1=value1,axis2=value2;axis1=value1,axis2=value2;...'. With no input, only "
+            "the origin location is measured."
+        ),
     )
     arg_parser.add_argument("font", help="Font file (.ttf or .otf)")
     options = arg_parser.parse_args(sys.argv[1:])

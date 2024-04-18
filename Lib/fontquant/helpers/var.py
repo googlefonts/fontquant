@@ -3,7 +3,7 @@ from itertools import product
 
 # https://stackoverflow.com/questions/64867925/python-nested-lists-all-combinations
 def nested_product(ls):
-    lst_positions = [l for l in ls if isinstance(l, list)]
+    lst_positions = [li for li in ls if isinstance(li, list)]
     for p in product(*lst_positions):
         it = iter(p)
         yield [e if not isinstance(e, list) else [next(it)] for e in ls]

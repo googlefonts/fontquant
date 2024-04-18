@@ -343,9 +343,11 @@ print(value)
 >>> {"wdth=100.0,wght=400.0": 0.5, "wdth=100.0,wght=500.0": 0.5}
 ```
 
-**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically** and the _return values_ will be **float** _regardless of your input_.
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
 To identify them in your results, you should also sort and format your input instances accordingly.
-You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once) for this purpose.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
 
 _Example with **origin location**:_
 ```python
