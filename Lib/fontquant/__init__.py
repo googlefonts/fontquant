@@ -3,6 +3,13 @@ import uharfbuzz as hb
 from fontTools import ttLib
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.fontcontent import get_primary_script, get_glyphs_for_script
+from fontquant.helpers.var import (
+    sort_instance,
+    stat_table_combinations,
+    fvar_instances,
+    combined_axis_locations,
+    instances_str_to_list,
+)
 
 
 class CustomHarfbuzz(Vharfbuzz):
@@ -273,18 +280,29 @@ class Metric(object):
     data_type = None
     example_value = None
     fully_automatic = True
+    variable_aware = False
 
-    def __init__(self, ttFont, vhb, parent=None) -> None:
+    def __init__(self, ttFont, vhb, variable, parent=None) -> None:
         self.ttFont = ttFont
         self.vhb = vhb
         self.parent = parent
+
+        if variable == "stat":
+            variable = list(stat_table_combinations(ttFont))
+        elif variable == "fvar":
+            variable = fvar_instances(ttFont)
+        elif variable == "all":
+            variable = combined_axis_locations(ttFont)
+        elif type(variable) is str:
+            variable = instances_str_to_list(variable)
+        self.variable = variable
 
     def shape_value(self, value):
         return self.data_type().shape_value(value)
 
     def find_check(self, path):
         for child in self.children:
-            instance = child(self.ttFont, self.vhb, parent=self)
+            instance = child(self.ttFont, self.vhb, self.variable, parent=self)
             if instance.path() == path.split("/"):
                 return instance
             else:
@@ -332,9 +350,10 @@ class Metric(object):
             return False
 
     def value(self, includes=None, excludes=None):
+
         dictionary = {}
         for child in self.children:
-            instance = child(self.ttFont, self.vhb, parent=self)
+            instance = child(self.ttFont, self.vhb, self.variable, parent=self)
             if instance.is_included(includes) and not instance.is_excluded(excludes):
                 dictionary[instance.keyword] = instance.value(includes, excludes)
             elif not includes and not excludes:
@@ -357,13 +376,15 @@ class Metric(object):
     def link_list(self):
         if self.__doc__:
             link = "/".join(self.path()).replace("/", "").replace(" ", "-")
-            return [f'  * [{self.name}](#{self.name.lower().replace(" ", "-")}-{link})']
+            return [
+                f'  * [{self.name}{" 🎛️" if self.variable_aware else ""}](#{self.name.lower().replace(" ", "-")}-{link})'
+            ]
         else:
             check_list = []
             if self.name:
                 check_list.append("* " + self.name + ":")
             for child in self.children:
-                instance = child(self.ttFont, self.vhb, parent=self)
+                instance = child(self.ttFont, self.vhb, self.variable, parent=self)
                 new_list = instance.link_list()
                 if new_list:
                     check_list += new_list
@@ -388,6 +409,8 @@ class Metric(object):
             markdown = f"""\
 ### {self.name} (`{"/".join(self.path())}`)
 
+{"🎛️ _This metric is variable-aware_" if self.variable_aware else ""}
+
 {" ".join([line.strip() for line in self.__doc__.splitlines()])}
 """
             if self.interpretation_hint:
@@ -398,7 +421,28 @@ class Metric(object):
             if self.data_type:
                 markdown += f"""\n_Return Value:_ {self.data_type().return_value_description()}
 
-_Example:_
+"""
+
+            if self.variable_aware:
+                markdown += f"""_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+values = results["{join_sequence.join(self.path())}"]["values"]
+print(values)
+>>> {{"wdth=100.0,wght=400.0": {self.data_type().example_value(self.example_value)}, "wdth=100.0,wght=500.0": {self.data_type().example_value(self.example_value)}}}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically** and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once) for this purpose.
+
+"""
+            if self.variable_aware:
+                markdown += f"""_Example with **origin location**:_"""
+            else:
+                markdown += f"""_Example:_"""
+            markdown += f"""
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -418,7 +462,7 @@ print(value)
                 markdown += f"## {self.name}\n\n"
 
             for child in self.children:
-                instance = child(self.ttFont, self.vhb, parent=self)
+                instance = child(self.ttFont, self.vhb, self.variable, parent=self)
                 markdown += instance.documentation()
             return markdown
 
@@ -432,9 +476,9 @@ class Base(Metric):
     children = [Casing, Numerals, Appearance]
 
 
-def quantify(font_path, includes=None, excludes=None):
+def quantify(font_path, includes=None, excludes=None, locations=None):
     ttFont = CustomTTFont(font_path)
     vhb = CustomHarfbuzz(font_path)
 
-    base = Base(ttFont, vhb)
+    base = Base(ttFont, vhb, locations)
     return base.value(includes, excludes)

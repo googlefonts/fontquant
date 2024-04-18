@@ -6,13 +6,13 @@ def get_font_path(filename):
     return os.path.dirname(os.path.realpath(__file__)) + "/fonts/" + filename
 
 
-def get_result(filename, includes=None, excludes=None):
+def get_result(filename, includes=None, excludes=None, variable=None):
     font_path = get_font_path(filename)
 
     ttFont = CustomTTFont(font_path)
     vhb = CustomHarfbuzz(font_path)
 
-    base = Base(ttFont, vhb)
+    base = Base(ttFont, vhb, variable)
     return base.value(includes, excludes)
 
 
@@ -74,6 +74,44 @@ def test_appearance():
 
     bigshouldersstencil = get_result("BigShouldersStencilText[wght].ttf", includes=["appearance/stencil"])
     assert bigshouldersstencil["appearance"]["stencil"]["value"] is True
+
+
+def test_variable():
+    font = "Foldit-VariableFont_wght.ttf"
+    assert (
+        get_result(
+            font,
+            includes=["appearance/weight"],
+            variable="fvar",
+        )
+        == get_result(
+            font,
+            includes=["appearance/weight"],
+            variable="stat",
+        )
+        == get_result(
+            font,
+            includes=["appearance/weight"],
+            variable="all",
+        )
+        == {
+            "appearance": {
+                "weight": {
+                    "values": {
+                        "wght=100.0": 0.139,
+                        "wght=200.0": 0.179,
+                        "wght=300.0": 0.239,
+                        "wght=400.0": 0.306,
+                        "wght=500.0": 0.358,
+                        "wght=600.0": 0.378,
+                        "wght=700.0": 0.419,
+                        "wght=800.0": 0.474,
+                        "wght=900.0": 0.515,
+                    }
+                }
+            }
+        }
+    )
 
 
 def test_helpers():

@@ -3,6 +3,7 @@ from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.beziers import removeOverlaps
+from fontquant.helpers.var import instance_dict_to_str
 from fontquant.casing import Unicase
 
 
@@ -72,8 +73,8 @@ class LowercaseAStyle(Metric):
     fully_automatic = False
 
     def value(self, includes=None, excludes=None):
-        stencil = Stencil(self.ttFont, self.vhb).value()["value"]
-        unicase = Unicase(self.ttFont, self.vhb).value()["value"]
+        stencil = Stencil(self.ttFont, self.vhb, self.variable).value()["value"]
+        unicase = Unicase(self.ttFont, self.vhb, self.variable).value()["value"]
 
         glyph = self.ttFont.glyphname_for_char("a")
         if glyph and not stencil and not unicase:
@@ -144,8 +145,8 @@ class LowercaseGStyle(Metric):
     fully_automatic = False
 
     def value(self, includes=None, excludes=None):
-        stencil = Stencil(self.ttFont, self.vhb).value()["value"]
-        unicase = Unicase(self.ttFont, self.vhb).value()["value"]
+        stencil = Stencil(self.ttFont, self.vhb, self.variable).value()["value"]
+        unicase = Unicase(self.ttFont, self.vhb, self.variable).value()["value"]
 
         glyph = self.ttFont.glyphname_for_char("g")
         if glyph and not stencil and not unicase:
@@ -242,12 +243,23 @@ class Weight(Metric):
     name = "Weight"
     keyword = "weight"
     data_type = Percentage
+    variable_aware = True
 
     def value(self, includes=None, excludes=None):
-        pen = CustomStatisticsPen()
-        stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
 
-        return {"value": self.shape_value(stats["weight"])}
+        if self.variable:
+            values = {}
+            for instance in self.variable:
+                pen = CustomStatisticsPen()
+                stats = pen.measure(self.ttFont, location=instance, glyphs=self.ttFont.get_glyphs_for_primary_script())
+                values[instance_dict_to_str(instance)] = self.shape_value(stats["weight"])
+
+            return {"values": values}
+        else:
+            pen = CustomStatisticsPen()
+            stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
+
+            return {"value": self.shape_value(stats["weight"])}
 
 
 class Width(Metric):

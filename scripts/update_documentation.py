@@ -2,12 +2,12 @@ import sys
 import os
 from fontquant import Base
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../Lib")
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + "/../Lib")
 doc_path = os.path.dirname(os.path.realpath(__file__)) + "/../Lib/fontquant/README.md"
 header_path = os.path.dirname(os.path.realpath(__file__)) + "/../Lib/fontquant/README.header.md"
 
 
-base = Base(None, None)
+base = Base(None, None, None)
 
 with open(header_path, "r") as header:
     with open(doc_path, "w") as out:
