@@ -271,12 +271,23 @@ class Width(Metric):
     name = "Width"
     keyword = "width"
     data_type = Percentage
+    variable_aware = True
 
     def value(self, includes=None, excludes=None):
-        pen = CustomStatisticsPen()
-        stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
 
-        return {"value": self.shape_value(stats["width"])}
+        if self.variable:
+            values = {}
+            for instance in self.variable:
+                pen = CustomStatisticsPen()
+                stats = pen.measure(self.ttFont, location=instance, glyphs=self.ttFont.get_glyphs_for_primary_script())
+                values[instance_dict_to_str(instance)] = self.shape_value(stats["width"])
+
+            return {"value": values}
+        else:
+            pen = CustomStatisticsPen()
+            stats = pen.measure(self.ttFont, glyphs=self.ttFont.get_glyphs_for_primary_script())
+
+            return {"value": self.shape_value(stats["width"])}
 
 
 class Appearance(Metric):

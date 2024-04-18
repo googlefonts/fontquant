@@ -22,7 +22,7 @@
   * [Stroke Contrast Ratio](#stroke-contrast-ratio-appearancestroke_contrast_ratio)  
   * [Stroke Contrast Angle](#stroke-contrast-angle-appearancestroke_contrast_angle)  
   * [Weight 🎛️](#weight-appearanceweight)  
-  * [Width](#width-appearancewidth)  
+  * [Width 🎛️](#width-appearancewidth)  
   * [Lowercase a style](#lowercase-a-style-appearancelowercase_a_style)  
   * [Lowercase g style](#lowercase-g-style-appearancelowercase_g_style)  
   * [Stencil](#stencil-appearancestencil)
@@ -360,13 +360,28 @@ print(value)
 
 ### Width (`appearance/width`)
 
-
+🎛️ _This metric is variable-aware_
 
 Measures the width of all letters in the primary script of the font. This metric measures the average width of all glyphs as a percentage of the UPM. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
 _Return Value:_ Percentage expressed as float 0—1 (e.g. `0.5`)
 
-_Example:_
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["width"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 0.5, "wdth=100.0,wght=500.0": 0.5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
