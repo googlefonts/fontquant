@@ -105,6 +105,9 @@ print(default_numerals)
 
 # For variable-aware metrics (see documentation), you may define instance locations:
 results = quantify("font.ttf", excludes=["appearance"], locations="wght=400,wdth=100;wght=500,wdth=100;")
+# In this case, the results are under "values", indexed by their location:
+print(results["appearance"]["weight"]["values"]["wdth=100.0,wght=400.0"])
+>>> 0.5
 
 ```
 
