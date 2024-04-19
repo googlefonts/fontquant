@@ -106,7 +106,7 @@ print(default_numerals)
 # For variable-aware metrics (see documentation), you may define instance locations
 # either manually (see below), or as "stat" (all combinations of `STAT` table definitions,
 # may be a looong list), or "fvar", or "all" (both `STAT` and `fvar` combined):
-results = quantify("font.ttf", excludes=["appearance"], locations="wght=400,wdth=100;wght=500,wdth=100;")
+results = quantify("font.ttf", includes=["appearance"], locations="wght=400,wdth=100;wght=500,wdth=100;")
 # In this case, the results are indexed by their location:
 print(results["appearance"]["weight"]["value"]["wdth=100.0,wght=400.0"])
 >>> 0.5
