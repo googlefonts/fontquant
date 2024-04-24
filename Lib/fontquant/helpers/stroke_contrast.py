@@ -279,7 +279,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     if show:
         plt.show()
 
-    return round((min_row["thickness"] / max_row["thickness"]) * 100) / 100, round(contrast_angle * 10) / 10
+    return round((min_row["thickness"] / max_row["thickness"]) * 100) / 100, round(contrast_angle * 100) / 100
 
 
 if __name__ == "__main__":
