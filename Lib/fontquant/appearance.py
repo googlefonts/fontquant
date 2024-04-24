@@ -8,6 +8,9 @@ from fontquant.helpers.var import instance_dict_to_str
 from fontquant.casing import Unicase
 from math import degrees, atan
 
+# Temporary storage for stroke values to be shared across two classes
+_stroke_values = {}
+
 
 class Stencil(Metric):
     """\
@@ -184,7 +187,6 @@ class StrokeContrastBase(Metric):
         ascender = self.ttFont["hhea"].ascender
         assert descender <= 0
 
-        self.parent._stroke_values = {}
         if self.variable:
             for instance in self.variable:
 
@@ -194,7 +196,7 @@ class StrokeContrastBase(Metric):
                     self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
                 paths = pen.paths
 
-                self.parent._stroke_values[instance_dict_to_str(instance)] = stroke_contrast(
+                _stroke_values[instance_dict_to_str(instance)] = stroke_contrast(
                     paths, width, ascender, descender, show=False
                 )
         else:
@@ -204,23 +206,23 @@ class StrokeContrastBase(Metric):
                 self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
             paths = pen.paths
 
-            self.parent._stroke_values["default"] = stroke_contrast(paths, width, ascender, descender, show=False)
+            _stroke_values["default"] = stroke_contrast(paths, width, ascender, descender, show=False)
 
     def value(self, includes=None, excludes=None):
 
-        if not hasattr(self.parent, "_stroke_values"):
+        if not _stroke_values:
             self.measure()
 
         if self.variable:
             values = {}
             for instance in self.variable:
-                values[instance_dict_to_str(instance)] = self.parent._stroke_values[instance_dict_to_str(instance)][
+                values[instance_dict_to_str(instance)] = _stroke_values[instance_dict_to_str(instance)][
                     self.result_index
                 ]
 
             return {"value": values}
         else:
-            return {"value": self.parent._stroke_values["default"][self.result_index]}
+            return {"value": _stroke_values["default"][self.result_index]}
 
 
 class StrokeContrastRatio(StrokeContrastBase):
