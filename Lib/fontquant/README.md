@@ -19,8 +19,8 @@
   * [Arbitrary Fractions](#arbitrary-fractions-numeralsarbitrary_fractions)  
   * [Slashed Zero](#slashed-zero-numeralsslashed_zero)  
 * Appearance:  
-  * [Stroke Contrast Ratio](#stroke-contrast-ratio-appearancestroke_contrast_ratio)  
-  * [Stroke Contrast Angle](#stroke-contrast-angle-appearancestroke_contrast_angle)  
+  * [Stroke Contrast Ratio 🎛️](#stroke-contrast-ratio-appearancestroke_contrast_ratio)  
+  * [Stroke Contrast Angle 🎛️](#stroke-contrast-angle-appearancestroke_contrast_angle)  
   * [Weight 🎛️](#weight-appearanceweight)  
   * [Width 🎛️](#width-appearancewidth)  
   * [Slant 🎛️](#slant-appearanceslant)  
@@ -295,13 +295,28 @@ print(value)
 
 ### Stroke Contrast Ratio (`appearance/stroke_contrast_ratio`)
 
-
+🎛️ _This metric is variable-aware_
 
 Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke.  One representative character is measured for the font's primary script, such as the "o" for Latin. 
 
 _Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
-_Example:_
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["stroke_contrast_ratio"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 0.5, "wdth=100.0,wght=500.0": 0.5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")
@@ -312,13 +327,28 @@ print(value)
 
 ### Stroke Contrast Angle (`appearance/stroke_contrast_angle`)
 
-
+🎛️ _This metric is variable-aware_
 
 Calculates the angle of the stroke contrast. An angle of 0° means vertical contrast, with positive angles being counter-clockwise.  One representative character is measured for the font's primary script, such as the "o" for Latin. 
 
 _Return Value:_ Integer number (e.g. `5`)
 
-_Example:_
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["stroke_contrast_angle"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
 ```python
 from fontquant import quantify
 results = quantify("path/to/font.ttf")

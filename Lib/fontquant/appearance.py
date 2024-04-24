@@ -1,6 +1,7 @@
 from fontquant import Metric, Percentage, Integer, String, Boolean, Degrees
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
+from beziers.utils.pens import BezierPathCreatingPen
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.beziers import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
@@ -164,7 +165,7 @@ class LowercaseGStyle(Metric):
         return {"value": None}
 
 
-class StrokeContrastBase(object):
+class StrokeContrastBase(Metric):
     # These need to be very simple letters with counters:
     measure_characters = {"fallback": "o", "Arab": "ه"}
 
@@ -178,15 +179,51 @@ class StrokeContrastBase(object):
     def measure(self):
         character = self.get_character_to_measure()
         width = self.ttFont.getGlyphSet()[character].width
-        paths = BezierPath.fromFonttoolsGlyph(self.ttFont, character)
+
         descender = self.ttFont["hhea"].descender
         ascender = self.ttFont["hhea"].ascender
         assert descender <= 0
 
-        self.parent.stroke_values = stroke_contrast(paths, width, ascender, descender)
+        self.parent._stroke_values = {}
+        if self.variable:
+            for instance in self.variable:
+
+                buf = self.vhb.shape(character, {"variations": instance})
+                pen = BezierPathCreatingPen()
+                for info in buf.glyph_infos:
+                    self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
+                paths = pen.paths
+
+                self.parent._stroke_values[instance_dict_to_str(instance)] = stroke_contrast(
+                    paths, width, ascender, descender, show=False
+                )
+        else:
+            buf = self.vhb.shape(character)
+            pen = BezierPathCreatingPen()
+            for info in buf.glyph_infos:
+                self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
+            paths = pen.paths
+
+            self.parent._stroke_values["default"] = stroke_contrast(paths, width, ascender, descender, show=False)
+
+    def value(self, includes=None, excludes=None):
+
+        if not hasattr(self.parent, "_stroke_values"):
+            self.measure()
+
+        if self.variable:
+            values = {}
+            for instance in self.variable:
+                values[instance_dict_to_str(instance)] = self.parent._stroke_values[instance_dict_to_str(instance)][
+                    self.result_index
+                ]
+
+            return {"value": values}
+        else:
+            return {"value": self.parent._stroke_values["default"][self.result_index]}
 
 
-class StrokeContrastRatio(Metric, StrokeContrastBase):
+class StrokeContrastRatio(StrokeContrastBase):
     """\
     Calculates the ratio of the stroke contrast,
     calculated in thinnest/thickest stroke.
@@ -198,18 +235,11 @@ class StrokeContrastRatio(Metric, StrokeContrastBase):
     name = "Stroke Contrast Ratio"
     keyword = "stroke_contrast_ratio"
     data_type = Percentage
-
-    def value(self, includes=None, excludes=None):
-        if not hasattr(self.parent, "stroke_values"):
-            try:
-                self.measure()
-            except Exception as e:
-                return {"value": str(e)}
-
-        return {"value": self.shape_value(self.parent.stroke_values[0])}
+    variable_aware = True
+    result_index = 0
 
 
-class StrokeContrastAngle(Metric, StrokeContrastBase):
+class StrokeContrastAngle(StrokeContrastBase):
     """\
     Calculates the angle of the stroke contrast. An angle of 0° means
     vertical contrast, with positive angles being counter-clockwise.
@@ -221,15 +251,8 @@ class StrokeContrastAngle(Metric, StrokeContrastBase):
     name = "Stroke Contrast Angle"
     keyword = "stroke_contrast_angle"
     data_type = Integer
-
-    def value(self, includes=None, excludes=None):
-        if not hasattr(self.parent, "stroke_values"):
-            try:
-                self.measure()
-            except Exception as e:
-                return {"value": str(e)}
-
-        return {"value": self.shape_value(self.parent.stroke_values[1])}
+    variable_aware = True
+    result_index = 1
 
 
 class StatisticsPenMetrics(Metric):
