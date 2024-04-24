@@ -331,7 +331,7 @@ print(value)
 
 Calculates the angle of the stroke contrast. An angle of 0° means vertical contrast, with positive angles being counter-clockwise.  One representative character is measured for the font's primary script, such as the "o" for Latin. 
 
-_Return Value:_ Integer number (e.g. `5`)
+_Return Value:_ Angle as floating point number (e.g. `-12.5`)
 
 _Example with **variable locations**:_
 ```python
@@ -339,7 +339,7 @@ from fontquant import quantify
 results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
 value = results["appearance"]["stroke_contrast_angle"]["value"]
 print(value)
->>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+>>> {"wdth=100.0,wght=400.0": -12.5, "wdth=100.0,wght=500.0": -12.5}
 ```
 
 **Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
@@ -354,7 +354,7 @@ from fontquant import quantify
 results = quantify("path/to/font.ttf")
 value = results["appearance"]["stroke_contrast_angle"]["value"]
 print(value)
->>> 5
+>>> -12.5
 ```
 
 ### Weight (`appearance/weight`)
@@ -427,7 +427,7 @@ print(value)
 
 Measures the slant of all letters in the primary script of the font in degrees. Right-leaning shapes have negative numbers. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
-_Return Value:_ Degrees as floating point number (e.g. `-12.5`)
+_Return Value:_ Angle as floating point number (e.g. `-12.5`)
 
 _Example with **variable locations**:_
 ```python

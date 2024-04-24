@@ -255,12 +255,12 @@ class Percentage(Float):
         return "Percentage as floating point number 0—1 (e.g. `0.5`)"
 
 
-class Degrees(Float):
+class Angle(Float):
     def example_value(self, default_example_value):
         return self.shape_value(default_example_value) or -12.5
 
     def return_value_description(self):
-        return "Degrees as floating point number (e.g. `-12.5`)"
+        return "Angle as floating point number (e.g. `-12.5`)"
 
 
 class Boolean(BaseDataType):

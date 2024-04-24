@@ -1,4 +1,4 @@
-from fontquant import Metric, Percentage, Integer, String, Boolean, Degrees
+from fontquant import Metric, Percentage, Integer, String, Boolean, Angle
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from beziers.utils.pens import BezierPathCreatingPen
@@ -250,7 +250,7 @@ class StrokeContrastAngle(StrokeContrastBase):
 
     name = "Stroke Contrast Angle"
     keyword = "stroke_contrast_angle"
-    data_type = Integer
+    data_type = Angle
     variable_aware = True
     result_index = 1
 
@@ -316,7 +316,7 @@ class Slant(StatisticsPenMetrics):
 
     name = "Slant"
     keyword = "slant"
-    data_type = Degrees
+    data_type = Angle
     variable_aware = True
     value_name = "slant"
 
