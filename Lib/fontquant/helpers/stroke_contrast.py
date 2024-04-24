@@ -105,34 +105,46 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     for path in paths:
         path.translate(Point(0, -descender))
 
-    # Write SVG
-    svg = f'<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg"><path d="'
-    for path in paths:
-        svg += path.asSVGPath()
-    svg += '" /></svg>'
+    via_image = True
 
-    img = svg_to_img(svg)
-    img = ImageOps.invert(img)
+    scale = 1.0
+    if via_image:
+        # Write SVG
+        svg = f'<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg"><path d="'
+        for path in paths:
+            svg += path.asSVGPath()
+        svg += '" /></svg>'
 
-    # Scale down image
-    scale = 2.5
-    width, height = img.size
-    img = img.resize((int(width / scale), int(height / scale)))
+        img = svg_to_img(svg)
+        img = ImageOps.invert(img)
 
-    # Skeletonize
-    skeleton_lee = skeletonize(np.array(img), method="lee")
-    sk = Skeleton(skeleton_lee)
+        # Scale down image
+        scale = 2.5
+        width, height = img.size
+        img = img.resize((int(width / scale), int(height / scale)))
+
+        # Skeletonize
+        skeleton_lee = skeletonize(np.array(img), method="lee")
+        sk = Skeleton(skeleton_lee)
 
     # Analyze
     strokes = pandas.DataFrame(columns=["center", "p1", "p2", "thickness", "position"])
-    for i in range(len(sk.paths_list())):
-        skeleton_path = BezierPath.fromPoints([Point(x, y) for y, x, _ in sk.path_coordinates(i)], error=200)
+
+    # for skeleton_path in sk.paths_list():
+    if True:
+        i = 0
+
+        if via_image:
+            skeleton_path = BezierPath.fromPoints([Point(x, y) for y, x, _ in sk.path_coordinates(i)], error=200)
+        else:
+            skeleton_path = paths[1]
 
         # Scale up again
-        skeleton_path.scale(scale)
+        if via_image:
+            skeleton_path.scale(scale)
         skeleton_path.tidy(maxCollectionSize=0, lengthLimit=50)
         # lower number here leads to more segments
-        skeleton_path = skeleton_path.flatten(2)
+        skeleton_path = skeleton_path.flatten(5)
 
         nodeList = skeleton_path.asNodelist()
         for i, node in enumerate(nodeList):
@@ -142,8 +154,13 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
                 j = i - 1
             previousNode = nodeList[j]
 
+            if node.point == previousNode.point:
+                continue
+
             # Find point halfway between node and previous node
             halfway_point = Interpolate(node.point, previousNode.point, 0.5)
+
+            distance = node.point.distanceFrom(previousNode.point)
 
             if show and show_skeleton:
                 point(halfway_point, ax3)
@@ -262,7 +279,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     if show:
         plt.show()
 
-    return round((min_row["thickness"] / max_row["thickness"]) * 100) / 100, round(contrast_angle)
+    return round((min_row["thickness"] / max_row["thickness"]) * 100) / 100, round(contrast_angle * 10) / 10
 
 
 if __name__ == "__main__":
