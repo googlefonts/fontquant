@@ -8,8 +8,6 @@ import matplotlib.patches as mpatches
 import numpy as np
 import seaborn as sns
 
-from skimage.morphology import skeletonize
-from skan import Skeleton
 from beziers.path import BezierPath
 from beziers.point import Point
 from beziers.path.representations.Nodelist import Node
@@ -17,6 +15,10 @@ from PIL import ImageOps
 from fontquant.helpers.images import svg_to_img
 
 from fontquant import CustomTTFont
+
+# Distance of measurement points.
+# Smaller values lead to more segments and more accurate results, but is slower.
+PRECISION = 20
 
 
 def remove_outliers(array, column):
@@ -105,10 +107,13 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     for path in paths:
         path.translate(Point(0, -descender))
 
-    via_image = True
+    via_image = False
 
     scale = 1.0
     if via_image:
+        from skimage.morphology import skeletonize
+        from skan import Skeleton
+
         # Write SVG
         svg = f'<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg"><path d="'
         for path in paths:
@@ -137,14 +142,14 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
         if via_image:
             skeleton_path = BezierPath.fromPoints([Point(x, y) for y, x, _ in sk.path_coordinates(i)], error=200)
         else:
-            skeleton_path = paths[1]
+            skeleton_path = paths[0]
 
         # Scale up again
         if via_image:
             skeleton_path.scale(scale)
-        skeleton_path.tidy(maxCollectionSize=0, lengthLimit=50)
+        # skeleton_path.tidy(maxCollectionSize=0, lengthLimit=50)
         # lower number here leads to more segments
-        skeleton_path = skeleton_path.flatten(5)
+        skeleton_path = skeleton_path.flatten(PRECISION)
 
         nodeList = skeleton_path.asNodelist()
         for i, node in enumerate(nodeList):
@@ -168,7 +173,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
             # Rotate node 90° and variate angle to find the shortest distance at halfway_point
             angles = pandas.DataFrame(columns=["p1", "p2", "thickness"])
 
-            for angle in range(-30, 31):
+            for angle in range(-30, 31, 3):
                 outside_point = node.point.rotated(halfway_point, math.radians(90 + angle))
 
                 # distance
