@@ -212,7 +212,7 @@ class StrokeContrastBase(Metric):
 
     def value(self, includes=None, excludes=None):
 
-        if not hasattr(self.parent.parent, "self.parent.parent._stroke_values"):
+        if not hasattr(self.parent.parent, "_stroke_values"):
             self.measure()
 
         if self.variable:
