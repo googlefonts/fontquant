@@ -142,6 +142,8 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
         if via_image:
             skeleton_path = BezierPath.fromPoints([Point(x, y) for y, x, _ in sk.path_coordinates(i)], error=200)
         else:
+            # Sort paths by size
+            paths = sorted(paths, key=lambda x: x.bounds().width, reverse=True)
             skeleton_path = paths[0]
 
         # Scale up again
