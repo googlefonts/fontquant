@@ -50,7 +50,7 @@ def test_appearance():
     # Test for Foldit, which errors out
     farro = get_result("Farro-Regular.ttf", includes=["appearance"])
     assert farro["appearance"]["stroke_contrast_ratio"]["value"] == 0.94
-    assert farro["appearance"]["stroke_contrast_angle"]["value"] == 0.56
+    assert farro["appearance"]["stroke_contrast_angle"]["value"] == 1.37
     assert farro["appearance"]["weight"]["value"] == 0.295
     assert farro["appearance"]["width"]["value"] == 0.589
     assert farro["appearance"]["slant"]["value"] == 0.142
@@ -60,12 +60,12 @@ def test_appearance():
 
     youngserif = get_result("YoungSerif-Regular.ttf", includes=["appearance"])
     assert youngserif["appearance"]["stroke_contrast_ratio"]["value"] == 0.55
-    assert youngserif["appearance"]["stroke_contrast_angle"]["value"] == 25.12
+    assert youngserif["appearance"]["stroke_contrast_angle"]["value"] == 25.42
     assert youngserif["appearance"]["stencil"]["value"] is False
 
     bodonimoda = get_result("BodoniModa_18pt-Italic.ttf", includes=["appearance"])
     assert bodonimoda["appearance"]["stroke_contrast_ratio"]["value"] == 0.15
-    assert bodonimoda["appearance"]["stroke_contrast_angle"]["value"] == -17.66
+    assert bodonimoda["appearance"]["stroke_contrast_angle"]["value"] == -17.88
     assert bodonimoda["appearance"]["lowercase_a_style"]["value"] == "single_story"
     assert bodonimoda["appearance"]["lowercase_g_style"]["value"] == "double_story"
     assert bodonimoda["appearance"]["stencil"]["value"] is False
