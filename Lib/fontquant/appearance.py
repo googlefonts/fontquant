@@ -284,8 +284,8 @@ class StatisticsPenMetrics(Metric):
 
 class Weight(StatisticsPenMetrics):
     """\
-    Measures the weight of all letters in the primary script of the font.
-    This metric measures the amount of ink per glyph as a percentage of an em square
+    Measures the weight of encoded characters of the font
+    as the amount of ink per glyph as a percentage of an em square
     and returns the average of all glyphs measured.
     Based on `fontTools.pens.statisticsPen.StatisticsPen`
     """
@@ -299,8 +299,9 @@ class Weight(StatisticsPenMetrics):
 
 class Width(StatisticsPenMetrics):
     """\
-    Measures the width of all letters in the primary script of the font
-    as a percentage of the UPM.
+    Measures the width of encoded characters of the font
+    as a percentage of the UPM
+    and returns the average of all glyphs measured.
     Based on `fontTools.pens.statisticsPen.StatisticsPen`
     """
 
@@ -313,8 +314,9 @@ class Width(StatisticsPenMetrics):
 
 class Slant(StatisticsPenMetrics):
     """\
-    Measures the slant of all letters in the primary script of the font
-    in degrees. Right-leaning shapes have negative numbers.
+    Measures the slante angle of encoded characters of the font
+    in degrees and returns the average of all glyphs measured.
+    Right-leaning shapes have negative numbers.
     Based on `fontTools.pens.statisticsPen.StatisticsPen`
     """
 

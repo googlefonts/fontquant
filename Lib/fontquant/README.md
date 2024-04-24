@@ -361,7 +361,7 @@ print(value)
 
 🎛️ _This metric is variable-aware_
 
-Measures the weight of all letters in the primary script of the font. This metric measures the amount of ink per glyph as a percentage of an em square and returns the average of all glyphs measured. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
+Measures the weight of encoded characters of the font as the amount of ink per glyph as a percentage of an em square and returns the average of all glyphs measured. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
 _Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
@@ -393,7 +393,7 @@ print(value)
 
 🎛️ _This metric is variable-aware_
 
-Measures the width of all letters in the primary script of the font as a percentage of the UPM. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
+Measures the width of encoded characters of the font as a percentage of the UPM and returns the average of all glyphs measured. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
 _Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
@@ -425,7 +425,7 @@ print(value)
 
 🎛️ _This metric is variable-aware_
 
-Measures the slant of all letters in the primary script of the font in degrees. Right-leaning shapes have negative numbers. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
+Measures the slante angle of encoded characters of the font in degrees and returns the average of all glyphs measured. Right-leaning shapes have negative numbers. Based on `fontTools.pens.statisticsPen.StatisticsPen` 
 
 _Return Value:_ Angle as floating point number (e.g. `-12.5`)
 
