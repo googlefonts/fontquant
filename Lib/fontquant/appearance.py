@@ -1,4 +1,4 @@
-from fontquant import Metric, Percentage, Integer, String, Boolean, Angle
+from fontquant import Metric, Percentage, String, Boolean, Angle
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from beziers.utils.pens import BezierPathCreatingPen
