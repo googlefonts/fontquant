@@ -107,10 +107,10 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     for path in paths:
         path.translate(Point(0, -descender))
 
-    via_image = False
+    via_skeleton = False
 
     scale = 1.0
-    if via_image:
+    if via_skeleton:
         from skimage.morphology import skeletonize
         from skan import Skeleton
 
@@ -139,7 +139,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     if True:
         i = 0
 
-        if via_image:
+        if via_skeleton:
             skeleton_path = BezierPath.fromPoints([Point(x, y) for y, x, _ in sk.path_coordinates(i)], error=200)
         else:
             # Sort paths by size
@@ -147,7 +147,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
             skeleton_path = paths[0]
 
         # Scale up again
-        if via_image:
+        if via_skeleton:
             skeleton_path.scale(scale)
         # skeleton_path.tidy(maxCollectionSize=0, lengthLimit=50)
         # lower number here leads to more segments
