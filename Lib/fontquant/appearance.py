@@ -3,7 +3,7 @@ from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from beziers.utils.pens import BezierPathCreatingPen
 from fontquant.helpers.pens import CustomStatisticsPen
-from fontquant.helpers.beziers import removeOverlaps
+from fontquant.helpers.bezier import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
 from fontquant.casing import Unicase
 from math import degrees, atan
