@@ -1,7 +1,7 @@
 from fontquant import Metric, Percentage, String, Boolean, Angle
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
-from beziers.utils.pens import BezierPathCreatingPen
+from kurbopy import BezPathCreatingPen
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.bezier import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
@@ -191,7 +191,7 @@ class StrokeContrastBase(Metric):
             for instance in self.variable:
 
                 buf = self.vhb.shape(character, {"variations": instance})
-                pen = BezierPathCreatingPen()
+                pen = BezPathCreatingPen()
                 for info in buf.glyph_infos:
                     self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
                 paths = pen.paths
@@ -201,7 +201,7 @@ class StrokeContrastBase(Metric):
                 )
         else:
             buf = self.vhb.shape(character)
-            pen = BezierPathCreatingPen()
+            pen = BezPathCreatingPen()
             for info in buf.glyph_infos:
                 self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
             paths = pen.paths

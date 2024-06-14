@@ -5,16 +5,9 @@ booleanOperations
 fontParts
 
 # stroke:
-scikit-image
-skan
 pandas
 numpy
 matplotlib
 seaborn
-pillow
 beziers
-
-# png to svg
-svglib
-rlPyCairo
-
+kurbopy
