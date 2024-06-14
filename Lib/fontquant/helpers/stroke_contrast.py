@@ -100,7 +100,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     height = ascender - descender
 
     # Analyze
-    strokes = pandas.DataFrame(columns=["center", "p1", "p2", "thickness", "position"])
+    strokes_lst = []
 
     # for skeleton_path in sk.paths_list():
     if True:
@@ -132,7 +132,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
                 draw_point(plt, halfway_point, ax3)
 
             # Rotate node 90° and variate angle to find the shortest distance at halfway_point
-            angles = pandas.DataFrame(columns=["p1", "p2", "thickness"])
+            angles_lst = []
 
             for angle in range(-30, 31, 3):
 
@@ -154,30 +154,36 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
                             intersections_list.sort(key=lambda x: x.distance(halfway_point))
                             intersections_list = intersections_list[:2]
 
-                        angles.loc[len(angles.index)] = [
-                            intersections_list[0],
-                            intersections_list[1],
-                            intersections_list[0].distance(intersections_list[1]),
-                        ]
+                        angles_lst.append(
+                            [
+                                intersections_list[0],
+                                intersections_list[1],
+                                intersections_list[0].distance(intersections_list[1]),
+                            ]
+                        )
 
+            angles = pandas.DataFrame(columns=["p1", "p2", "thickness"], data=angles_lst)
             # Process different angles measured at halfway_point
             remove_outliers(angles, "thickness")
             min_angle = angles.loc[angles["thickness"].idxmin()]
 
             # Add shortest line to strokes list
-            strokes.loc[len(strokes.index)] = [
-                halfway_point,
-                min_angle["p1"],
-                min_angle["p2"],
-                min_angle["thickness"],
-                i / len(skeleton_path),
-            ]
+            strokes_lst.append(
+                [
+                    halfway_point,
+                    min_angle["p1"],
+                    min_angle["p2"],
+                    min_angle["thickness"],
+                    i / len(skeleton_path),
+                ]
+            )
             if show:
                 draw_point(plt, min_angle["p1"], ax3)
                 draw_point(plt, min_angle["p2"], ax3)
                 line(min_angle["p1"], min_angle["p2"], ax3)
 
     # https://www.geeksforgeeks.org/detect-and-remove-the-outliers-using-python/
+    strokes = pandas.DataFrame(columns=["center", "p1", "p2", "thickness", "position"], data=strokes_lst)
 
     if show:
         sns.boxplot(strokes["thickness"], ax=ax4)
