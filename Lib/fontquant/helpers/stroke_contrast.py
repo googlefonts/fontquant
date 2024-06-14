@@ -2,11 +2,7 @@
 
 import pandas
 import math
-import matplotlib.pyplot as plt
-import matplotlib.path as mpath
-import matplotlib.patches as mpatches
 import numpy as np
-import seaborn as sns
 
 from kurbopy import Point, Vec2, Line, Vec2
 
@@ -93,7 +89,10 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
 
     # Prepare matplotlib
     if show:
-        f, (ax3, ax4, ax5) = plt.subplots(1, 3, figsize=(15, 15))
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+
+        _f, (ax3, ax4, ax5) = plt.subplots(1, 3, figsize=(15, 15))
 
     height = ascender - descender
 
