@@ -4,7 +4,7 @@ import pandas
 import math
 import numpy as np
 
-from kurbopy import Point, Vec2, Line, Vec2
+from kurbopy import Point, Vec2, Line
 
 
 # Distance of measurement points.
@@ -49,12 +49,15 @@ def interpolate_point(a, b, p):
     return Point(Interpolate(a.x, b.x, p), Interpolate(a.y, b.y, p))
 
 
-def draw_point(point, ax):
+def draw_point(plt, point, ax):
     circle = plt.Circle((point.x, point.y), 2)
     ax.add_patch(circle)
 
 
 def line(p1, p2, ax, color="gray", width=1):
+    import matplotlib.patches as mpatches
+    import matplotlib.path as mpath
+
     Path = mpath.Path
     pp = mpatches.PathPatch(Path([(p1.x, p1.y), (p2.x, p2.y)], [Path.MOVETO, Path.LINETO]), edgecolor=color, lw=width)
     ax.add_patch(pp)
@@ -126,7 +129,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
             distance = point.distance(previous_point)
 
             if show:
-                draw_point(halfway_point, ax3)
+                draw_point(plt, halfway_point, ax3)
 
             # Rotate node 90° and variate angle to find the shortest distance at halfway_point
             angles = pandas.DataFrame(columns=["p1", "p2", "thickness"])
@@ -170,8 +173,8 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
                 i / len(skeleton_path),
             ]
             if show:
-                draw_point(min_angle["p1"], ax3)
-                draw_point(min_angle["p2"], ax3)
+                draw_point(plt, min_angle["p1"], ax3)
+                draw_point(plt, min_angle["p2"], ax3)
                 line(min_angle["p1"], min_angle["p2"], ax3)
 
     # https://www.geeksforgeeks.org/detect-and-remove-the-outliers-using-python/
