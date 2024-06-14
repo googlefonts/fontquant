@@ -16,8 +16,8 @@ def remove_outliers(array, column):
     """Detection"""
     # IQR
     # Calculate the upper and lower limits
-    Q1 = array[column].quantile(0.25)
-    Q3 = array[column].quantile(0.75)
+    Q1 = array[column].quantile(0.2)
+    Q3 = array[column].quantile(0.8)
     IQR = Q3 - Q1
     lower = Q1 - 1.1 * IQR
     upper = Q3 + 1.1 * IQR
@@ -179,8 +179,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     if show:
         sns.boxplot(strokes["thickness"], ax=ax4)
 
-    # This caused faults in some cases, removing the maximum value
-    # remove_outliers(strokes, "thickness")
+    remove_outliers(strokes, "thickness")
 
     if show:
         sns.boxplot(strokes["thickness"], ax=ax5)
