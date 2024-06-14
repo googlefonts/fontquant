@@ -297,7 +297,7 @@ print(value)
 
 🎛️ _This metric is variable-aware_
 
-Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke.  One representative character is measured for the font's primary script, such as the "o" for Latin. 
+Calculates the ratio of the stroke contrast, calculated in thinnest/thickest stroke.  One representative character is measured for the font's primary script, such as the "o" for Latin.  Note that the two stroke contrast metrics (ratio and angle) are calculated in the same function. For efficiency, query both metrics at during the same call. 
 
 _Return Value:_ Percentage as floating point number 0—1 (e.g. `0.5`)
 
@@ -329,7 +329,7 @@ print(value)
 
 🎛️ _This metric is variable-aware_
 
-Calculates the angle of the stroke contrast. An angle of 0° means vertical contrast, with positive angles being counter-clockwise.  One representative character is measured for the font's primary script, such as the "o" for Latin. 
+Calculates the angle of the stroke contrast. An angle of 0° means vertical contrast, with positive angles being counter-clockwise.  One representative character is measured for the font's primary script, such as the "o" for Latin.  Note that the two stroke contrast metrics (ratio and angle) are calculated in the same function. For efficiency, query both metrics at during the same call. 
 
 _Return Value:_ Angle as floating point number (e.g. `-12.5`)
 

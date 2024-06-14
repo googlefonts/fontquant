@@ -234,6 +234,9 @@ class StrokeContrastRatio(StrokeContrastBase):
 
     One representative character is measured for the font's primary script,
     such as the "o" for Latin.
+
+    Note that the two stroke contrast metrics (ratio and angle) are calculated in the same function.
+    For efficiency, query both metrics at during the same call.
     """
 
     name = "Stroke Contrast Ratio"
@@ -250,6 +253,9 @@ class StrokeContrastAngle(StrokeContrastBase):
 
     One representative character is measured for the font's primary script,
     such as the "o" for Latin.
+
+    Note that the two stroke contrast metrics (ratio and angle) are calculated in the same function.
+    For efficiency, query both metrics at during the same call.
     """
 
     name = "Stroke Contrast Angle"
