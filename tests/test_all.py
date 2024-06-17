@@ -19,12 +19,19 @@ def get_result(filename, includes=None, excludes=None, variable=None):
 def test_casing():
     farro = get_result("Farro-Regular.ttf", includes=["casing"])
     assert farro["casing"]["unicase"]["value"] is False
+    assert farro["casing"]["lowercase_shapes"]["value"] == "lowercase"
     youngserif = get_result("YoungSerif-Regular.ttf", includes=["casing"])
     assert youngserif["casing"]["unicase"]["value"] is False
     unica = get_result("UnicaOne-Regular.ttf", includes=["casing"])
     assert unica["casing"]["unicase"]["value"] is True
     delius = get_result("DeliusUnicase-Regular.ttf", includes=["casing"])
     assert delius["casing"]["unicase"]["value"] is True
+    ysabeau = get_result("Ysabeau[wght].ttf", includes=["casing"])
+    assert ysabeau["casing"]["lowercase_shapes"]["value"] == "lowercase"
+    ysabeau_sc = get_result("YsabeauSC[wght].ttf", includes=["casing"])
+    assert ysabeau_sc["casing"]["lowercase_shapes"]["value"] == "smallcaps"
+    castorotitling = get_result("CastoroTitling-Regular.ttf", includes=["casing"])
+    assert castorotitling["casing"]["lowercase_shapes"]["value"] == "uppercase"
 
 
 def test_numerals():

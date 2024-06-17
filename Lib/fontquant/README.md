@@ -7,6 +7,7 @@
   * [Caps-To-SmallCaps](#caps-to-smallcaps-casingcaps-to-smallcaps)  
   * [Case-Sensitive Punctuation](#case-sensitive-punctuation-casingcase_sensitive_punctuation)  
   * [Unicase](#unicase-casingunicase)  
+  * [Lowercase Shapes](#lowercase-shapes-casinglowercase_shapes)  
 * Numerals:  
   * [Proportional Oldstyle Numerals](#proportional-oldstyle-numerals-numeralsproportional_oldstyle)  
   * [Tabular Oldstyle Numerals](#tabular-oldstyle-numerals-numeralstabular_oldstyle)  
@@ -91,7 +92,7 @@ print(value)
 
 
 
-Reports whether or not a font is unicase (lowercase and uppercase letters being of the same height). 
+Reports whether or not a font is unicase (lowercase and uppercase letters being of the same height). To check for different shapes of lowercase letters compared to uppercase, use the `Lowercase Shapes` metric. 
 
 _Return Value:_ Boolean (`True`or `False`)
 
@@ -102,6 +103,23 @@ results = quantify("path/to/font.ttf")
 value = results["casing"]["unicase"]["value"]
 print(value)
 >>> True
+```
+
+### Lowercase Shapes (`casing/lowercase_shapes`)
+
+
+
+Returns the shapes of lowercase-codepoint characters. Possible values are `uppercase`, `lowercase`, and `smallcaps`. This check compares the contour count (and the average height) of uppercase and lowercase letters, so it compares actual outline construction. In that sense it's different from the `Unicase` metric which only looks at dimensions and allows upper/lowercase shapes to be different as long as they are of similar height. 
+
+_Return Value:_ String
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["casing"]["lowercase_shapes"]["value"]
+print(value)
+>>> abc...
 ```
 
 ## Numerals

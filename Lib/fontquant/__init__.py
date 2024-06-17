@@ -9,6 +9,7 @@ from fontquant.helpers.var import (
     combined_axis_locations,
     instances_str_to_list,
 )
+from beziers.utils.pens import BezierPathCreatingPen
 
 
 class CustomHarfbuzz(Vharfbuzz):
@@ -203,6 +204,12 @@ class CustomHarfbuzz(Vharfbuzz):
             "",
         ]
         return "\n".join(svg)
+
+    def buf_to_bezierpaths(self, buf):
+        pen = BezierPathCreatingPen()
+        for info in buf.glyph_infos:
+            self._hbfont.draw_glyph_with_pen(info.codepoint, pen)
+        return pen.paths
 
 
 class CustomTTFont(ttLib.TTFont):
