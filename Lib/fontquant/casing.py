@@ -203,7 +203,8 @@ class CASE(Metric):
 
 class LowercaseShapes(Metric):
     """\
-    Returns the shapes of lowercase-codepoint characters. Possible values are `uppercase`, `lowercase`, and `smallcaps`.
+    Returns the shapes of lowercase-codepoint characters.
+    Possible values are `uppercase`, `lowercase`, and `smallcaps`.
     This check compares the contour count (and the average height) of uppercase and lowercase letters,
     so it compares actual outline construction. In that sense it's different from the `Unicase` metric which only looks
     at dimensions and allows upper/lowercase shapes to be different as long as they are of similar height.
