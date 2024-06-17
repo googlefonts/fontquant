@@ -103,6 +103,10 @@ class CustomHarfbuzz(Vharfbuzz):
         buf = self.shape(string, options)
         return self.buf_to_bbox(buf)
 
+    def buf_to_svg(self, buf):
+        self._drawfuncs = None
+        return super().buf_to_svg(buf)
+
     def buf_to_svg_plus_boxes(self, buf):
         """Converts a buffer to SVG
 
