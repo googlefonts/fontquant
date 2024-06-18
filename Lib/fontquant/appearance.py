@@ -1,4 +1,4 @@
-from fontquant import Metric, Percentage, String, Boolean, Angle
+from fontquant import Metric, Percentage, String, Boolean, Angle, PerMille
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
 from kurbopy import BezPathCreatingPen
@@ -336,6 +336,96 @@ class Slant(StatisticsPenMetrics):
         return -degrees(atan(value))
 
 
+class VerticalMetrics(Metric):
+    def value(self, includes=None, excludes=None):
+        if self.variable:
+            values = {}
+            for instance in self.variable:
+
+                buf = self.vhb.shape(self.character, {"variations": instance})
+                pen = BezPathCreatingPen()
+                for info in buf.glyph_infos:
+                    self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
+                paths = pen.paths
+
+                values[instance_dict_to_str(instance)] = self.shape_value(
+                    self.specific_value(paths) / self.ttFont["head"].unitsPerEm * 1000
+                )
+
+            return {"value": values}
+        else:
+            buf = self.vhb.shape(self.character)
+            pen = BezPathCreatingPen()
+            for info in buf.glyph_infos:
+                self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
+            paths = pen.paths
+
+            return {"value": self.shape_value(self.specific_value(paths) / self.ttFont["head"].unitsPerEm * 1000)}
+
+    def specific_value(self, paths):
+        raise NotImplementedError
+
+
+class XHeight(VerticalMetrics):
+    """\
+    Reports x-height of `x`.
+    """
+
+    name = "x-Height"
+    keyword = "x_height"
+    variable_aware = True
+    data_type = PerMille
+    character = "x"
+
+    def specific_value(self, paths):
+        return max([path.bounding_box().max_y() for path in paths])
+
+
+class CapHeight(VerticalMetrics):
+    """\
+    Reports cap-height of `H`.
+    """
+
+    name = "Cap-Height"
+    keyword = "cap_height"
+    variable_aware = True
+    data_type = PerMille
+    character = "H"
+
+    def specific_value(self, paths):
+        return max([path.bounding_box().max_y() for path in paths])
+
+
+class Ascender(VerticalMetrics):
+    """\
+    Reports ascender of `h`.
+    """
+
+    name = "Ascender"
+    keyword = "ascender"
+    variable_aware = True
+    data_type = PerMille
+    character = "h"
+
+    def specific_value(self, paths):
+        return max([path.bounding_box().max_y() for path in paths])
+
+
+class Descender(VerticalMetrics):
+    """\
+    Reports descender of `y`.
+    """
+
+    name = "Descender"
+    keyword = "descender"
+    variable_aware = True
+    data_type = PerMille
+    character = "y"
+
+    def specific_value(self, paths):
+        return min([path.bounding_box().min_y() for path in paths])
+
+
 class Appearance(Metric):
     name = "Appearance"
     keyword = "appearance"
@@ -348,4 +438,8 @@ class Appearance(Metric):
         LowercaseAStyle,
         LowercaseGStyle,
         Stencil,
+        XHeight,
+        CapHeight,
+        Ascender,
+        Descender,
     ]

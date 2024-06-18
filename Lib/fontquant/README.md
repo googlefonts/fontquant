@@ -27,7 +27,11 @@
   * [Slant 🎛️](#slant-appearanceslant)  
   * [Lowercase a style](#lowercase-a-style-appearancelowercase_a_style)  
   * [Lowercase g style](#lowercase-g-style-appearancelowercase_g_style)  
-  * [Stencil](#stencil-appearancestencil)
+  * [Stencil](#stencil-appearancestencil)  
+  * [x-Height 🎛️](#x-height-appearancex_height)  
+  * [Cap-Height 🎛️](#cap-height-appearancecap_height)  
+  * [Ascender 🎛️](#ascender-appearanceascender)  
+  * [Descender 🎛️](#descender-appearancedescender)
 
 ## Casing
 
@@ -520,5 +524,133 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["stencil"]["value"]
 print(value)
 >>> True
+```
+
+### x-Height (`appearance/x_height`)
+
+🎛️ _This metric is variable-aware_
+
+Reports x-height of `x`. 
+
+_Return Value:_ Per-Mille of UPM (e.g. `1000`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["x_height"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 1000, "wdth=100.0,wght=500.0": 1000}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["x_height"]["value"]
+print(value)
+>>> 1000
+```
+
+### Cap-Height (`appearance/cap_height`)
+
+🎛️ _This metric is variable-aware_
+
+Reports cap-height of `H`. 
+
+_Return Value:_ Per-Mille of UPM (e.g. `1000`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["cap_height"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 1000, "wdth=100.0,wght=500.0": 1000}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["cap_height"]["value"]
+print(value)
+>>> 1000
+```
+
+### Ascender (`appearance/ascender`)
+
+🎛️ _This metric is variable-aware_
+
+Reports ascender of `h`. 
+
+_Return Value:_ Per-Mille of UPM (e.g. `1000`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["ascender"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 1000, "wdth=100.0,wght=500.0": 1000}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["ascender"]["value"]
+print(value)
+>>> 1000
+```
+
+### Descender (`appearance/descender`)
+
+🎛️ _This metric is variable-aware_
+
+Reports descender of `y`. 
+
+_Return Value:_ Per-Mille of UPM (e.g. `1000`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["descender"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 1000, "wdth=100.0,wght=500.0": 1000}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["descender"]["value"]
+print(value)
+>>> 1000
 ```
 

@@ -64,6 +64,10 @@ def test_appearance():
     assert farro["appearance"]["lowercase_a_style"]["value"] == "double_story"
     assert farro["appearance"]["lowercase_g_style"]["value"] == "single_story"
     assert farro["appearance"]["stencil"]["value"] is False
+    assert farro["appearance"]["x_height"]["value"] == 600.0
+    assert farro["appearance"]["cap_height"]["value"] == 751.0
+    assert farro["appearance"]["ascender"]["value"] == 800.0
+    assert farro["appearance"]["descender"]["value"] == -216.0
 
     youngserif = get_result("YoungSerif-Regular.ttf", includes=["appearance"])
     assert youngserif["appearance"]["stroke_contrast_ratio"]["value"] == 0.55

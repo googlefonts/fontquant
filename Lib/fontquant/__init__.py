@@ -298,6 +298,14 @@ class Integer(BaseDataType):
         return "Integer number (e.g. `5`)"
 
 
+class PerMille(Float):
+    def example_value(self, default_example_value):
+        return self.shape_value(default_example_value) or 1000
+
+    def return_value_description(self):
+        return "Per-Mille of UPM (e.g. `1000`)"
+
+
 class Metric(object):
     name = None
     keyword = None
