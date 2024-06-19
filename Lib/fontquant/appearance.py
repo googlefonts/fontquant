@@ -5,6 +5,7 @@ from kurbopy import BezPathCreatingPen
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.bezier import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
+from fontquant.helpers.settings import get_script_setting
 from fontquant.casing import Unicase
 from math import degrees, atan
 
@@ -164,19 +165,22 @@ class LowercaseGStyle(Metric):
 
 
 class StrokeContrastBase(Metric):
-    # These need to be very simple letters with counters:
-    measure_characters = {"fallback": "o", "Arab": "ه"}
-
     def get_character_to_measure(self):
-        primary_script = self.ttFont.get_primary_script()
-        if primary_script in self.measure_characters:
-            return self.ttFont.glyphname_for_char(self.measure_characters[primary_script])
+
+        if self.parent.parent.primary_script and get_script_setting(
+            self.parent.parent.primary_script, "stroke_contrast_glyphs"
+        ):
+            characters = str(get_script_setting(self.parent.parent.primary_script, "stroke_contrast_glyphs")).split(
+                ","
+            )
         else:
-            return self.ttFont.glyphname_for_char(self.measure_characters["fallback"])
+            characters = str(get_script_setting("Latn", "stroke_contrast_glyphs")).split(",")
+
+        return characters[0]
 
     def measure(self):
         character = self.get_character_to_measure()
-        width = self.ttFont.getGlyphSet()[character].width
+        width = 1000
 
         descender = self.ttFont["hhea"].descender
         ascender = self.ttFont["hhea"].ascender
@@ -209,6 +213,8 @@ class StrokeContrastBase(Metric):
 
     def value(self, includes=None, excludes=None):
 
+        response = {}
+
         if not hasattr(self.parent.parent, "_stroke_values"):
             self.measure()
 
@@ -219,9 +225,14 @@ class StrokeContrastBase(Metric):
                     instance_dict_to_str(instance)
                 ][self.result_index]
 
-            return {"value": values}
+            response["value"] = values
         else:
-            return {"value": self.parent.parent._stroke_values["default"][self.result_index]}
+            response["value"] = self.parent.parent._stroke_values["default"][self.result_index]
+
+        if self.parent.parent.debug:
+            response["character"] = self.get_character_to_measure()
+
+        return response
 
 
 class StrokeContrastRatio(StrokeContrastBase):

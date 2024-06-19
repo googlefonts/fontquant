@@ -1,4 +1,5 @@
 from fontquant.helpers.var import instances_str_to_list, instances_list_to_str, sort_instances
+from fontquant.helpers.settings import get_script_setting
 
 
 def test_helpers():
@@ -20,3 +21,7 @@ def test_helpers():
         {"wdth": 100.0, "wght": 500.0},
     ]
     assert sort_instances("wght=400,wdth=100;wght=500,wdth=100") == "wdth=100.0,wght=400.0;wdth=100.0,wght=500.0"
+
+
+def test_settings():
+    assert get_script_setting("Latn", "stroke_contrast_glyphs") == "o,O"

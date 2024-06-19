@@ -516,11 +516,12 @@ class Base(Metric):
     children = [Casing, Numerals, Appearance]
 
 
-def quantify(font_path, includes=None, excludes=None, locations=None, debug=False, show=False):
+def quantify(font_path, includes=None, excludes=None, locations=None, debug=False, show=False, primary_script=None):
     ttFont = CustomTTFont(font_path)
     vhb = CustomHarfbuzz(font_path)
 
     base = Base(ttFont, vhb, locations)
     base.debug = debug
     base.show = show
+    base.primary_script = primary_script
     return base.value(includes, excludes)
