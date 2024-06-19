@@ -1,6 +1,6 @@
 import sys
 import json
-from fontquant import CustomHarfbuzz, CustomTTFont, Base
+from fontquant import quantify
 import argparse
 
 
@@ -23,6 +23,18 @@ def cli():
         action="store_true",
         help=("Developer option: Profile the code. Outputs a list of functions sorted by total time. "),
     )
+    arg_parser.add_argument(
+        "-d",
+        action="store_true",
+        help=("Developer option: Add debugging information to the output."),
+    )
+    arg_parser.add_argument(
+        "-s",
+        action="store_true",
+        help=(
+            "Developer option: If there's anything to show visually, show it. Only works with activated debugging (-d)."
+        ),
+    )
     arg_parser.add_argument("font", help="Font file (.ttf or .otf)")
     options = arg_parser.parse_args(sys.argv[1:])
 
@@ -33,11 +45,12 @@ def cli():
         profiler = cProfile.Profile()
         profiler.enable()
 
-    ttFont = CustomTTFont(sys.argv[-1])
-    vhb = CustomHarfbuzz(sys.argv[-1])
-
-    base = Base(ttFont, vhb, options.l)
-    formatted = json.dumps(base.value(options.i, options.x), indent=2)
+    formatted = json.dumps(
+        quantify(
+            options.font, includes=options.i, excludes=options.x, locations=options.l, debug=options.d, show=options.s
+        ),
+        indent=2,
+    )
     print(formatted)
 
     if options.p:

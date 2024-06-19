@@ -184,7 +184,6 @@ class StrokeContrastBase(Metric):
         ascender = self.ttFont["hhea"].ascender
         assert descender <= 0
 
-        SHOW = False
         self.parent.parent._stroke_values = {}
 
         if self.variable:
@@ -197,7 +196,7 @@ class StrokeContrastBase(Metric):
                 paths = pen.paths
 
                 self.parent.parent._stroke_values[instance_dict_to_str(instance)] = stroke_contrast(
-                    paths, width, ascender, descender, show=SHOW
+                    paths, width, ascender, descender, show=self.parent.parent.debug and self.parent.parent.show
                 )
         else:
             buf = self.vhb.shape(character)
@@ -207,7 +206,7 @@ class StrokeContrastBase(Metric):
             paths = pen.paths
 
             self.parent.parent._stroke_values["default"] = stroke_contrast(
-                paths, width, ascender, descender, show=SHOW
+                paths, width, ascender, descender, show=self.parent.parent.debug and self.parent.parent.show
             )
 
     def value(self, includes=None, excludes=None):
