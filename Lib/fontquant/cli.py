@@ -8,10 +8,14 @@ def cli():
 
     arg_parser = argparse.ArgumentParser(description="Measure font statistics.")
     arg_parser.add_argument(
-        "-i", action="append", help="Include metrics by their (partial) path. You can use several -i flags."
+        "-i",
+        action="append",
+        help="Include metrics by their (partial) path. You can use several -i flags. Only these will be used.",
     )
     arg_parser.add_argument(
-        "-x", action="append", help="Exclude metrics by their (partial) path. You can use several -x flags."
+        "-x",
+        action="append",
+        help="Exclude metrics by their (partial) path. You can use several -x flags. All except these will be used.",
     )
     arg_parser.add_argument(
         "-l",
