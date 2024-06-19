@@ -116,12 +116,10 @@ class LowercaseAStyle(Metric):
                 if ratio > threshold:
                     return {
                         "value": "double_story",
-                        "debug": (weight, threshold, ratio),
                     }
                 else:
                     return {
                         "value": "single_story",
-                        "debug": (threshold, ratio),
                     }
 
         return {"value": None}
