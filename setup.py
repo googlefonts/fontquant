@@ -45,6 +45,11 @@ setup(
     },
     package_dir={"": "Lib"},
     packages=find_packages("Lib"),
+    package_data={
+        "fontquant": [
+            "data/*.csv",
+        ]
+    },
     include_package_data=True,
     python_requires=">=3.8",
 )
