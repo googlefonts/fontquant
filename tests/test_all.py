@@ -1,5 +1,5 @@
 import os
-from fontquant import CustomHarfbuzz, CustomTTFont, Base
+from fontquant import quantify, CustomTTFont
 
 
 def get_font_path(filename):
@@ -9,11 +9,12 @@ def get_font_path(filename):
 def get_result(filename, includes=None, excludes=None, variable=None):
     font_path = get_font_path(filename)
 
-    ttFont = CustomTTFont(font_path)
-    vhb = CustomHarfbuzz(font_path)
-
-    base = Base(ttFont, vhb, variable)
-    return base.value(includes, excludes)
+    return quantify(
+        font_path,
+        includes=includes,
+        excludes=excludes,
+        locations=variable,
+    )
 
 
 def test_casing():
