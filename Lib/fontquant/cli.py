@@ -7,8 +7,12 @@ import argparse
 def cli():
 
     arg_parser = argparse.ArgumentParser(description="Measure font statistics.")
-    arg_parser.add_argument("-i", action="append", help="Include metrics by their (partial) path")
-    arg_parser.add_argument("-x", action="append", help="Exclude metrics by their (partial) path")
+    arg_parser.add_argument(
+        "-i", action="append", help="Include metrics by their (partial) path. You can use several -i flags."
+    )
+    arg_parser.add_argument(
+        "-x", action="append", help="Exclude metrics by their (partial) path. You can use several -x flags."
+    )
     arg_parser.add_argument(
         "-l",
         action="store",
@@ -19,26 +23,29 @@ def cli():
         ),
     )
     arg_parser.add_argument(
-        "-p",
+        "--primary_script",
+        action="store",
+        help=("Primary script as per https://github.com/google/fonts/tree/main/lang/Lib/gflanguages/data/scripts"),
+    )
+    arg_parser.add_argument(
+        "--profile",
         action="store_true",
         help=("Developer option: Profile the code. Outputs a list of functions sorted by total time. "),
     )
     arg_parser.add_argument(
-        "-d",
+        "--debug",
         action="store_true",
         help=("Developer option: Add debugging information to the output."),
     )
     arg_parser.add_argument(
-        "-s",
+        "--show",
         action="store_true",
-        help=(
-            "Developer option: If there's anything to show visually, show it. Only works with activated debugging (-d)."
-        ),
+        help=("Developer option: If there's anything to show visually, show it. Only works with activated debugging."),
     )
     arg_parser.add_argument("font", help="Font file (.ttf or .otf)")
     options = arg_parser.parse_args(sys.argv[1:])
 
-    if options.p:
+    if options.profile:
         import cProfile
         import pstats
 
@@ -47,13 +54,19 @@ def cli():
 
     formatted = json.dumps(
         quantify(
-            options.font, includes=options.i, excludes=options.x, locations=options.l, debug=options.d, show=options.s
+            options.font,
+            includes=options.i,
+            excludes=options.x,
+            locations=options.l,
+            debug=options.debug,
+            show=options.show,
+            primary_script=options.primary_script,
         ),
         indent=2,
     )
     print(formatted)
 
-    if options.p:
+    if options.profile:
         profiler.disable()
         stats = pstats.Stats(profiler).sort_stats("tottime")
         stats.print_stats()
