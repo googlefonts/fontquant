@@ -205,8 +205,8 @@ class CustomHarfbuzz(Vharfbuzz):
         ]
         return "\n".join(svg)
 
-    def buf_to_bezierpaths(self, buf):
-        pen = BezierPathCreatingPen()
+    def buf_to_bezierpaths(self, buf, penclass=BezierPathCreatingPen):
+        pen = penclass()
         for info in buf.glyph_infos:
             self._hbfont.draw_glyph_with_pen(info.codepoint, pen)
         return pen.paths
