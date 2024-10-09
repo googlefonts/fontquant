@@ -331,12 +331,12 @@ if __name__ == "__main__":
 
     from kurbopy import BezPathCreatingPen
 
-    from fontquant import CustomHarfbuzz, CustomTTFont, quantify
+    from fontquant import CustomHarfbuzz, CustomTTFont
     from matplotlib import pyplot as plt
 
     parser = argparse.ArgumentParser(description="Raycasting test for fonts")
     parser.add_argument("--variations", nargs="?", help="Variation settings")
-    parser.add_argument("--draw", help="Draw the results")
+    parser.add_argument("--draw", help="Draw the results", default="")
     parser.add_argument("font", help="Path to the font file")
 
     args = parser.parse_args()
@@ -348,12 +348,6 @@ if __name__ == "__main__":
             k, v = var.split("=")
             variations[k] = float(v)
 
-    results = quantify(args.font, includes=["appearance/slant"])
-    slant = results["appearance"]["slant"]["value"]
-    if abs(slant) < 5:
-        slant = 0
-    print("Slant:", slant)
-
     def paths_for_glyph(char):
         buf = vhb.shape(char, {"variations": variations})
         return vhb.buf_to_bezierpaths(buf, penclass=BezPathCreatingPen)
@@ -361,14 +355,14 @@ if __name__ == "__main__":
     many_samples = 12
 
     parama = {
-        "XOPQ": dict(glyph="H", start_point=(0.0, 0.5), direction=-slant, winding="ink", samples=many_samples),
-        "XOLC": dict(glyph="n", start_point=(0.0, 0.4), direction=slant, winding="ink", samples=many_samples),
-        "XOFI": dict(glyph="1", start_point=(0.0, 0.5), direction=slant, winding="ink"),
-        "XTRA": dict(glyph="H", start_point=(0.0, 0.5), direction=-slant, winding="transparent", samples=many_samples),
-        "XTLC": dict(glyph="n", start_point=(0.0, 0.4), direction=slant, winding="transparent", samples=many_samples),
-        "XTFI": dict(glyph="0", start_point=(0.0, 0.5), jittering=0.05, direction=slant, winding="transparent"),
+        "XOPQ": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="ink", samples=many_samples),
+        "XOLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="ink", samples=many_samples),
+        "XOFI": dict(glyph="1", start_point=(0.0, 0.5), direction="E", winding="ink"),
+        "XTRA": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="transparent", samples=many_samples),
+        "XTLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="transparent", samples=many_samples),
+        "XTFI": dict(glyph="0", start_point=(0.0, 0.5), jittering=0.05, direction="E", winding="transparent"),
         "YOPQ": dict(
-            glyph="H", start_point=(0.5, 0.25), direction=slant + 90, samples=int(many_samples * 0.8), winding="ink"
+            glyph="H", start_point=(0.5, 0.25), direction="N", samples=int(many_samples * 0.8), winding="ink"
         ),
         "YOLC": dict(
             glyph="f",
@@ -379,14 +373,16 @@ if __name__ == "__main__":
             winding="ink",
         ),
         "YOFI": dict(
-            glyph="0", start_point=(0.5, 0), direction=-slant + 90, samples=many_samples, jittering=0.05, winding="ink"
+            glyph="0", start_point=(0.5, 0), direction="N", samples=many_samples, jittering=0.05, winding="ink"
         ),
     }
-    plots = len(parama) if args.draw == "*" else len([p for p in parama.keys() if p in args.draw])
-    rows = math.ceil(plots / 3)
-    cols = min(plots, 3)
+    plots = len(parama) if args.draw == "*" else len([p for p in parama.keys() if p in (args.draw or "")])
+    rows = max(math.ceil(plots / 3), 1)
+    cols = max(min(plots, 3), 1)
     fig, axes = plt.subplots(nrows=rows, ncols=cols)
-    if plots == 1:
+    if plots == 0:
+        axes = []
+    elif plots == 1:
         axes = [axes]
     else:
         axes = axes.flat
@@ -405,6 +401,8 @@ if __name__ == "__main__":
         pairs = caster.pairs()
         try:
             value = round(pairs.median_pair_distance())
+            # Upem scale
+            value = round(value * round(1000 / ttFont["head"].unitsPerEm, 1))
         except statistics.StatisticsError:
             print(f"Could not determine {parameter}")
             value = None
