@@ -1,7 +1,6 @@
 from fontquant import Metric, Percentage, String, Boolean, Angle, PerMille, Integer
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
-from kurbopy import BezPathCreatingPen
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.bezier import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
