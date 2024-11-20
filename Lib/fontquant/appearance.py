@@ -193,21 +193,13 @@ class StrokeContrastBase(Metric):
         if self.variable:
             for instance in self.variable:
 
-                buf = self.vhb.shape(character, {"variations": instance})
-                pen = BezPathCreatingPen()
-                for info in buf.glyph_infos:
-                    self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-                paths = pen.paths
+                paths = self.paths_for_glyph(character, instance)
 
                 self.parent.parent._stroke_values[instance_dict_to_str(instance)] = stroke_contrast(
                     paths, width, ascender, descender, show=self.parent.parent.debug and self.parent.parent.show
                 )
         else:
-            buf = self.vhb.shape(character)
-            pen = BezPathCreatingPen()
-            for info in buf.glyph_infos:
-                self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-            paths = pen.paths
+            paths = self.paths_for_glyph(character)
 
             self.parent.parent._stroke_values["default"] = stroke_contrast(
                 paths, width, ascender, descender, show=self.parent.parent.debug and self.parent.parent.show
@@ -352,11 +344,7 @@ class VerticalMetrics(Metric):
             values = {}
             for instance in self.variable:
 
-                buf = self.vhb.shape(self.character, {"variations": instance})
-                pen = BezPathCreatingPen()
-                for info in buf.glyph_infos:
-                    self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-                paths = pen.paths
+                paths = self.paths_for_glyph(self.character, instance)
 
                 values[instance_dict_to_str(instance)] = self.shape_value(
                     self.specific_value(paths) * 1000 / self.ttFont["head"].unitsPerEm
@@ -364,11 +352,7 @@ class VerticalMetrics(Metric):
 
             return {"value": values}
         else:
-            buf = self.vhb.shape(self.character)
-            pen = BezPathCreatingPen()
-            for info in buf.glyph_infos:
-                self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-            paths = pen.paths
+            paths = self.paths_for_glyph(self.character)
 
             return {"value": self.shape_value(self.specific_value(paths) * 1000 / self.ttFont["head"].unitsPerEm)}
 
