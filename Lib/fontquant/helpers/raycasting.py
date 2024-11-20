@@ -300,19 +300,21 @@ class Raycaster:
                 normal = Vec2(-direction.y, direction.x).normalize()
                 midpoint = midpoint + normal * 10
                 if is_outlier:
-                    nodecolor = "#333377"
-                    edgecolor = "#8888ff"
-                    textcolor = "#333377"
+                    nodecolor = "#33337766"
+                    edgecolor = "#8888ff66"
+                    textcolor = "#33337766"
                     textsize = 6
+                    markersize = 0
                 else:
                     nodecolor = "r"
                     edgecolor = "r"
                     textcolor = "#000000"
                     textsize = 8
+                    markersize = 5
 
                 ax.plot([pair[0].x, pair[1].x], [pair[0].y, pair[1].y], "-", color=edgecolor)
-                ax.plot(pair[0].x, pair[0].y, "o", color=nodecolor)
-                ax.plot(pair[1].x, pair[1].y, "o", color=nodecolor)
+                ax.plot(pair[0].x, pair[0].y, "o", color=nodecolor, markersize=markersize)
+                ax.plot(pair[1].x, pair[1].y, "o", color=nodecolor, markersize=markersize)
                 ax.text(
                     midpoint.x,
                     midpoint.y,
@@ -337,78 +339,93 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Raycasting test for fonts")
     parser.add_argument("--variations", nargs="?", help="Variation settings")
     parser.add_argument("--draw", help="Draw the results", default="")
-    parser.add_argument("font", help="Path to the font file")
+    parser.add_argument("fonts", help="Path to the font file", nargs="+")
 
     args = parser.parse_args()
-    ttFont = CustomTTFont(args.font)
-    vhb = CustomHarfbuzz(args.font)
-    variations = {}
-    if args.variations:
-        for var in args.variations.split(","):
-            k, v = var.split("=")
-            variations[k] = float(v)
 
-    def paths_for_glyph(char):
-        buf = vhb.shape(char, {"variations": variations})
-        return vhb.buf_to_bezierpaths(buf, penclass=BezPathCreatingPen)
+    def find_parametric_values(font):
+        ttFont = CustomTTFont(font)
+        vhb = CustomHarfbuzz(font)
+        variations = {}
+        if args.variations:
+            for var in args.variations.split(","):
+                k, v = var.split("=")
+                variations[k] = float(v)
 
-    many_samples = 12
+        def paths_for_glyph(char):
+            buf = vhb.shape(char, {"variations": variations})
+            return vhb.buf_to_bezierpaths(buf, penclass=BezPathCreatingPen)
 
-    parama = {
-        "XOPQ": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="ink", samples=many_samples),
-        "XOLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="ink", samples=many_samples),
-        "XOFI": dict(glyph="1", start_point=(0.0, 0.5), direction="E", winding="ink"),
-        "XTRA": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="transparent", samples=many_samples),
-        "XTLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="transparent", samples=many_samples),
-        "XTFI": dict(glyph="0", start_point=(0.0, 0.5), jittering=0.05, direction="E", winding="transparent"),
-        "YOPQ": dict(
-            glyph="H", start_point=(0.5, 0.25), direction="N", samples=int(many_samples * 0.8), winding="ink"
-        ),
-        "YOLC": dict(
-            glyph="f",
-            start_point=(0.75, 0.5),
-            end_point=(0.75, 0.9),
-            jittering=0.1,
-            samples=many_samples // 2,
-            winding="ink",
-        ),
-        "YOFI": dict(
-            glyph="0", start_point=(0.5, 0), direction="N", samples=many_samples, jittering=0.05, winding="ink"
-        ),
-    }
-    plots = len(parama) if args.draw == "*" else len([p for p in parama.keys() if p in (args.draw or "")])
-    rows = max(math.ceil(plots / 3), 1)
-    cols = max(min(plots, 3), 1)
-    fig, axes = plt.subplots(nrows=rows, ncols=cols)
-    if plots == 0:
-        axes = []
-    elif plots == 1:
-        axes = [axes]
-    else:
-        axes = axes.flat
-    axes_iter = iter(axes)
-    for parameter, settings in parama.items():
-        print("Calculating " + parameter)
-        caster = Raycaster(
-            paths_for_glyph(settings["glyph"]),
-            settings["start_point"],
-            endpoint=settings.get("end_point"),
-            direction=settings.get("direction"),
-        )
-        if "winding" in settings:
-            caster = caster.winding(settings["winding"])
-        caster = caster.jitter(settings.get("jittering", 0.2), settings.get("samples", 10))
-        pairs = caster.pairs()
-        try:
-            value = round(pairs.median_pair_distance())
-            # Upem scale
-            value = round(value * round(1000 / ttFont["head"].unitsPerEm, 1))
-        except statistics.StatisticsError:
-            print(f"Could not determine {parameter}")
-            value = None
-        print(f"{parameter}: ", value)
-        drawing = None
-        if parameter in args.draw or args.draw == "*":
-            drawing = pairs.draw(next(axes_iter), parameter, value)
-    if plots > 0:
-        plt.show()
+        many_samples = 12
+
+        parama = {
+            "XOPQ": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="ink", samples=many_samples),
+            "XOLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="ink", samples=many_samples),
+            "XOFI": dict(glyph="1", start_point=(0.0, 0.5), direction="E", winding="ink"),
+            "XTRA": dict(
+                glyph="H", start_point=(0.0, 0.5), direction="E", winding="transparent", samples=many_samples
+            ),
+            "XTLC": dict(
+                glyph="n", start_point=(0.0, 0.4), direction="E", winding="transparent", samples=many_samples
+            ),
+            "XTFI": dict(glyph="0", start_point=(0.0, 0.5), jittering=0.05, direction="E", winding="transparent"),
+            "YOPQ": dict(
+                glyph="H", start_point=(0.5, 0.25), direction="N", samples=int(many_samples * 0.8), winding="ink"
+            ),
+            "YOLC": dict(
+                glyph="f",
+                start_point=(0.75, 0.5),
+                end_point=(0.75, 0.9),
+                jittering=0.1,
+                samples=many_samples // 2,
+                winding="ink",
+            ),
+            "YOFI": dict(
+                glyph="0", start_point=(0.5, 0), direction="N", samples=many_samples, jittering=0.05, winding="ink"
+            ),
+        }
+        plots = len(parama) if args.draw == "*" else len([p for p in parama.keys() if p in (args.draw or "")])
+        rows = max(math.ceil(plots / 3), 1)
+        cols = max(min(plots, 3), 1)
+        if plots > 0:
+            fig, axes = plt.subplots(nrows=rows, ncols=cols)
+        if plots == 0:
+            axes = []
+        elif plots == 1:
+            axes = [axes]
+        else:
+            axes = axes.flat
+        axes_iter = iter(axes)
+        for parameter, settings in parama.items():
+            # print("Calculating " + parameter)
+            paths = paths_for_glyph(settings["glyph"])
+            if not paths:
+                print(f"Could not find glyph {settings['glyph']}")
+                continue
+            caster = Raycaster(
+                paths,
+                settings["start_point"],
+                endpoint=settings.get("end_point"),
+                direction=settings.get("direction"),
+            )
+            if "winding" in settings:
+                caster = caster.winding(settings["winding"])
+            caster = caster.jitter(settings.get("jittering", 0.2), settings.get("samples", 10))
+            pairs = caster.pairs()
+            try:
+                value = round(pairs.median_pair_distance())
+                # Upem scale
+                value = round(value * 1000 / ttFont["head"].unitsPerEm)
+            except statistics.StatisticsError:
+                print(f"Could not determine {parameter}")
+                value = None
+            print(f"{parameter}: ", value)
+            drawing = None
+            if parameter in args.draw or args.draw == "*":
+                drawing = pairs.draw(next(axes_iter), parameter, value)
+        if plots > 0:
+            plt.show()
+
+    for font in args.fonts:
+        print(font)
+        find_parametric_values(font)
