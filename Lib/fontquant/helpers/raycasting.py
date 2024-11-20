@@ -420,9 +420,8 @@ if __name__ == "__main__":
                 print(f"Could not determine {parameter}")
                 value = None
             print(f"{parameter}: ", value)
-            drawing = None
             if parameter in args.draw or args.draw == "*":
-                drawing = pairs.draw(next(axes_iter), parameter, value)
+                pairs.draw(next(axes_iter), parameter, value)
         if plots > 0:
             plt.show()
 
