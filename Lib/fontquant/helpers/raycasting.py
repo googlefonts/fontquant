@@ -3,7 +3,7 @@ import math
 import statistics
 from typing import List, Optional, Tuple, Union
 
-from kurbopy import Line, Point, Vec2, BezPath, Rect
+from kurbopy import Line, Point, Vec2, BezPath, Rect, Insets
 
 # There is a lot of (potentially unnecessary) scaffolding here to hopefully
 # make the final algorithms more readable.
@@ -95,7 +95,7 @@ class Raycaster:
         self.bbox = paths[0].bounding_box()
         for path in paths[1:]:
             self.bbox = self.bbox.union(path.bounding_box())
-        self.bbox = self.bbox.inset(10)
+        self.bbox = self.bbox.inset(Insets.uniform(10))
 
         if direction in angles:
             direction = angles[direction]
