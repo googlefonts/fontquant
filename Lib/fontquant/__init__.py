@@ -10,6 +10,7 @@ from fontquant.helpers.var import (
     instances_str_to_list,
 )
 from beziers.utils.pens import BezierPathCreatingPen
+from kurbopy import BezPathCreatingPen
 
 
 class CustomHarfbuzz(Vharfbuzz):
@@ -333,6 +334,10 @@ class Metric(object):
 
     def shape_value(self, value):
         return self.data_type().shape_value(value)
+
+    def paths_for_glyph(self, char, instance=None):
+        buf = self.vhb.shape(char, {"variations": instance or {}})
+        return self.vhb.buf_to_bezierpaths(buf, penclass=BezPathCreatingPen)
 
     def find_check(self, path):
         for child in self.children:
