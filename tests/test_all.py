@@ -59,9 +59,9 @@ def test_appearance():
     farro = get_result("Farro-Regular.ttf", includes=["appearance"])
     assert farro["appearance"]["stroke_contrast_ratio"]["value"] == 0.94
     assert farro["appearance"]["stroke_contrast_angle"]["value"] == 0.0
-    assert farro["appearance"]["weight"]["value"] == 0.295
-    assert farro["appearance"]["width"]["value"] == 0.589
-    assert farro["appearance"]["slant"]["value"] == 0.142
+    assert farro["appearance"]["weight"]["value"] == 0.296
+    assert farro["appearance"]["width"]["value"] == 0.561
+    assert farro["appearance"]["slant"]["value"] == -0.099
     assert farro["appearance"]["lowercase_a_style"]["value"] == "double_story"
     assert farro["appearance"]["lowercase_g_style"]["value"] == "single_story"
     assert farro["appearance"]["stencil"]["value"] is False
@@ -81,13 +81,24 @@ def test_appearance():
     assert bodonimoda["appearance"]["lowercase_a_style"]["value"] == "single_story"
     assert bodonimoda["appearance"]["lowercase_g_style"]["value"] == "double_story"
     assert bodonimoda["appearance"]["stencil"]["value"] is False
-    assert bodonimoda["appearance"]["slant"]["value"] == -12.23
+    assert bodonimoda["appearance"]["slant"]["value"] == -11.821
 
     allertastencil = get_result("AllertaStencil-Regular.ttf", includes=["appearance/stencil"])
     assert allertastencil["appearance"]["stencil"]["value"] is True
 
     bigshouldersstencil = get_result("BigShouldersStencilText[wght].ttf", includes=["appearance/stencil"])
     assert bigshouldersstencil["appearance"]["stencil"]["value"] is True
+
+    robotoflex = get_result("RobotoFlex-Var.ttf", includes=["appearance"])
+    assert robotoflex["appearance"]["XOPQ"]["value"] == 94
+    assert robotoflex["appearance"]["XOLC"]["value"] == 91
+    assert robotoflex["appearance"]["XOFI"]["value"] == 94
+    assert robotoflex["appearance"]["XTRA"]["value"] == 358
+    assert robotoflex["appearance"]["XTLC"]["value"] == 234
+    assert robotoflex["appearance"]["XTFI"]["value"] == 268
+    assert robotoflex["appearance"]["YOPQ"]["value"] == 77
+    assert robotoflex["appearance"]["YOLC"]["value"] == 69
+    assert robotoflex["appearance"]["YOFI"]["value"] == 77
 
 
 def test_variable():
@@ -112,10 +123,10 @@ def test_variable():
             "appearance": {
                 "weight": {
                     "value": {
-                        "wght=100.0": 0.139,
-                        "wght=200.0": 0.179,
-                        "wght=300.0": 0.239,
-                        "wght=400.0": 0.306,
+                        "wght=100.0": 0.137,
+                        "wght=200.0": 0.178,
+                        "wght=300.0": 0.238,
+                        "wght=400.0": 0.305,
                         "wght=500.0": 0.358,
                         "wght=600.0": 0.378,
                         "wght=700.0": 0.419,
@@ -356,6 +367,19 @@ def test_helpers():
         "uni021A",
         "uni021B",
         "uni0237",
+        "caron",
+        "dotaccent",
+        "gravecomb",
+        "acutecomb",
+        "uni0302",
+        "tildecomb",
+        "uni0304",
+        "uni0306",
+        "uni0307",
+        "uni0308",
+        "uni030A",
+        "uni030B",
+        "uni030C",
         "Wgrave",
         "wgrave",
         "Wacute",

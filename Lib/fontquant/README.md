@@ -31,7 +31,16 @@
   * [x-Height 🎛️](#x-height-appearancex_height)  
   * [Cap-Height 🎛️](#cap-height-appearancecap_height)  
   * [Ascender 🎛️](#ascender-appearanceascender)  
-  * [Descender 🎛️](#descender-appearancedescender)
+  * [Descender 🎛️](#descender-appearancedescender)  
+  * [XOPQ 🎛️](#xopq-appearanceXOPQ)  
+  * [XOLC 🎛️](#xolc-appearanceXOLC)  
+  * [XOFI 🎛️](#xofi-appearanceXOFI)  
+  * [XTRA 🎛️](#xtra-appearanceXTRA)  
+  * [XTLC 🎛️](#xtlc-appearanceXTLC)  
+  * [XTFI 🎛️](#xtfi-appearanceXTFI)  
+  * [YOPQ 🎛️](#yopq-appearanceYOPQ)  
+  * [YOLC 🎛️](#yolc-appearanceYOLC)  
+  * [YOFI 🎛️](#yofi-appearanceYOFI)
 
 ## Casing
 
@@ -652,5 +661,293 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["descender"]["value"]
 print(value)
 >>> 1000
+```
+
+### XOPQ (`appearance/XOPQ`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis XOPQ. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["XOPQ"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["XOPQ"]["value"]
+print(value)
+>>> 5
+```
+
+### XOLC (`appearance/XOLC`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis XOLC. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["XOLC"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["XOLC"]["value"]
+print(value)
+>>> 5
+```
+
+### XOFI (`appearance/XOFI`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis XOFI. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["XOFI"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["XOFI"]["value"]
+print(value)
+>>> 5
+```
+
+### XTRA (`appearance/XTRA`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis XTRA. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["XTRA"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["XTRA"]["value"]
+print(value)
+>>> 5
+```
+
+### XTLC (`appearance/XTLC`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis XTLC. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["XTLC"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["XTLC"]["value"]
+print(value)
+>>> 5
+```
+
+### XTFI (`appearance/XTFI`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis XTFI. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["XTFI"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["XTFI"]["value"]
+print(value)
+>>> 5
+```
+
+### YOPQ (`appearance/YOPQ`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis YOPQ. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["YOPQ"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["YOPQ"]["value"]
+print(value)
+>>> 5
+```
+
+### YOLC (`appearance/YOLC`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis YOLC. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["YOLC"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["YOLC"]["value"]
+print(value)
+>>> 5
+```
+
+### YOFI (`appearance/YOFI`)
+
+🎛️ _This metric is variable-aware_
+
+Reports parametric axis YOFI. 
+
+_Return Value:_ Integer number (e.g. `5`)
+
+_Example with **variable locations**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf", locations="wght=400,wdth=100;wght=500,wdth=100")
+value = results["appearance"]["YOFI"]["value"]
+print(value)
+>>> {"wdth=100.0,wght=400.0": 5, "wdth=100.0,wght=500.0": 5}
+```
+
+**Note:** The axes per instance used in the _return value keys_ will be **sorted alphabetically**
+and the _return values_ will be **float** _regardless of your input_.
+To identify them in your results, you should also sort and format your input instances accordingly.
+You may use `fontquant.helpers.var.sort_instance()` (per instance) or `.sort_instances()` (whole list at once)
+for this purpose.
+
+_Example with **origin location**:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["appearance"]["YOFI"]["value"]
+print(value)
+>>> 5
 ```
 

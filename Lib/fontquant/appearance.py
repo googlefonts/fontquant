@@ -1,13 +1,14 @@
-from fontquant import Metric, Percentage, String, Boolean, Angle, PerMille
+from fontquant import Metric, Percentage, String, Boolean, Angle, PerMille, Integer
 from fontquant.helpers.stroke_contrast import stroke_contrast
 from beziers.path import BezierPath
-from kurbopy import BezPathCreatingPen
 from fontquant.helpers.pens import CustomStatisticsPen
 from fontquant.helpers.bezier import removeOverlaps
 from fontquant.helpers.var import instance_dict_to_str
 from fontquant.helpers.settings import get_script_setting
+from fontquant.helpers.raycasting import Raycaster
 from fontquant.casing import Unicase
 from math import degrees, atan
+import statistics
 
 
 class Stencil(Metric):
@@ -191,21 +192,13 @@ class StrokeContrastBase(Metric):
         if self.variable:
             for instance in self.variable:
 
-                buf = self.vhb.shape(character, {"variations": instance})
-                pen = BezPathCreatingPen()
-                for info in buf.glyph_infos:
-                    self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-                paths = pen.paths
+                paths = self.paths_for_glyph(character, instance)
 
                 self.parent.parent._stroke_values[instance_dict_to_str(instance)] = stroke_contrast(
                     paths, width, ascender, descender, show=self.parent.parent.debug and self.parent.parent.show
                 )
         else:
-            buf = self.vhb.shape(character)
-            pen = BezPathCreatingPen()
-            for info in buf.glyph_infos:
-                self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-            paths = pen.paths
+            paths = self.paths_for_glyph(character)
 
             self.parent.parent._stroke_values["default"] = stroke_contrast(
                 paths, width, ascender, descender, show=self.parent.parent.debug and self.parent.parent.show
@@ -350,25 +343,17 @@ class VerticalMetrics(Metric):
             values = {}
             for instance in self.variable:
 
-                buf = self.vhb.shape(self.character, {"variations": instance})
-                pen = BezPathCreatingPen()
-                for info in buf.glyph_infos:
-                    self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-                paths = pen.paths
+                paths = self.paths_for_glyph(self.character, instance)
 
                 values[instance_dict_to_str(instance)] = self.shape_value(
-                    self.specific_value(paths) / self.ttFont["head"].unitsPerEm * 1000
+                    self.specific_value(paths) * 1000 / self.ttFont["head"].unitsPerEm
                 )
 
             return {"value": values}
         else:
-            buf = self.vhb.shape(self.character)
-            pen = BezPathCreatingPen()
-            for info in buf.glyph_infos:
-                self.vhb._hbfont.draw_glyph_with_pen(info.codepoint, pen)
-            paths = pen.paths
+            paths = self.paths_for_glyph(self.character)
 
-            return {"value": self.shape_value(self.specific_value(paths) / self.ttFont["head"].unitsPerEm * 1000)}
+            return {"value": self.shape_value(self.specific_value(paths) * 1000 / self.ttFont["head"].unitsPerEm)}
 
     def specific_value(self, paths):
         raise NotImplementedError
@@ -434,6 +419,156 @@ class Descender(VerticalMetrics):
         return min([path.bounding_box().min_y() for path in paths])
 
 
+class Parametric(Metric):
+
+    variable_aware = True
+    data_type = Integer
+
+    many_samples = 12
+
+    parama = {
+        "XOPQ": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="ink", samples=many_samples),
+        "XOLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="ink", samples=many_samples),
+        "XOFI": dict(glyph="1", start_point=(0.0, 0.5), direction="E", winding="ink"),
+        "XTRA": dict(glyph="H", start_point=(0.0, 0.5), direction="E", winding="transparent", samples=many_samples),
+        "XTLC": dict(glyph="n", start_point=(0.0, 0.4), direction="E", winding="transparent", samples=many_samples),
+        "XTFI": dict(glyph="0", start_point=(0.0, 0.5), jittering=0.05, direction="E", winding="transparent"),
+        "YOPQ": dict(
+            glyph="H", start_point=(0.5, 0.25), direction="N", samples=int(many_samples * 0.8), winding="ink"
+        ),
+        "YOLC": dict(
+            glyph="f",
+            start_point=(0.75, 0.5),
+            end_point=(0.75, 0.9),
+            jittering=0.1,
+            samples=many_samples // 2,
+            winding="ink",
+        ),
+        "YOFI": dict(
+            glyph="0", start_point=(0.5, 0), direction="N", samples=many_samples, jittering=0.05, winding="ink"
+        ),
+    }
+
+    def value(self, includes=None, excludes=None):
+
+        if self.variable:
+            values = {}
+            for instance in self.variable:
+
+                paths = self.paths_for_glyph(self.parama[self.__class__.__name__]["glyph"], instance)
+                values[instance_dict_to_str(instance)] = self.shape_value(self.specific_value(paths))
+
+            return {"value": values}
+        else:
+
+            paths = self.paths_for_glyph(self.parama[self.__class__.__name__]["glyph"])
+            return {"value": self.shape_value(self.specific_value(paths))}
+
+    def specific_value(self, paths):
+        parameter = self.__class__.__name__
+        settings = self.parama[parameter]
+        caster = Raycaster(
+            paths,
+            settings["start_point"],
+            endpoint=settings.get("end_point"),
+            direction=settings.get("direction"),
+        )
+        if "winding" in settings:
+            caster = caster.winding(settings["winding"])
+        caster = caster.jitter(settings.get("jittering", 0.2), settings.get("samples", 10))
+        pairs = caster.pairs()
+        try:
+            value = round(pairs.median_pair_distance())
+            # Upem scale
+            value = round(value * 1000 / self.ttFont["head"].unitsPerEm)
+        except statistics.StatisticsError:
+            print(f"Could not determine {parameter}")
+            value = None
+
+        return value
+
+
+class XOPQ(Parametric):
+    """\
+    Reports parametric axis XOPQ.
+    """
+
+    name = "XOPQ"
+    keyword = "XOPQ"
+
+
+class XOLC(Parametric):
+    """\
+    Reports parametric axis XOLC.
+    """
+
+    name = "XOLC"
+    keyword = "XOLC"
+
+
+class XOFI(Parametric):
+    """\
+    Reports parametric axis XOFI.
+    """
+
+    name = "XOFI"
+    keyword = "XOFI"
+
+
+class XTRA(Parametric):
+    """\
+    Reports parametric axis XTRA.
+    """
+
+    name = "XTRA"
+    keyword = "XTRA"
+
+
+class XTLC(Parametric):
+    """\
+    Reports parametric axis XTLC.
+    """
+
+    name = "XTLC"
+    keyword = "XTLC"
+
+
+class XTFI(Parametric):
+    """\
+    Reports parametric axis XTFI.
+    """
+
+    name = "XTFI"
+    keyword = "XTFI"
+
+
+class YOPQ(Parametric):
+    """\
+    Reports parametric axis YOPQ.
+    """
+
+    name = "YOPQ"
+    keyword = "YOPQ"
+
+
+class YOLC(Parametric):
+    """\
+    Reports parametric axis YOLC.
+    """
+
+    name = "YOLC"
+    keyword = "YOLC"
+
+
+class YOFI(Parametric):
+    """\
+    Reports parametric axis YOFI.
+    """
+
+    name = "YOFI"
+    keyword = "YOFI"
+
+
 class Appearance(Metric):
     name = "Appearance"
     keyword = "appearance"
@@ -450,4 +585,13 @@ class Appearance(Metric):
         CapHeight,
         Ascender,
         Descender,
+        XOPQ,
+        XOLC,
+        XOFI,
+        XTRA,
+        XTLC,
+        XTFI,
+        YOPQ,
+        YOLC,
+        YOFI,
     ]
