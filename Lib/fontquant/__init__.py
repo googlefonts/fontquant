@@ -521,6 +521,10 @@ class Base(Metric):
     children = [Casing, Numerals, Appearance]
 
 
+def order_dict(dictionary):
+    return {k: order_dict(v) if isinstance(v, dict) else v for k, v in sorted(dictionary.items())}
+
+
 def quantify(font_path, includes=None, excludes=None, locations=None, debug=False, show=False, primary_script=None):
     ttFont = CustomTTFont(font_path)
     vhb = CustomHarfbuzz(font_path)
@@ -529,4 +533,4 @@ def quantify(font_path, includes=None, excludes=None, locations=None, debug=Fals
     base.debug = debug
     base.show = show
     base.primary_script = primary_script
-    return base.value(includes, excludes)
+    return order_dict(base.value(includes, excludes))

@@ -17,6 +17,57 @@ def get_result(filename, includes=None, excludes=None, variable=None):
     )
 
 
+def test_quantify():
+    bigshouldersstencil = get_result("BigShouldersStencilText[wght].ttf")
+    assert bigshouldersstencil == {
+        "appearance": {
+            "XOFI": {"value": 41},
+            "XOLC": {"value": 41},
+            "XOPQ": {"value": 40},
+            "XTFI": {"value": 158},
+            "XTLC": {"value": 152},
+            "XTRA": {"value": 160},
+            "YOFI": {"value": None},
+            "YOLC": {"value": 34},
+            "YOPQ": {"value": 38},
+            "ascender": {"value": 800.0},
+            "cap_height": {"value": 800.0},
+            "descender": {"value": -201.0},
+            "lowercase_a_style": {"value": None},
+            "lowercase_g_style": {"value": None},
+            "slant": {"value": -0.447},
+            "stencil": {"value": True},
+            "stroke_contrast_angle": {"value": 0.0},
+            "stroke_contrast_ratio": {"value": 0.86},
+            "weight": {"value": 0.188},
+            "width": {"value": 0.319},
+            "x_height": {"value": 600.0},
+        },
+        "casing": {
+            "caps-to-smallcaps": {"failed": ["İ", "Ǎ", "Ǐ", "Ǒ", "Ǔ", "Ǖ", "Ǘ", "Ǚ", "Ǜ", "Ủ"], "value": 0.958},
+            "case_sensitive_punctuation": {"value": 0.385},
+            "lowercase_shapes": {"value": "lowercase"},
+            "smallcaps": {
+                "failed": ["ǎ", "ǐ", "ǒ", "ǔ", "ǖ", "ǘ", "ǚ", "ǜ", "ǝ", "ȷ", "π", "ủ", "ﬁ", "ﬂ"],
+                "value": 0.943,
+            },
+            "unicase": {"value": False},
+        },
+        "numerals": {
+            "arbitrary_fractions": {"value": True},
+            "default_numerals": {"value": "proportional_lining"},
+            "encoded_fractions": {"value": 1.0},
+            "inferior_numerals": {"value": 1.0},
+            "proportional_lining": {"value": True},
+            "proportional_oldstyle": {"value": False},
+            "slashed_zero": {"checked_additional_features": ["sups", "sinf", "frac"], "value": 0.0},
+            "superior_numerals": {"value": 1.0},
+            "tabular_lining": {"value": False},
+            "tabular_oldstyle": {"value": False},
+        },
+    }
+
+
 def test_casing():
     farro = get_result("Farro-Regular.ttf", includes=["casing"])
     assert farro["casing"]["unicase"]["value"] is False
