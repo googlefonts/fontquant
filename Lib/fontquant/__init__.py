@@ -245,6 +245,34 @@ class BaseDataType(object):
         return value
 
 
+class List(BaseDataType):
+    def example_value(self, default_example_value):
+        return default_example_value or [0, 1, 2]
+
+    def return_value_description(self):
+        return "List of values (e.g. `[0, 1, 2]`)"
+
+    # def shape_value(self, value):
+    #     if value is not None:
+    #         return round(value * 1000) / 1000
+    #     else:
+    #         return 0.0
+
+
+class Dictionary(BaseDataType):
+    def example_value(self, default_example_value):
+        return default_example_value or {"key": 0, "key2": 1, "key3": 2}
+
+    def return_value_description(self):
+        return 'Dictionary of values (e.g. `{"key": 0, "key2": 1, "key3": 2}`)'
+
+    # def shape_value(self, value):
+    #     if value is not None:
+    #         return round(value * 1000) / 1000
+    #     else:
+    #         return 0.0
+
+
 class Float(BaseDataType):
     def example_value(self, default_example_value):
         return self.shape_value(default_example_value) or 0.1
@@ -515,10 +543,11 @@ print(value)
 from .casing import Casing  # noqa E402 (Circular import)
 from .numerals import Numerals  # noqa E402 (Circular import)
 from .appearance import Appearance  # noqa E402 (Circular import)
+from .features import Features  # noqa E402 (Circular import)
 
 
 class Base(Metric):
-    children = [Casing, Numerals, Appearance]
+    children = [Casing, Numerals, Appearance, Features]
 
 
 def order_dict(dictionary):

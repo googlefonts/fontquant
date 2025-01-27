@@ -53,6 +53,33 @@ def test_quantify():
             },
             "unicase": {"value": False},
         },
+        "features": {
+            "feature_list": {
+                "value": [
+                    "aalt",
+                    "c2sc",
+                    "case",
+                    "ccmp",
+                    "dlig",
+                    "dnom",
+                    "frac",
+                    "kern",
+                    "liga",
+                    "locl",
+                    "mark",
+                    "mkmk",
+                    "numr",
+                    "ordn",
+                    "salt",
+                    "sinf",
+                    "smcp",
+                    "ss01",
+                    "subs",
+                    "sups",
+                ]
+            },
+            "stylistic_sets": {"value": {}},
+        },
         "numerals": {
             "arbitrary_fractions": {"value": True},
             "default_numerals": {"value": "proportional_lining"},
@@ -150,6 +177,60 @@ def test_appearance():
     assert robotoflex["appearance"]["YOPQ"]["value"] == 77
     assert robotoflex["appearance"]["YOLC"]["value"] == 69
     assert robotoflex["appearance"]["YOFI"]["value"] == 77
+
+
+def test_features():
+    ysabeau = get_result("Ysabeau[wght].ttf", includes=["features"])
+    assert ysabeau == {
+        "features": {
+            "feature_list": {
+                "value": [
+                    "aalt",
+                    "c2sc",
+                    "calt",
+                    "case",
+                    "ccmp",
+                    "dlig",
+                    "dnom",
+                    "frac",
+                    "hlig",
+                    "kern",
+                    "liga",
+                    "lnum",
+                    "locl",
+                    "mark",
+                    "mkmk",
+                    "numr",
+                    "onum",
+                    "ordn",
+                    "pnum",
+                    "rvrn",
+                    "sinf",
+                    "smcp",
+                    "ss01",
+                    "ss02",
+                    "ss03",
+                    "ss09",
+                    "ss10",
+                    "ss11",
+                    "subs",
+                    "sups",
+                    "tnum",
+                    "zero",
+                ]
+            },
+            "stylistic_sets": {
+                "value": {
+                    "ss01": "Infant cut",
+                    "ss02": "Office cut",
+                    "ss03": "Alternative a and u",
+                    "ss09": "Serbian Cyrillic",
+                    "ss10": "Bulgarian Cyrillic",
+                    "ss11": "Frankfurt-style Eszett",
+                }
+            },
+        }
+    }
 
 
 def test_variable():

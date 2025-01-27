@@ -40,7 +40,10 @@
   * [XTFI 🎛️](#xtfi-appearanceXTFI)  
   * [YOPQ 🎛️](#yopq-appearanceYOPQ)  
   * [YOLC 🎛️](#yolc-appearanceYOLC)  
-  * [YOFI 🎛️](#yofi-appearanceYOFI)
+  * [YOFI 🎛️](#yofi-appearanceYOFI)  
+* Features:  
+  * [List of OpenType Features](#list-of-opentype-features-featuresfeature_list)  
+  * [Stylistic Set Names](#stylistic-set-names-featuresstylistic_sets)
 
 ## Casing
 
@@ -949,5 +952,41 @@ results = quantify("path/to/font.ttf")
 value = results["appearance"]["YOFI"]["value"]
 print(value)
 >>> 5
+```
+
+## Features
+
+### List of OpenType Features (`features/feature_list`)
+
+
+
+Returns a list of all registed OpenType features in the font from both GSUB and GPOS tables. 
+
+_Return Value:_ List of values (e.g. `[0, 1, 2]`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["features"]["feature_list"]["value"]
+print(value)
+>>> ['aalt', 'liga', 'kern']
+```
+
+### Stylistic Set Names (`features/stylistic_sets`)
+
+
+
+Returns a dictionary with the names of the stylistic sets in the font. 
+
+_Return Value:_ Dictionary of values (e.g. `{"key": 0, "key2": 1, "key3": 2}`)
+
+_Example:_
+```python
+from fontquant import quantify
+results = quantify("path/to/font.ttf")
+value = results["features"]["stylistic_sets"]["value"]
+print(value)
+>>> {'ss01': 'Alternate a shape'}
 ```
 
