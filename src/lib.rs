@@ -1,3 +1,4 @@
+#![deny(clippy::unwrap_used, clippy::expect_used)]
 use crate::error::FontquantError;
 use std::collections::HashMap;
 
