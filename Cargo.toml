@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.35", features = ["derive"] }
-greencurves = { version = "0.2.1", path = "/Users/simon/hacks/bezier-things/greencurves" }
+greencurves = "0.2.1"
 kurbo = "0.11.1"
 skrifa = "0.30.0"
 thiserror = "2.0.12"
