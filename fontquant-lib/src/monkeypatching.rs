@@ -49,9 +49,10 @@ mod tests {
     #[test]
     fn test_glyphs_for_primary_script() {
         #[allow(clippy::unwrap_used)] // it's a test suite
-        let fontref =
-            skrifa::FontRef::new(include_bytes!("../tests/fonts/AllertaStencil-Regular.ttf"))
-                .unwrap();
+        let fontref = skrifa::FontRef::new(include_bytes!(
+            "../../tests/fonts/AllertaStencil-Regular.ttf"
+        ))
+        .unwrap();
         assert_eq!(fontref.primary_script(), "Latn");
         let glyphs: Vec<_> = fontref.glyphs_for_primary_script().collect();
         assert_eq!(glyphs.len(), 120);

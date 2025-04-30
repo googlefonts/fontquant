@@ -1,5 +1,5 @@
 use clap::Parser;
-use fontquant::run;
+use fontquant_lib::run;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]

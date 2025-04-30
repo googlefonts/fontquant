@@ -1,0 +1,11 @@
+[package]
+name = "fontquant-lib"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+greencurves = "0.2.1"
+kurbo = "0.11.1"
+skrifa = { workspace = true }
+thiserror = "2.0.12"
+unicode-script = "0.5.7"

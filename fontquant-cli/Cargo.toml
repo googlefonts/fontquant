@@ -5,8 +5,5 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.35", features = ["derive"] }
-greencurves = "0.2.1"
-kurbo = "0.11.1"
-skrifa = "0.30.0"
-thiserror = "2.0.12"
-unicode-script = "0.5.7"
+fontquant-lib = { path = "../fontquant-lib" }
+skrifa = { workspace = true }
