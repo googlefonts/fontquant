@@ -6,4 +6,6 @@ pub enum FontquantError {
     SkrifaParse(#[from] skrifa::raw::ReadError),
     #[error("skrifa could not draw the font: {0}")]
     SkrifaDraw(#[from] skrifa::outline::DrawError),
+    #[error("skia could not simplify a glyph")]
+    SkiaError,
 }

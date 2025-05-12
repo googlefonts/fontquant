@@ -1,7 +1,12 @@
 use std::collections::HashMap;
 
-use skrifa::{FontRef, GlyphId, MetadataProvider};
+use skrifa::{setting::VariationSetting, FontRef, GlyphId, MetadataProvider};
 use unicode_script::UnicodeScript;
+
+use crate::{
+    bezglyph::{BezGlyph, ScalerPen},
+    error::FontquantError,
+};
 
 pub(crate) trait PrimaryScript {
     fn primary_script(&self) -> String;
@@ -39,6 +44,57 @@ impl PrimaryScript for FontRef<'_> {
                     .any(|s| s.short_name() == primary_script)
                     .then_some(gid)
             })
+    }
+}
+
+pub(crate) trait MakeBezGlyphs {
+    fn bezglyph_for_char(
+        &self,
+        location: &[VariationSetting],
+        scale: Option<f32>,
+        c: char,
+    ) -> Result<Option<BezGlyph>, FontquantError>;
+    fn bezglyph_for_gid(
+        &self,
+        location: &[VariationSetting],
+        scale: Option<f32>,
+        gid: GlyphId,
+    ) -> Result<Option<BezGlyph>, FontquantError>;
+}
+impl MakeBezGlyphs for FontRef<'_> {
+    fn bezglyph_for_char(
+        &self,
+        location: &[VariationSetting],
+        scale: Option<f32>,
+        c: char,
+    ) -> Result<Option<BezGlyph>, FontquantError> {
+        let Some(glyph_id) = self.charmap().map(c as u32) else {
+            return Ok(None);
+        };
+        self.bezglyph_for_gid(location, scale, glyph_id)
+    }
+    fn bezglyph_for_gid(
+        &self,
+        location: &[VariationSetting],
+        scale: Option<f32>,
+        glyph_id: GlyphId,
+    ) -> Result<Option<BezGlyph>, FontquantError> {
+        let collection = self.outline_glyphs();
+        let loc = self.axes().location(location);
+
+        let settings =
+            skrifa::outline::DrawSettings::unhinted(skrifa::prelude::Size::unscaled(), &loc);
+        let outlined = collection.get(glyph_id).ok_or(FontquantError::SkrifaDraw(
+            skrifa::outline::DrawError::GlyphNotFound(glyph_id),
+        ))?;
+        let mut bezglyph = BezGlyph::default();
+        if let Some(scale) = scale {
+            let mut scaled_bezglyph = ScalerPen::new(&mut bezglyph, scale);
+            outlined.draw(settings, &mut scaled_bezglyph)?;
+        } else {
+            outlined.draw(settings, &mut bezglyph)?;
+        }
+        Ok(Some(bezglyph))
     }
 }
 

@@ -1,13 +1,27 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
+use quantifiers::ALL_QUANTIFIERS;
+
 use crate::error::FontquantError;
 use std::collections::HashMap;
 
 mod bezglyph;
 mod error;
 mod monkeypatching;
-mod stats;
+mod quantifiers;
 
-#[derive(Debug, Clone)]
+#[macro_export]
+macro_rules! quantifier {
+    ($ident:ident, $name:expr, $description:expr, $example_value:expr) => {
+        static $ident: std::sync::LazyLock<$crate::MetricKey> =
+            std::sync::LazyLock::new(|| $crate::MetricKey {
+                name: $name.to_string(),
+                description: $description.to_string(),
+                example_value: $example_value,
+            });
+    };
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum MetricValue {
     Metric(f64),
     Percentage(f64),
@@ -58,10 +72,7 @@ pub fn run(
 ) -> Result<Results, FontquantError> {
     let mut results = Results::new();
     #[allow(clippy::single_element_loop)]
-    for metric in [
-        stats::WholeFontStatistics::gather_from_font,
-        // Add more metrics here
-    ] {
+    for metric in ALL_QUANTIFIERS.iter() {
         metric(font, location, &mut results)?;
     }
     Ok(results)
