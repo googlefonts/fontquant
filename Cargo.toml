@@ -1,9 +1,8 @@
-[package]
-name = "fontquant"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+resolver = "3"
+members = ["fontquant-lib", "fontquant-cli"]
 
-[dependencies]
+[workspace.dependencies]
 clap = { version = "4.5.35", features = ["derive"] }
 greencurves = "0.2.1"
 itertools = "0.14.0"
