@@ -25,88 +25,14 @@ impl BezGlyph {
     }
 
     pub fn remove_overlaps(&self) -> Result<BezGlyph, FontquantError> {
-        // Yes, this is a horrible piece of code. But it should hopefully go away soon
-        // when kurbo gets native path operations support.
-        use skia_safe::{simplify, Path};
-        let mut path = Path::default();
-        for bezpez in self.iter() {
-            for pathel in bezpez.iter() {
-                match pathel {
-                    kurbo::PathEl::MoveTo(point) => path.move_to((point.x as i32, point.y as i32)),
-                    kurbo::PathEl::LineTo(point) => path.line_to((point.x as i32, point.y as i32)),
-                    kurbo::PathEl::QuadTo(point, point1) => path.quad_to(
-                        (point.x as i32, point.y as i32),
-                        (point1.x as i32, point1.y as i32),
-                    ),
-                    kurbo::PathEl::CurveTo(point, point1, point2) => path.cubic_to(
-                        (point.x as i32, point.y as i32),
-                        (point1.x as i32, point1.y as i32),
-                        (point2.x as i32, point2.y as i32),
-                    ),
-                    kurbo::PathEl::ClosePath => path.close(),
-                };
-            }
-        }
+        use skia_safe::simplify;
+        let path = bezpaths_to_skpath(self.iter());
         let newpath = simplify(&path).ok_or(FontquantError::SkiaError)?;
-        let points_count = newpath.count_points();
-        let mut points = vec![skia_safe::Point::default(); points_count];
-        let _count_returned = newpath.get_points(&mut points);
+        Ok(skpath_to_bezglyph(newpath))
+    }
 
-        let verb_count = newpath.count_verbs();
-        let mut verbs = vec![0_u8; verb_count];
-        let _count_returned_verbs = newpath.get_verbs(&mut verbs);
-        let mut newglyph = BezGlyph::default();
-        let mut cur_pt = 0;
-        for verb in verbs {
-            let verb: skia_safe::PathVerb = unsafe { std::mem::transmute(verb as u32) };
-            match verb {
-                skia_safe::PathVerb::Move => {
-                    <BezGlyph as skrifa::outline::OutlinePen>::move_to(
-                        &mut newglyph,
-                        points[cur_pt].x,
-                        points[cur_pt].y,
-                    );
-                    cur_pt += 1;
-                }
-                skia_safe::PathVerb::Line => {
-                    <BezGlyph as skrifa::outline::OutlinePen>::line_to(
-                        &mut newglyph,
-                        points[cur_pt].x,
-                        points[cur_pt].y,
-                    );
-                    cur_pt += 1;
-                }
-                skia_safe::PathVerb::Quad => {
-                    <BezGlyph as skrifa::outline::OutlinePen>::quad_to(
-                        &mut newglyph,
-                        points[cur_pt].x,
-                        points[cur_pt].y,
-                        points[cur_pt + 1].x,
-                        points[cur_pt + 1].y,
-                    );
-                    cur_pt += 2;
-                }
-                skia_safe::PathVerb::Conic => {
-                    panic!("You got a conic curve into a TrueType font, clever you.")
-                }
-                skia_safe::PathVerb::Cubic => {
-                    <BezGlyph as skrifa::outline::OutlinePen>::curve_to(
-                        &mut newglyph,
-                        points[cur_pt].x,
-                        points[cur_pt].y,
-                        points[cur_pt + 1].x,
-                        points[cur_pt + 1].y,
-                        points[cur_pt + 2].x,
-                        points[cur_pt + 2].y,
-                    );
-                    cur_pt += 3;
-                }
-                skia_safe::PathVerb::Close => {
-                    <BezGlyph as skrifa::outline::OutlinePen>::close(&mut newglyph);
-                }
-            }
-        }
-        Ok(newglyph)
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 }
 
@@ -175,4 +101,92 @@ impl skrifa::outline::OutlinePen for ScalerPen<'_> {
     fn close(&mut self) {
         self.pen.close();
     }
+}
+
+// Yes, this is a horrible piece of code. But it should hopefully go away soon
+// when kurbo gets native path operations support.
+
+pub(crate) fn bezpaths_to_skpath<'a, I: IntoIterator<Item = &'a BezPath>>(
+    bezpaths: I,
+) -> skia_safe::Path {
+    let mut path = skia_safe::Path::default();
+    for pathel in bezpaths.into_iter().flatten() {
+        match pathel {
+            kurbo::PathEl::MoveTo(point) => path.move_to((point.x as i32, point.y as i32)),
+            kurbo::PathEl::LineTo(point) => path.line_to((point.x as i32, point.y as i32)),
+            kurbo::PathEl::QuadTo(point, point1) => path.quad_to(
+                (point.x as i32, point.y as i32),
+                (point1.x as i32, point1.y as i32),
+            ),
+            kurbo::PathEl::CurveTo(point, point1, point2) => path.cubic_to(
+                (point.x as i32, point.y as i32),
+                (point1.x as i32, point1.y as i32),
+                (point2.x as i32, point2.y as i32),
+            ),
+            kurbo::PathEl::ClosePath => path.close(),
+        };
+    }
+    path
+}
+
+pub(crate) fn skpath_to_bezglyph(path: skia_safe::Path) -> BezGlyph {
+    let points_count = path.count_points();
+    let mut points = vec![skia_safe::Point::default(); points_count];
+    let _count_returned = path.get_points(&mut points);
+
+    let verb_count = path.count_verbs();
+    let mut verbs = vec![0_u8; verb_count];
+    let _count_returned_verbs = path.get_verbs(&mut verbs);
+    let mut newglyph = BezGlyph::default();
+    let mut cur_pt = 0;
+    for verb in verbs {
+        let verb: skia_safe::PathVerb = unsafe { std::mem::transmute(verb as u32) };
+        match verb {
+            skia_safe::PathVerb::Move => {
+                <BezGlyph as skrifa::outline::OutlinePen>::move_to(
+                    &mut newglyph,
+                    points[cur_pt].x,
+                    points[cur_pt].y,
+                );
+                cur_pt += 1;
+            }
+            skia_safe::PathVerb::Line => {
+                <BezGlyph as skrifa::outline::OutlinePen>::line_to(
+                    &mut newglyph,
+                    points[cur_pt].x,
+                    points[cur_pt].y,
+                );
+                cur_pt += 1;
+            }
+            skia_safe::PathVerb::Quad => {
+                <BezGlyph as skrifa::outline::OutlinePen>::quad_to(
+                    &mut newglyph,
+                    points[cur_pt].x,
+                    points[cur_pt].y,
+                    points[cur_pt + 1].x,
+                    points[cur_pt + 1].y,
+                );
+                cur_pt += 2;
+            }
+            skia_safe::PathVerb::Conic => {
+                panic!("You got a conic curve into a TrueType font, clever you.")
+            }
+            skia_safe::PathVerb::Cubic => {
+                <BezGlyph as skrifa::outline::OutlinePen>::curve_to(
+                    &mut newglyph,
+                    points[cur_pt].x,
+                    points[cur_pt].y,
+                    points[cur_pt + 1].x,
+                    points[cur_pt + 1].y,
+                    points[cur_pt + 2].x,
+                    points[cur_pt + 2].y,
+                );
+                cur_pt += 3;
+            }
+            skia_safe::PathVerb::Close => {
+                <BezGlyph as skrifa::outline::OutlinePen>::close(&mut newglyph);
+            }
+        }
+    }
+    newglyph
 }

@@ -1,7 +1,11 @@
 use itertools::{process_results, Itertools};
 use kurbo::{flatten, BezPath, PathEl, PathSeg, Shape};
 
-use crate::{bezglyph::BezGlyph, monkeypatching::MakeBezGlyphs, quantifier, MetricValue};
+use crate::{
+    bezglyph::{bezpaths_to_skpath, skpath_to_bezglyph, BezGlyph},
+    monkeypatching::MakeBezGlyphs,
+    quantifier, MetricValue,
+};
 
 pub fn is_stencil_font(
     font: &skrifa::FontRef,
@@ -35,7 +39,14 @@ fn is_stencil_glyph(glyph: &BezGlyph) -> Result<bool, crate::FontquantError> {
                 if path1 == path2 {
                     continue;
                 }
-                if bezpath_intersects(path1, path2) {
+                // Check if there is no boolean intersection between the two paths
+                // (i.e. not just that the paths don't cross, but that there is no intersection area)
+                let p1_skia = bezpaths_to_skpath(&[path1.clone()]);
+                let p2_skia = bezpaths_to_skpath(&[path2.clone()]);
+                let intersection = skia_safe::op(&p1_skia, &p2_skia, skia_safe::PathOp::Intersect)
+                    .unwrap_or_default();
+                let bg: BezGlyph = skpath_to_bezglyph(intersection);
+                if !bg.is_empty() {
                     return Ok(false);
                 }
             }
