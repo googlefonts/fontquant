@@ -1,4 +1,5 @@
 use crate::MetricGatherer;
+use fontations::skrifa;
 
 pub mod appearance;
 

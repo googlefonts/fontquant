@@ -1,8 +1,9 @@
 use crate::error::FontquantError;
 use crate::{monkeypatching::MakeBezGlyphs, monkeypatching::PrimaryScript, quantifier};
 use crate::{MetricGatherer, MetricValue};
+use fontations::skrifa;
+use fontations::skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
 use greencurves::{ComputeGreenStatistics, CurveStatistics, GreenStatistics};
-use skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
 pub struct WholeFontStatistics {
     pub weight: f64,
     #[allow(dead_code)]

@@ -2,6 +2,7 @@
 use quantifiers::ALL_QUANTIFIERS;
 
 use crate::error::FontquantError;
+use fontations::skrifa;
 use std::collections::HashMap;
 
 mod bezglyph;

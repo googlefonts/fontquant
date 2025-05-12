@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use skrifa::{setting::VariationSetting, FontRef, GlyphId, MetadataProvider};
+use fontations::skrifa;
+use fontations::skrifa::{setting::VariationSetting, FontRef, GlyphId, MetadataProvider};
 use unicode_script::UnicodeScript;
 
 use crate::{

@@ -1,3 +1,4 @@
+use fontations::skrifa;
 use kurbo::BezPath;
 
 use crate::error::FontquantError;
