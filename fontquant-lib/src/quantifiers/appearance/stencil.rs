@@ -57,34 +57,6 @@ fn is_stencil_glyph(glyph: &BezGlyph) -> Result<bool, crate::FontquantError> {
     Ok(false)
 }
 
-fn bezpath_intersects(b1: &BezPath, b2: &BezPath) -> bool {
-    if b1.bounding_box().intersect(b2.bounding_box()).area() < f64::EPSILON {
-        return false;
-    }
-    let mut pts1 = vec![];
-    let mut pts2 = vec![];
-    flatten(b1, 0.1, |el| match el {
-        PathEl::MoveTo(a) => pts1.push(a),
-        PathEl::LineTo(a) => pts1.push(a),
-        _ => {}
-    });
-    flatten(b2, 0.1, |el| match el {
-        PathEl::MoveTo(a) => pts2.push(a),
-        PathEl::LineTo(a) => pts2.push(a),
-        _ => {}
-    });
-    for (&la1, &la2) in pts1.iter().circular_tuple_windows() {
-        for (&lb1, &lb2) in pts2.iter().circular_tuple_windows() {
-            let seg1 = PathSeg::Line(kurbo::Line::new(la1, la2));
-            let seg2 = kurbo::Line::new(lb1, lb2);
-            if !seg1.intersect_line(seg2).is_empty() {
-                return true;
-            }
-        }
-    }
-    false
-}
-
 #[cfg(test)]
 mod tests {
     use skrifa::FontRef;
@@ -97,7 +69,7 @@ mod tests {
         let mut results = crate::Results::new();
         is_stencil_font(
             &FontRef::new(include_bytes!(
-                "../../../tests/fonts/AllertaStencil-Regular.ttf"
+                "../../../../tests/fonts/AllertaStencil-Regular.ttf"
             ))
             .unwrap(),
             &[],
