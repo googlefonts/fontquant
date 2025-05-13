@@ -115,13 +115,14 @@ pub fn get_parametric(
 
     for caster in casters() {
         if let Some(glyph) = font.bezglyph_for_char(location, None, caster.glyph)? {
+            let glyph = glyph.remove_overlaps()?;
             let mut raycaster = Raycaster::new(&glyph, caster.start, caster.direction);
             (caster.specializer)(&mut raycaster);
             let xopq = raycaster.median_pair_distance(true).round();
             // Upem scale
             results.add_metric(
                 caster.metric,
-                MetricValue::PerMille((xopq / 1000.0 * upem as f64).round()),
+                MetricValue::PerMille((xopq / upem as f64 * 1000.0).round()),
             );
         }
     }
@@ -221,6 +222,8 @@ mod tests {
                 .bezglyph_for_char(&[], None, builder.glyph)
                 .expect("Failed to get glyph")
                 .expect("Glyph not found");
+            let glyph = glyph.remove_overlaps().expect("Failed to remove overlaps");
+
             let mut raycaster = Raycaster::new(&glyph, builder.start, builder.direction);
             (builder.specializer)(&mut raycaster);
             let data = raycaster.draw();
@@ -231,7 +234,7 @@ mod tests {
             assert_eq!(
                 found, *expected,
                 "{} should be {}, we found {}",
-                builder.metric.name, found, expected
+                builder.metric.name, expected, found
             );
         }
     }
