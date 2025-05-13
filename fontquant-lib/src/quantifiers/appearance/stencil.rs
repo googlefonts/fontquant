@@ -1,6 +1,6 @@
 use fontations::skrifa;
-use itertools::{process_results, Itertools};
-use kurbo::{flatten, BezPath, PathEl, PathSeg, Shape};
+use itertools::process_results;
+use kurbo::Shape;
 
 use crate::{
     bezglyph::{bezpaths_to_skpath, skpath_to_bezglyph, BezGlyph},
