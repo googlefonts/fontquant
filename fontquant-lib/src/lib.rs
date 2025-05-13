@@ -7,6 +7,7 @@ use std::collections::HashMap;
 
 mod bezglyph;
 mod error;
+mod helpers;
 mod monkeypatching;
 mod quantifiers;
 
