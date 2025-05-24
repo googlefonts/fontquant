@@ -91,6 +91,7 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     #     path.removeOverlap()
 
     # Prepare matplotlib
+    print("show?", show)
     if show:
         import matplotlib.pyplot as plt
         import seaborn as sns
@@ -102,132 +103,207 @@ def stroke_contrast(paths, width, ascender, descender, show=False):
     # Analyze
     strokes_lst = []
 
-    # for skeleton_path in sk.paths_list():
-    if True:
-        i = 0
+    with open("/tmp/debug.svg", "w") as f:
+        bbox = paths[0].control_box()
+        for path in paths[1:]:
+            bbox = bbox.union(path.control_box())
+        margin = 0.1 * min(bbox.width(), bbox.height())
+        bbox = bbox.inflate(margin, margin)
 
-        # Sort paths by size
-        paths = sorted(paths, key=lambda x: x.bounding_box().width(), reverse=True)
-        skeleton_path = paths[0]
+        f.write('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="')
+        f.write(f"{bbox.x0} {bbox.y0} {bbox.width()} {bbox.height()}")
+        f.write('">\n')
 
-        # Scale up again
-        skeleton_path = skeleton_path.flatten(PRECISION)
-
-        for i, point in enumerate(skeleton_path):
-            if i == 0:
-                j = len(skeleton_path) - 1
+        skeleton_path = sorted(paths, key=lambda x: x.bounding_box().width(), reverse=True)[0]
+        for path in paths:
+            if path == skeleton_path:
+                color = "red"
             else:
-                j = i - 1
-            previous_point = skeleton_path[j]
+                color = "darkgray"
+            svg_cmds = path.to_svg()
+            f.write('  <path d="')
+            f.write(svg_cmds)
+            f.write('"\n    fill="none" stroke="')
+            f.write(color)
+            f.write('" stroke-width="1" />\n')
 
-            if point.x == previous_point.x and point.y == previous_point.y:
-                continue
+            flattened = path.flatten(PRECISION)
+            for pt in flattened:
+                f.write('  <circle cx="')
+                f.write(f"{pt.x:03}")
+                f.write('" cy="')
+                f.write(f"{pt.y:03}")
+                f.write('" r="2" opacity="0.5" fill="')
+                f.write(color)
+                f.write('" />\n')
+        
+        # for skeleton_path in sk.paths_list():
+        if True:
+            i = 0
 
-            # Find point halfway between node and previous node
-            halfway_point = point.midpoint(previous_point)
+            # Sort paths by size
+            paths = sorted(paths, key=lambda x: x.bounding_box().width(), reverse=True)
+            skeleton_path = paths[0]
 
-            distance = point.distance(previous_point)
 
-            if show:
-                draw_point(plt, halfway_point, ax3)
+            print(type(skeleton_path))
+            print(skeleton_path, len(skeleton_path.elements()), bbox)
 
-            # Rotate node 90° and variate angle to find the shortest distance at halfway_point
-            angles_lst = []
+            # Scale up again
+            skeleton_path = skeleton_path.flatten(PRECISION)
 
-            for angle in range(-30, 31, 3):
+            print("flattened length", len(skeleton_path))
 
-                outside_point = Point(*rotate((point.x, point.y), (halfway_point.x, halfway_point.y), 90 + angle))
-                distance = outside_point.distance(halfway_point)
+            for i, point in enumerate(skeleton_path):
+                if i == 0:
+                    j = len(skeleton_path) - 1
+                else:
+                    j = i - 1
+                previous_point = skeleton_path[j]
 
-                if distance:
-                    # Create line with endpoints far outside glyph
-                    # TODO: Find better way to calculate the 5000 distance, based on font's UPM
-                    far_outside_point_1 = interpolate_point(halfway_point, outside_point, 5000 / distance)
-                    far_outside_point_2 = interpolate_point(halfway_point, outside_point, -1 * (5000 / distance))
-                    measurement_line = Line(far_outside_point_1, far_outside_point_2)
-                    intersections_list = intersections(paths, measurement_line)
+                if point.x == previous_point.x and point.y == previous_point.y:
+                    continue
 
-                    # Found 2 or more intersections
-                    if intersections_list:
-                        # Sort points by distance to node and shorten list
-                        if len(intersections_list) > 2:
-                            intersections_list.sort(key=lambda x: x.distance(halfway_point))
-                            intersections_list = intersections_list[:2]
+                # Find point halfway between node and previous node
+                halfway_point = point.midpoint(previous_point)
 
-                        angles_lst.append(
-                            [
-                                intersections_list[0],
-                                intersections_list[1],
-                                intersections_list[0].distance(intersections_list[1]),
-                            ]
-                        )
+                distance = point.distance(previous_point)
 
-            angles = pandas.DataFrame(columns=["p1", "p2", "thickness"], data=angles_lst)
-            # Process different angles measured at halfway_point
-            remove_outliers(angles, "thickness")
-            min_angle = angles.loc[angles["thickness"].idxmin()]
+                if show:
+                    draw_point(plt, halfway_point, ax3)
 
-            # Add shortest line to strokes list
-            strokes_lst.append(
-                [
-                    halfway_point,
-                    min_angle["p1"],
-                    min_angle["p2"],
-                    min_angle["thickness"],
-                    i / len(skeleton_path),
-                ]
-            )
-            if show:
-                draw_point(plt, min_angle["p1"], ax3)
-                draw_point(plt, min_angle["p2"], ax3)
-                line(min_angle["p1"], min_angle["p2"], ax3)
+                # Rotate node 90° and variate angle to find the shortest distance at halfway_point
+                angles_lst = []
 
-    # https://www.geeksforgeeks.org/detect-and-remove-the-outliers-using-python/
-    strokes = pandas.DataFrame(columns=["center", "p1", "p2", "thickness", "position"], data=strokes_lst)
+                for angle in range(-30, 31, 3):
 
-    if show:
-        sns.boxplot(strokes["thickness"], ax=ax4)
+                    outside_point = Point(*rotate((point.x, point.y), (halfway_point.x, halfway_point.y), 90 + angle))
+                    distance = outside_point.distance(halfway_point)
 
-    remove_outliers(strokes, "thickness")
+                    if distance:
+                        # Create line with endpoints far outside glyph
+                        # TODO: Find better way to calculate the 5000 distance, based on font's UPM
+                        far_outside_point_1 = interpolate_point(halfway_point, outside_point, 5000 / distance)
+                        far_outside_point_2 = interpolate_point(halfway_point, outside_point, -1 * (5000 / distance))
+                        measurement_line = Line(far_outside_point_1, far_outside_point_2)
+                        intersections_list = intersections(paths, measurement_line)
 
-    if show:
-        sns.boxplot(strokes["thickness"], ax=ax5)
+                        # if i % 8 == 0:
+                        #     f.write('  <line x1="')
+                        #     f.write(f"{far_outside_point_1.x:03}")
+                        #     f.write('" y1="')
+                        #     f.write(f"{far_outside_point_1.y:03}")
+                        #     f.write('" x2="')
+                        #     f.write(f"{far_outside_point_2.x:03}")
+                        #     f.write('" y2="')
+                        #     f.write(f"{far_outside_point_2.y:03}")
+                        #     f.write('" stroke="blue" stroke-width="0.1" />\n')
 
-    # max
-    max_row = strokes.loc[strokes["thickness"].idxmax()]
-    min_row = strokes.loc[strokes["thickness"].idxmin()]
+                        # Found 2 or more intersections
+                        if intersections_list:
+                            # Sort points by distance to node and shorten list
+                            if len(intersections_list) > 2:
+                                intersections_list.sort(key=lambda x: x.distance(halfway_point))
+                                intersections_list = intersections_list[:2]
 
-    # find other minimum
-    strokes.sort_values(by=["thickness"], inplace=True)
-    other_min = None
-    for ind in strokes.index:
-        # TODO:
-        # The 0.75/0.25 approach is a crutch. Make sure this point can be found going around the path's origin
-        # like an unsigned integer
-        if 0.75 > abs(strokes["position"][ind] - min_row["position"]) > 0.25:
-            other_min = strokes.loc[ind]
-            break
+                            angles_lst.append(
+                                [
+                                    intersections_list[0],
+                                    intersections_list[1],
+                                    intersections_list[0].distance(intersections_list[1]),
+                                ]
+                            )
 
-    if show:
-        line(max_row["p1"], max_row["p2"], ax3, color="red", width=4)
-        line(min_row["p1"], min_row["p2"], ax3, color="blue", width=4)
-        if other_min is not None:
-            line(other_min["p1"], other_min["p2"], ax3, color="blue", width=4)
+                angles = pandas.DataFrame(columns=["p1", "p2", "thickness"], data=angles_lst)
+                # Process different angles measured at halfway_point
+                remove_outliers(angles, "thickness")
+                min_angle = angles.loc[angles["thickness"].idxmin()]
 
-        ax3.set_aspect("equal")
-        ax3.set_ylim(0, height)
-        ax3.set_xlim(0, width)
+                f.write('  <line x1="')
+                f.write(f"{min_angle["p1"].x:03}")
+                f.write('" y1="')
+                f.write(f"{min_angle["p1"].y:03}")
+                f.write('" x2="')
+                f.write(f"{min_angle["p2"].x:03}")
+                f.write('" y2="')
+                f.write(f"{min_angle["p2"].y:03}")
+                f.write('" stroke="blue" stroke-width="0.2" />\n')
 
-    # Contrast angle
-    contrast_angle = None
-    if other_min is not None:
-        if other_min["center"].y > min_row["center"].y:
-            vector = Vec2(min_row["center"].x - other_min["center"].x, min_row["center"].y - other_min["center"].y)
-        else:
-            vector = Vec2(other_min["center"].x - min_row["center"].x, other_min["center"].y - min_row["center"].y)
-        contrast_angle = math.degrees(vector.atan2()) + 90
+                # Add shortest line to strokes list
+                strokes_lst.append(
+                    [
+                        halfway_point,
+                        min_angle["p1"],
+                        min_angle["p2"],
+                        min_angle["thickness"],
+                        i / len(skeleton_path),
+                    ]
+                )
+                if show:
+                    draw_point(plt, min_angle["p1"], ax3)
+                    draw_point(plt, min_angle["p2"], ax3)
+                    line(min_angle["p1"], min_angle["p2"], ax3)
+
+        # https://www.geeksforgeeks.org/detect-and-remove-the-outliers-using-python/
+        strokes = pandas.DataFrame(columns=["center", "p1", "p2", "thickness", "position"], data=strokes_lst)
+
         if show:
-            line(other_min["center"], min_row["center"], ax3, color="gray", width=2)
+            sns.boxplot(strokes["thickness"], ax=ax4)
+
+        remove_outliers(strokes, "thickness")
+
+        if show:
+            sns.boxplot(strokes["thickness"], ax=ax5)
+
+        # max
+        max_row = strokes.loc[strokes["thickness"].idxmax()]
+        min_row = strokes.loc[strokes["thickness"].idxmin()]
+
+        # find other minimum
+        strokes.sort_values(by=["thickness"], inplace=True)
+        other_min = None
+        for ind in strokes.index:
+            # TODO:
+            # The 0.75/0.25 approach is a crutch. Make sure this point can be found going around the path's origin
+            # like an unsigned integer
+            if 0.75 > abs(strokes["position"][ind] - min_row["position"]) > 0.25:
+                other_min = strokes.loc[ind]
+                break
+
+        if show:
+            line(max_row["p1"], max_row["p2"], ax3, color="red", width=4)
+            line(min_row["p1"], min_row["p2"], ax3, color="blue", width=4)
+            if other_min is not None:
+                line(other_min["p1"], other_min["p2"], ax3, color="blue", width=4)
+
+            ax3.set_aspect("equal")
+            ax3.set_ylim(0, height)
+            ax3.set_xlim(0, width)
+
+        # Contrast angle
+        contrast_angle = None
+        if other_min is not None:
+            if other_min["center"].y > min_row["center"].y:
+                vector = Vec2(min_row["center"].x - other_min["center"].x, min_row["center"].y - other_min["center"].y)
+            else:
+                vector = Vec2(other_min["center"].x - min_row["center"].x, other_min["center"].y - min_row["center"].y)
+            contrast_angle = math.degrees(vector.atan2()) + 90
+            if show:
+                line(other_min["center"], min_row["center"], ax3, color="gray", width=2)
+
+            f.write('  <line x1="')
+            f.write(f"{other_min["center"].x:03}")
+            f.write('" y1="')
+            f.write(f"{other_min["center"].y:03}")
+            f.write('" x2="')
+            f.write(f"{min_row["center"].x:03}")
+            f.write('" y2="')
+            f.write(f"{min_row["center"].y:03}")
+            f.write('" stroke="purple" stroke-width="0.5" />\n')
+        else:
+            print("No contrast_angle")
+
+        f.write("</svg>\n")
 
     if show:
         plt.show()
