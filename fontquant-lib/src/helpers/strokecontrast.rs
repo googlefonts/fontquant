@@ -6,9 +6,11 @@ use super::remove_outliers;
 
 const TOLERANCE: f64 = 0.1;
 
+type ShowStrokesList<'a> = Box<dyn Fn(&[Stroke]) + 'a>;
+type ShowMinSecondMax<'a> = Box<dyn Fn(&Stroke, Option<&Stroke>, &Stroke) + 'a>;
 struct DebuggingHook<'a> {
-    show_strokes_list: Box<dyn Fn(&Vec<Stroke>) + 'a>,
-    show_min_second_max: Box<dyn Fn(&Stroke, Option<&Stroke>, &Stroke) + 'a>,
+    show_strokes_list: ShowStrokesList<'a>,
+    show_min_second_max: ShowMinSecondMax<'a>,
 }
 
 #[allow(dead_code)]
