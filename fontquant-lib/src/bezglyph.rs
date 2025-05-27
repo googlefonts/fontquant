@@ -1,5 +1,5 @@
 use fontations::skrifa;
-use kurbo::BezPath;
+use kurbo::{BezPath, Shape};
 
 use crate::error::FontquantError;
 
@@ -7,6 +7,13 @@ use crate::error::FontquantError;
 pub struct BezGlyph(pub(crate) Vec<BezPath>);
 
 impl BezGlyph {
+    pub fn bbox(&self) -> Option<kurbo::Rect> {
+        self.0
+            .iter()
+            .map(|path| path.bounding_box())
+            .reduce(|acc, bbox| acc.union(bbox))
+    }
+
     #[allow(clippy::should_implement_trait)]
     pub fn next(&mut self) -> &mut BezPath {
         self.0.push(BezPath::new());

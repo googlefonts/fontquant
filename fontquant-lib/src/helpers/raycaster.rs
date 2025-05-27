@@ -107,9 +107,9 @@ impl<'a> Raycaster<'a> {
         let samples = 12;
         let _intersections = vec![];
         let _pairs = vec![];
-        let bbox = paths
-            .iter()
-            .fold(Rect::ZERO, |acc, path| acc.union(path.bounding_box()))
+        let bbox = glyph
+            .bbox()
+            .unwrap_or_default()
             .inset(Insets::uniform(10.0));
         let (direction, endpoint) = match direction {
             Direction::Angle(angle) => {
