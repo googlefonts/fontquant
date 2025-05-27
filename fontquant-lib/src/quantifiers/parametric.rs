@@ -131,60 +131,60 @@ pub fn get_parametric(
 
 quantifier!(
     XOPQ,
-    "XOPQ",
+    "parametric/XOPQ",
     "The font's X Opaque parametric value",
     MetricValue::PerMille(120.0)
 );
 
 quantifier!(
     XOLC,
-    "XOLC",
+    "parametric/XOLC",
     "The font's X Opaque lowercase parametric value",
     MetricValue::PerMille(120.0)
 );
 
 quantifier!(
     XOFI,
-    "XOFI",
+    "parametric/XOFI",
     "The font's X Opaque figures parametric value",
     MetricValue::PerMille(120.0)
 );
 
 quantifier!(
     XTRA,
-    "XTRA",
+    "parametric/XTRA",
     "The font's X Transparent parametric value",
     MetricValue::PerMille(120.0)
 );
 
 quantifier!(
     XTLC,
-    "XTLC",
+    "parametric/XTLC",
     "The font's X Transparent lowercase parametric value",
     MetricValue::PerMille(120.0)
 );
 
 quantifier!(
     XTFI,
-    "XTFI",
+    "parametric/XTFI",
     "The font's X Transparent figures parametric value",
     MetricValue::PerMille(120.0)
 );
 quantifier!(
     YOPQ,
-    "YOPQ",
+    "parametric/YOPQ",
     "The font's Y Opaque parametric value",
     MetricValue::PerMille(120.0)
 );
 quantifier!(
     YOLC,
-    "YOLC",
+    "parametric/YOLC",
     "The font's Y Opaque lowercase parametric value",
     MetricValue::PerMille(120.0)
 );
 quantifier!(
     YOFI,
-    "YOFI",
+    "parametric/YOFI",
     "The font's Y Opaque lowercase figure value",
     MetricValue::PerMille(120.0)
 );
