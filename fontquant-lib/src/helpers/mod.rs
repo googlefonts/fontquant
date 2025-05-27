@@ -26,9 +26,11 @@ where
     list.retain(|_| keep.next().unwrap());
 }
 
+#[allow(dead_code)] // Used in tests
 fn k2s(pt: kurbo::Point) -> skia_safe::Point {
     skia_safe::Point::new(pt.x as f32, pt.y as f32)
 }
+#[allow(dead_code)] // Used in tests
 fn s2k(pt: skia_safe::Point) -> kurbo::Point {
     kurbo::Point::new(pt.x as f64, pt.y as f64)
 }

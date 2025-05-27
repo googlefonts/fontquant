@@ -11,6 +11,7 @@ struct DebuggingHook<'a> {
     show_min_second_max: Box<dyn Fn(&Stroke, Option<&Stroke>, &Stroke) + 'a>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 struct Stroke {
     half_way: Point,
@@ -38,11 +39,11 @@ fn all_intersections(paths: &[&BezPath], line: &Line) -> Vec<Point> {
     intersections
 }
 
-pub fn stroke_contrast_yanone(glyph: &BezGlyph) -> Option<(f32, Option<f32>)> {
-    _stroke_contrast_yanone(glyph, None)
+pub fn stroke_contrast_antiqua(glyph: &BezGlyph) -> Option<(f32, Option<f32>)> {
+    _stroke_contrast_antiqua(glyph, None)
 }
 
-fn _stroke_contrast_yanone(
+fn _stroke_contrast_antiqua(
     glyph: &BezGlyph,
     hook: Option<&DebuggingHook>,
 ) -> Option<(f32, Option<f32>)> {
@@ -125,13 +126,11 @@ fn _stroke_contrast_yanone(
     let max_index = indices[indices.len() - 1];
     // Find the "second minimum": distance should be similar but index must be far away
     let mut second_min_index = None;
-    let mut second_min_distance = strokes_list[min_index].distance;
     for index in indices.into_iter().skip(1) {
         if (index as isize - min_index as isize) % (strokes_list.len() as isize)
             > (strokes_list.len() / 4) as isize
         {
             second_min_index = Some(index);
-            second_min_distance = strokes_list[index].distance;
             break;
         }
     }
@@ -161,10 +160,7 @@ mod tests {
     use kurbo::{BezPath, Insets, SvgParseError};
     use skia_safe::{EncodedImageFormat, PaintStyle};
 
-    use crate::{
-        bezglyph::bezpaths_to_skpath,
-        helpers::{k2s, s2k},
-    };
+    use crate::{bezglyph::bezpaths_to_skpath, helpers::k2s};
 
     use super::*;
 
@@ -245,7 +241,7 @@ mod tests {
             })),
         };
 
-        let (contrast, angle) = _stroke_contrast_yanone(&glyph, Some(&debughooks)).unwrap();
+        let (contrast, angle) = _stroke_contrast_antiqua(&glyph, Some(&debughooks)).unwrap();
 
         std::mem::forget(debughooks);
 
