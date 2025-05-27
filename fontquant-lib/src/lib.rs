@@ -3,7 +3,7 @@ use quantifiers::ALL_QUANTIFIERS;
 
 use crate::error::FontquantError;
 use fontations::skrifa;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 mod bezglyph;
 mod error;
@@ -42,7 +42,7 @@ pub struct MetricKey {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct Results(HashMap<String, (&'static MetricKey, MetricValue)>);
+pub struct Results(BTreeMap<String, (&'static MetricKey, MetricValue)>);
 impl Results {
     pub fn new() -> Self {
         Default::default()
