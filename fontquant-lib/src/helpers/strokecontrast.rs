@@ -1,8 +1,16 @@
-use crate::bezglyph::BezGlyph;
-use itertools::Itertools;
-use kurbo::{flatten, Affine, BezPath, Line, ParamCurve, Point, Shape};
+use std::io::Write;
 
-use super::remove_outliers;
+use crate::{
+    bezglyph::BezGlyph,
+    helpers::{
+        all_intersections,
+        raycaster::{self, Raycaster},
+        remove_outliers,
+    },
+};
+use itertools::Itertools;
+use kurbo::{flatten, Affine, BezPath, Line, Point, Shape};
+use statistical::median;
 
 const TOLERANCE: f64 = 0.1;
 
@@ -21,24 +29,6 @@ struct Stroke {
     p2: Point,
     distance: f32,
     position: usize,
-}
-
-fn all_intersections(paths: &[&BezPath], line: &Line) -> Vec<Point> {
-    let mut intersections = vec![];
-    for path in paths {
-        for sect in path.segments() {
-            intersections.extend(
-                sect.intersect_line(*line)
-                    .iter()
-                    .map(|intersection| line.eval(intersection.line_t)),
-            )
-        }
-    }
-    // Uniquify intersections
-    intersections.sort_by(|a, b| a.x.total_cmp(&b.x).then(a.y.total_cmp(&b.y)));
-    intersections.dedup();
-
-    intersections
 }
 
 pub fn stroke_contrast_antiqua(glyph: &BezGlyph) -> Option<(f32, Option<f32>)> {
@@ -154,11 +144,57 @@ fn _stroke_contrast_antiqua(
     Some((contrast, angle))
 }
 
+#[allow(clippy::unwrap_used)]
+pub fn stroke_contrast_raycaster(
+    raycaster_north: &mut Raycaster,
+    raycaster_east: &mut Raycaster,
+) -> Option<f32> {
+    raycaster_north.winding(raycaster::Winding::Ink);
+    raycaster_east.winding(raycaster::Winding::Ink);
+
+    if log::log_enabled!(log::Level::Trace) {
+        let data = raycaster_north.draw();
+        let mut file = std::fs::File::create("rc-north.png").unwrap();
+        file.write_all(data.as_bytes()).unwrap();
+    }
+
+    let mut distances = raycaster_north.distances();
+    // If any pairs have the same X coords as any others, keep the pair with the smallest distance
+    distances.sort_by(|a, b| a.0.x.total_cmp(&b.0.x).then(a.2.total_cmp(&b.2)));
+    distances.dedup_by(|a, b| a.0.x == b.0.x && a.1.x == b.1.x);
+    let mut distances = distances
+        .iter()
+        .map(|(_, _, d)| *d as f32)
+        .collect::<Vec<_>>();
+    remove_outliers(&mut distances, |d| *d as f64);
+    log::trace!("North distances (before outlier removal): {:?}", distances);
+    log::trace!("North distances: {:?}", distances);
+    let horizontal_thickness = median(&distances) as f64;
+    log::trace!("Horizontal thickness: {:?}", horizontal_thickness);
+
+    if log::log_enabled!(log::Level::Trace) {
+        let data = raycaster_east.draw();
+        let mut file = std::fs::File::create("rc-east.png").unwrap();
+        file.write_all(data.as_bytes()).unwrap();
+    }
+
+    let vertical_thickness = raycaster_east.median_pair_distance(true);
+
+    if horizontal_thickness == 0.0 {
+        return None;
+    }
+    let contrast = vertical_thickness / horizontal_thickness;
+    log::trace!("Vertical thickness: {:?}", vertical_thickness);
+    log::trace!("Contrast: {:?}", contrast);
+    Some(contrast as f32)
+}
+
 #[cfg(test)]
 mod tests {
     #![allow(clippy::expect_used, clippy::unwrap_used)]
     use std::io::Write;
 
+    use crate::helpers::raycaster::{ProportionalPoint, EAST, NORTH};
     use kurbo::{BezPath, Insets, SvgParseError};
     use skia_safe::{EncodedImageFormat, PaintStyle};
 
@@ -167,9 +203,14 @@ mod tests {
     use super::*;
 
     // EB Garamond O. Thickest stroke: 84 units; thinnest stroke: 27 units. (3.11x)
-    // Thickness at north: 30 units; thickness at east: 83 units. (2.77x)
+    // Thickness at north: 30 units; thickness at west: 83 units. (2.77x)
     // Roughly: broad nib at width = 85, height = 25, pen angle = 15 degrees.
     const EBGARAMOND_O: &str = "M234 -14Q178 -14 133 12Q88 38 61 83Q35 129 35 187Q35 229 51 269Q68 309 98 342Q128 375 168 394Q208 414 254 414Q312 414 358 386Q405 358 432 312Q460 267 460 213Q460 155 434 103Q409 51 359 18Q309 -14 234 -14ZM255 16Q289 16 316 29Q343 42 358 71Q370 94 374 127Q378 160 378 189Q378 237 360 281Q343 326 311 354Q280 383 237 383Q210 383 188 374Q167 366 149 343Q129 318 123 282Q117 246 117 210Q117 161 135 116Q153 72 184 44Q215 16 255 16Z";
+
+    // Lobster's O. This is a pain because it has a thin outstroke in the northeast which should be
+    // ignored for contrast calculation. Thickest stroke: 150; thinnest (real) stroke: 61 (2.46x)
+    // Thickness at north: 62; thickness at west: 146 (2.35x)
+    const LOBSTER_O: &str = "M29 34Q-14 72 -14 154Q-14 222 14 305Q42 388 104 448Q166 509 260 509Q388 509 388 349L388 348Q391 347 399 347Q432 347 475 364Q518 382 553 407L562 380Q533 349 486 327Q440 306 385 297Q377 206 344 138Q311 70 259 33Q207 -4 146 -4Q72 -4 29 34ZM234 113Q258 141 276 188Q294 236 302 294Q275 300 275 336Q275 377 306 390Q304 423 296 435Q288 448 268 448Q235 448 204 400Q173 352 154 285Q135 218 135 167Q135 119 146 102Q157 86 186 86Q210 86 234 113Z";
 
     fn svg_to_bezglyph(svg: &str) -> Result<BezGlyph, SvgParseError> {
         // Split at Zs
@@ -189,7 +230,7 @@ mod tests {
 
     #[test]
     fn test_contrast() {
-        let glyph = svg_to_bezglyph(EBGARAMOND_O).unwrap();
+        let glyph = svg_to_bezglyph(LOBSTER_O).unwrap();
         let bbox = glyph.bbox().unwrap().inset(Insets::uniform(20.0));
         let mut surface =
             skia_safe::surfaces::raster_n32_premul((bbox.width() as i32, bbox.height() as i32))
@@ -254,6 +295,13 @@ mod tests {
             .unwrap();
         let mut file = std::fs::File::create("test.png").unwrap();
         file.write_all(&data).expect("write to file");
+
+        let mut raycaster_north = Raycaster::new(&glyph, ProportionalPoint::new(0.5, 0.0), NORTH);
+        raycaster_north.jitter(0.2, 20);
+        let mut raycaster_east = Raycaster::new(&glyph, ProportionalPoint::new(0.0, 0.5), EAST);
+        raycaster_east.jitter(0.2, 50);
+        let contrast =
+            stroke_contrast_raycaster(&mut raycaster_north, &mut raycaster_east).unwrap();
 
         assert!(contrast > 2.0);
         assert!(contrast < 3.5);

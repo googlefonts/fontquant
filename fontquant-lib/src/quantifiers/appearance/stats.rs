@@ -1,6 +1,8 @@
-use crate::error::FontquantError;
-use crate::{monkeypatching::MakeBezGlyphs, monkeypatching::PrimaryScript, quantifier};
-use crate::{MetricGatherer, MetricValue};
+use crate::{
+    error::FontquantError,
+    monkeypatching::{MakeBezGlyphs, PrimaryScript},
+    quantifier, MetricValue,
+};
 use fontations::skrifa;
 use fontations::skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
 use greencurves::{ComputeGreenStatistics, CurveStatistics, GreenStatistics};
@@ -48,6 +50,18 @@ impl WholeFontStatistics {
             slant: -(slnt_sum / glyphs.len() as f64).atan().to_degrees(),
         })
     }
+
+    pub fn gather_from_font(
+        font: &skrifa::FontRef,
+        location: &[skrifa::setting::VariationSetting],
+        results: &mut crate::Results,
+    ) -> Result<(), FontquantError> {
+        let stats = WholeFontStatistics::new_from_font(font, location)?;
+        results.add_metric(&WEIGHT, MetricValue::Metric(stats.weight));
+        results.add_metric(&WIDTH, MetricValue::Metric(stats.width));
+        results.add_metric(&SLANT, MetricValue::Angle(stats.slant));
+        Ok(())
+    }
 }
 
 quantifier!(WEIGHT,
@@ -66,17 +80,3 @@ quantifier!(SLANT, "slant",
     "Measures the slant angle of encoded characters of the font in degrees and returns the average of all glyphs measured. Right-leaning shapes have negative numbers.",
     MetricValue::Angle(12.0)
 );
-
-impl MetricGatherer for WholeFontStatistics {
-    fn gather_from_font(
-        font: &skrifa::FontRef,
-        location: &[skrifa::setting::VariationSetting],
-        results: &mut crate::Results,
-    ) -> Result<(), FontquantError> {
-        let stats = WholeFontStatistics::new_from_font(font, location)?;
-        results.add_metric(&WEIGHT, MetricValue::Metric(stats.weight));
-        results.add_metric(&WIDTH, MetricValue::Metric(stats.width));
-        results.add_metric(&SLANT, MetricValue::Angle(stats.slant));
-        Ok(())
-    }
-}

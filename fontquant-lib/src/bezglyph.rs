@@ -112,7 +112,8 @@ impl skrifa::outline::OutlinePen for ScalerPen<'_> {
 }
 
 // Yes, this is a horrible piece of code. But it should hopefully go away soon
-// when kurbo gets native path operations support.
+// when kurbo gets native path operations support. However, it's also quite useful
+// for easy visualization.
 
 pub(crate) fn bezpaths_to_skpath<'a, I: IntoIterator<Item = &'a BezPath>>(
     bezpaths: I,

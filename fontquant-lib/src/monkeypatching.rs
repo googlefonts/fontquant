@@ -1,3 +1,12 @@
+//! Traits for additional things we would love to have on a FontRef
+//!
+//! This module provides:
+//!
+//! * `.primary_script` - Returns the primary script of the font.
+//! * `.glyphs_for_primary_script` - Returns an iterator over glyph IDs which
+//!     represent characters in the primary script.
+//! * `.bezglyph_for_char` - Returns a `BezGlyph` for a given character at a given location and scale.
+//! * `.bezglyph_for_gid` - Returns a `BezGlyph` for a given glyph ID at a given location and scale.
 use std::collections::HashMap;
 
 use fontations::skrifa;

@@ -1,3 +1,5 @@
+use kurbo::{BezPath, Line, ParamCurve, Point};
+
 pub mod raycaster;
 pub mod strokecontrast;
 
@@ -24,6 +26,24 @@ where
         .map(|&d| d >= lower_bound && d <= upper_bound);
     #[allow(clippy::unwrap_used)]
     list.retain(|_| keep.next().unwrap());
+}
+
+pub(crate) fn all_intersections(paths: &[&BezPath], line: &Line) -> Vec<Point> {
+    let mut intersections = vec![];
+    for path in paths {
+        for sect in path.segments() {
+            intersections.extend(
+                sect.intersect_line(*line)
+                    .iter()
+                    .map(|intersection| line.eval(intersection.line_t)),
+            )
+        }
+    }
+    // Uniquify intersections
+    intersections.sort_by(|a, b| a.x.total_cmp(&b.x).then(a.y.total_cmp(&b.y)));
+    intersections.dedup();
+
+    intersections
 }
 
 #[allow(dead_code)] // Used in tests

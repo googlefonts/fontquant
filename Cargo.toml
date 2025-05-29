@@ -11,3 +11,4 @@ skia-safe = "0.84.0"                                 # Temporary expedient until
 fontations = "0.1.0"
 thiserror = "2.0.12"
 unicode-script = "0.5.7"
+log = "0.4.27"

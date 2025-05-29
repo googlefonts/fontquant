@@ -268,7 +268,7 @@ impl<'a> Raycaster<'a> {
         }
     }
 
-    fn _distances(&mut self) -> Vec<(Point, Point, f64)> {
+    pub(crate) fn distances(&mut self) -> Vec<(Point, Point, f64)> {
         if self._pairs.is_empty() {
             self.pairs();
         }
@@ -281,10 +281,7 @@ impl<'a> Raycaster<'a> {
     }
 
     pub fn median_pair_distance(&mut self, remove_outliers: bool) -> f64 {
-        if self._pairs.is_empty() {
-            self.pairs();
-        }
-        let mut distances = self._distances();
+        let mut distances = self.distances();
         if remove_outliers {
             let new_distances = drop_outliers(distances.clone(), None);
             // Log outliers here
@@ -367,7 +364,7 @@ impl<'a> Raycaster<'a> {
             }
         }
 
-        let distances = self._distances();
+        let distances = self.distances();
         for (start, end, distance) in distances.iter() {
             let mut paint =
                 skia_safe::Paint::new(skia_safe::Color4f::new(0.0, 1.0, 0.0, 1.0), None);

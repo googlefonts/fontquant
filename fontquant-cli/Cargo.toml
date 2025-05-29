@@ -7,3 +7,4 @@ edition = "2024"
 clap = { version = "4.5.35", features = ["derive"] }
 fontquant-lib = { path = "../fontquant-lib" }
 fontations = { workspace = true }
+log = { workspace = true }
