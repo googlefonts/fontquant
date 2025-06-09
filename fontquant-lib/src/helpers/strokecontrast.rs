@@ -169,6 +169,9 @@ pub fn stroke_contrast_raycaster(
     remove_outliers(&mut distances, |d| *d as f64);
     log::trace!("North distances (before outlier removal): {:?}", distances);
     log::trace!("North distances: {:?}", distances);
+    if distances.is_empty() {
+        return None;
+    }
     let horizontal_thickness = median(&distances) as f64;
     log::trace!("Horizontal thickness: {:?}", horizontal_thickness);
 

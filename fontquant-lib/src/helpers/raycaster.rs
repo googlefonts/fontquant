@@ -53,6 +53,9 @@ fn drop_outliers(
     }
     // Otherwise, drop anything n standard deviations away from the median
     let just_distances: Vec<f64> = references.iter().map(|(_, _, d)| *d).collect();
+    if just_distances.is_empty() {
+        return vec![];
+    }
     let median_dist = statistical::median(&just_distances);
     let stdev = statistical::standard_deviation(&just_distances, Some(median_dist));
     if stdev == 0.0 {
