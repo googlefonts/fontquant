@@ -14,4 +14,5 @@ pub const ALL_QUANTIFIERS: &[QuantifierFn] = &[
     appearance::is_stencil_font,
     parametric::get_parametric,
     appearance::get_stroke_contrast,
+    appearance::metrics::gather_from_font,
 ];

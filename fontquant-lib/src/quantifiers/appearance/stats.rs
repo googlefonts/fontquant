@@ -3,7 +3,7 @@ use crate::{
     monkeypatching::{MakeBezGlyphs, PrimaryScript},
     quantifier, MetricValue,
 };
-use fontations::skrifa;
+use fontations::skrifa::{self, prelude::Size, MetadataProvider};
 use fontations::skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
 use greencurves::{ComputeGreenStatistics, CurveStatistics, GreenStatistics};
 pub struct WholeFontStatistics {
@@ -24,11 +24,14 @@ impl WholeFontStatistics {
         let mut wdth_sum = 0.0;
         let mut slnt_sum = 0.0;
         let glyphs = font.glyphs_for_primary_script().collect::<Vec<_>>();
-        let hmtx = font.hmtx()?;
-        // let names = GlyphNames::new(font);
 
         for glyph_id in glyphs.iter().copied() {
-            let glyph_width = hmtx.advance(glyph_id).unwrap_or(0) as f64;
+            let normalized = font.axes().location(location);
+
+            let glyph_width = font
+                .glyph_metrics(Size::unscaled(), &normalized)
+                .advance_width(glyph_id)
+                .unwrap_or(0.0) as f64;
             let Some(bezglyph) =
                 font.bezglyph_for_gid(location, Some(1.0 / upem as f32), glyph_id)?
             else {
@@ -60,6 +63,10 @@ impl WholeFontStatistics {
         results.add_metric(&WEIGHT, MetricValue::Metric(stats.weight));
         results.add_metric(&WIDTH, MetricValue::Metric(stats.width));
         results.add_metric(&SLANT, MetricValue::Angle(stats.slant));
+        results.add_metric(
+            &WEIGHT_PERCEPTUAL,
+            MetricValue::Metric(stats.weight_perceptual),
+        );
         Ok(())
     }
 }
@@ -68,6 +75,12 @@ quantifier!(WEIGHT,
     "weight",
     "Measures the weight of encoded characters of the font as the amount of ink per glyph as a percentage of an em square and returns the average of all glyphs measured.",
     MetricValue::Percentage(0.12)
+);
+
+quantifier!(WEIGHT_PERCEPTUAL,
+    "weight_perceptual",
+    "Measures the weight of encoded characters of the font as the amount of ink per glyph and returns the average of all glyphs measured.",
+    MetricValue::Metric(123.0)
 );
 
 quantifier!(WIDTH,

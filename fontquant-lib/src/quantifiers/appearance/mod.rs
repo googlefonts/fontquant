@@ -1,3 +1,4 @@
+pub mod metrics;
 mod stats;
 mod stencil;
 mod strokecontrast;

@@ -111,7 +111,7 @@ pub fn get_parametric(
     location: &[skrifa::setting::VariationSetting],
     results: &mut crate::Results,
 ) -> Result<(), crate::FontquantError> {
-    let upem = font.head()?.units_per_em();
+    let upem = font.head()?.units_per_em() as f64;
 
     for caster in casters() {
         if let Some(glyph) = font.bezglyph_for_char(location, None, caster.glyph)? {
@@ -122,9 +122,24 @@ pub fn get_parametric(
             // Upem scale
             results.add_metric(
                 caster.metric,
-                MetricValue::PerMille((xopq / upem as f64 * 1000.0).round()),
+                MetricValue::PerMille((xopq / upem * 1000.0).round()),
             );
         }
+    }
+
+    // YTAS is simply the top of the 'h' glyph
+    if let Some(bbox) = font
+        .bezglyph_for_char(location, None, 'h')?
+        .and_then(|bez| bez.bbox())
+    {
+        results.add_metric(&YTAS, MetricValue::PerMille(bbox.max_y() / upem * 1000.0));
+    }
+    // YTDE is simply the bottom of the 'p' glyph
+    if let Some(bbox) = font
+        .bezglyph_for_char(location, None, 'p')?
+        .and_then(|bez| bez.bbox())
+    {
+        results.add_metric(&YTDE, MetricValue::PerMille(bbox.min_y() / upem * 1000.0));
     }
     Ok(())
 }
@@ -187,6 +202,18 @@ quantifier!(
     "parametric/YOFI",
     "The font's Y Opaque lowercase figure value",
     MetricValue::PerMille(120.0)
+);
+quantifier!(
+    YTAS,
+    "parametric/YTAS",
+    "The font's Y Transparent ascender value",
+    MetricValue::PerMille(750.0)
+);
+quantifier!(
+    YTDE,
+    "parametric/YTDE",
+    "The font's Y Transparent descender value",
+    MetricValue::PerMille(-203.0)
 );
 
 #[cfg(test)]
