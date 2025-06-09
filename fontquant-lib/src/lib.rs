@@ -41,6 +41,19 @@ pub enum MetricValue {
     Integer(i32),
 }
 
+impl TryInto<f64> for MetricValue {
+    type Error = &'static str;
+
+    fn try_into(self) -> Result<f64, Self::Error> {
+        match self {
+            MetricValue::Metric(value) => Ok(value),
+            MetricValue::Percentage(value) => Ok(value),
+            MetricValue::PerMille(value) => Ok(value),
+            _ => Err("Cannot convert to f64"),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct MetricKey {
     pub name: String,
