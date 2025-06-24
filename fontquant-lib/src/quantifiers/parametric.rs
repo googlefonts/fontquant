@@ -1,9 +1,15 @@
 use std::sync::LazyLock;
 
-use fontations::{read::TableProvider, skrifa};
+use fontations::{
+    read::TableProvider,
+    skrifa::{self, prelude::Size, MetadataProvider},
+};
 
 use crate::{
-    helpers::raycaster::{Direction, ProportionalPoint, Raycaster, Winding, EAST, NORTH},
+    helpers::{
+        raycaster::{Direction, ProportionalPoint, Raycaster, Winding, EAST, NORTH},
+        remove_outliers,
+    },
     monkeypatching::MakeBezGlyphs,
     quantifier, MetricKey, MetricValue,
 };
@@ -141,6 +147,36 @@ pub fn get_parametric(
     {
         results.add_metric(&YTDE, MetricValue::PerMille(bbox.min_y() / upem * 1000.0));
     }
+
+    // XCLR is the sidebearing of the 'o' glyph
+    let normalized = font.axes().location(location);
+    let glyph_metrics = font.glyph_metrics(Size::unscaled(), &normalized);
+    if let Some(x_box) = font
+        .charmap()
+        .map('o' as u32)
+        .and_then(|gid| glyph_metrics.bounds(gid))
+    {
+        results.add_metric(
+            &XCLR,
+            MetricValue::PerMille(x_box.x_min as f64 / upem * 1000.0),
+        );
+    }
+
+    // XCLS is the sidebearing of the 'n' glyph, avoiding serifs
+    if let Some(glyph) = font.bezglyph_for_char(location, None, 'n')? {
+        let glyph = glyph.remove_overlaps()?;
+        let mut raycaster = Raycaster::new(&glyph, ProportionalPoint::new(0.0, 0.4), EAST);
+        let pairs = raycaster.pairs();
+        let mut leftsides = pairs
+            .iter()
+            .flat_map(|rays| rays.first())
+            .map(|ray| ray.0.x)
+            .collect::<Vec<_>>();
+        remove_outliers(&mut leftsides, |&f| f);
+        if let Some(&xcls) = leftsides.iter().min_by(|&a, &b| a.total_cmp(b)) {
+            results.add_metric(&XCLS, MetricValue::PerMille((xcls / upem * 1000.0).round()));
+        }
+    }
     Ok(())
 }
 
@@ -216,6 +252,20 @@ quantifier!(
     MetricValue::PerMille(-203.0)
 );
 
+quantifier!(
+    XCLR,
+    "parametric/XCLR",
+    "The font's X lowercase round sidebearing",
+    MetricValue::PerMille(17.0)
+);
+
+quantifier!(
+    XCLS,
+    "parametric/XCLS",
+    "The font's X lowercase straight sidebearing",
+    MetricValue::PerMille(17.0)
+);
+
 #[cfg(test)]
 mod tests {
     use fontations::skrifa;
@@ -251,7 +301,7 @@ mod tests {
                 .expect("Glyph not found");
             let glyph = glyph.remove_overlaps().expect("Failed to remove overlaps");
 
-            let mut raycaster = Raycaster::new(&glyph, builder.start, builder.direction);
+            let mut raycaster = Raycaster::new(&glyph, ProportionalPoint::new(0.0, 0.4), EAST);
             (builder.specializer)(&mut raycaster);
             let data = raycaster.draw();
             let mut file = std::fs::File::create(builder.metric.name.clone() + ".png").unwrap();

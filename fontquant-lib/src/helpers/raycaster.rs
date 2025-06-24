@@ -231,7 +231,7 @@ impl<'a> Raycaster<'a> {
         }
     }
 
-    fn pairs(&mut self) {
+    pub fn pairs(&mut self) -> &Vec<Vec<(Point, Point)>> {
         self._pairs.clear();
         if self._intersections.is_empty() {
             self._cast_ray();
@@ -269,6 +269,7 @@ impl<'a> Raycaster<'a> {
                     .collect(),
             );
         }
+        &self._pairs
     }
 
     pub(crate) fn distances(&mut self) -> Vec<(Point, Point, f64)> {
