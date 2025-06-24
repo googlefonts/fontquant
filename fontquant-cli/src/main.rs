@@ -9,22 +9,30 @@ use fontquant_lib::run;
 struct Cli {
     font: String,
     #[arg(short, long, default_value = "", value_parser=parse_setting)]
-    location: Vec<Setting<f32>>,
+    location: std::vec::Vec<Setting<f32>>,
 }
 
-fn parse_setting(s: &str) -> Result<Setting<f32>, String> {
-    let parts: Vec<&str> = s.splitn(2, '=').collect();
-    if parts.len() != 2 {
-        return Err(format!("Invalid setting format: {}", s));
+fn parse_setting(s: &str) -> Result<Vec<Setting<f32>>, String> {
+    if s.is_empty() {
+        return Ok(vec![]);
     }
-    let axis = parts[0].to_string();
-    let value: f32 = parts[1]
-        .parse()
-        .map_err(|_| format!("Invalid value for setting: {}", s))?;
-    Ok(Setting::new(
-        Tag::from_str(&axis).map_err(|_| format!("Invalid tag: {}", axis))?,
-        value,
-    ))
+    let settings_text = s.split(',');
+    let mut settings: Vec<Setting<f32>> = Vec::new();
+    for setting in settings_text {
+        let parts: Vec<&str> = setting.splitn(2, '=').collect();
+        if parts.len() != 2 {
+            return Err(format!("Invalid setting format: {}", s));
+        }
+        let axis = parts[0].to_string();
+        let value: f32 = parts[1]
+            .parse()
+            .map_err(|_| format!("Invalid value for setting: {}", s))?;
+        settings.push(Setting::new(
+            Tag::from_str(&axis).map_err(|_| format!("Invalid tag: {}", axis))?,
+            value,
+        ));
+    }
+    Ok(settings)
 }
 
 fn main() {
