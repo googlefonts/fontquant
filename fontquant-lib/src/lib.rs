@@ -54,6 +54,20 @@ impl TryInto<f64> for MetricValue {
     }
 }
 
+impl std::fmt::Display for MetricValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MetricValue::Metric(value) => write!(f, "{:.2}", value),
+            MetricValue::Percentage(value) => write!(f, "{:.2}%", value * 100.0),
+            MetricValue::String(value) => write!(f, "{}", value),
+            MetricValue::Boolean(value) => write!(f, "{}", value),
+            MetricValue::Angle(value) => write!(f, "{:.2}", value),
+            MetricValue::PerMille(value) => write!(f, "{:.0}", value),
+            MetricValue::Integer(value) => write!(f, "{}", value),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct MetricKey {
     pub name: String,
@@ -79,6 +93,10 @@ impl Results {
     }
     pub fn iter(&self) -> impl Iterator<Item = (&String, &Metric)> {
         self.0.iter()
+    }
+
+    pub fn keys(&self) -> impl Iterator<Item = &String> {
+        self.0.keys()
     }
 }
 

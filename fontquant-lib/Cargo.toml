@@ -13,3 +13,4 @@ thiserror = "2.0.12"
 unicode-script = "0.5.7"
 statistical = "1.0.0"
 log = { workspace = true }
+unicode-properties = "0.1.3"
