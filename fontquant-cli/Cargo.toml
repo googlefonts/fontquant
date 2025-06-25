@@ -8,3 +8,5 @@ clap = { version = "4.5.35", features = ["derive"] }
 fontquant-lib = { path = "../fontquant-lib" }
 fontations = { workspace = true }
 log = { workspace = true }
+indicatif = { version = "0.17.11", features = ["rayon"] }
+rayon = "1.10.0"
