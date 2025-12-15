@@ -321,7 +321,7 @@ class Width(StatisticsPenMetrics):
 
 class Slant(StatisticsPenMetrics):
     """\
-    Measures the slante angle of encoded characters of the font
+    Measures the slanted angle of encoded characters of the font
     in degrees and returns the average of all glyphs measured.
     Right-leaning shapes have negative numbers.
     Based on `fontTools.pens.statisticsPen.StatisticsPen`
