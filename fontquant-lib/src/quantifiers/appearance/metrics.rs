@@ -1,10 +1,10 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::{error::FontquantError, monkeypatching::MakeBezGlyphs, quantifier, MetricValue};
+use crate::{MetricValue, error::FontquantError, monkeypatching::MakeBezGlyphs, quantifier};
 use fontations::{
-    read::{tables::gdef::GlyphClassDef, ReadError},
+    read::{ReadError, tables::gdef::GlyphClassDef},
     skrifa::{
-        prelude::Size, raw::TableProvider, setting::VariationSetting, FontRef, MetadataProvider,
+        FontRef, MetadataProvider, prelude::Size, raw::TableProvider, setting::VariationSetting,
     },
     types::{GlyphId, GlyphId16},
 };
@@ -189,9 +189,10 @@ fn glyph_metrics_stats(f: &FontRef) -> Result<GlyphMetricsStats, ReadError> {
             continue;
         }
         if let Some(width) = metrics.advance(glyphid)
-            && width != 0 {
-                widths.insert(width);
-            }
+            && width != 0
+        {
+            widths.insert(width);
+        }
     }
 
     Ok(GlyphMetricsStats {

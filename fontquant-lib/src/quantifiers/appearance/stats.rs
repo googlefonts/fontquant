@@ -1,10 +1,11 @@
 use crate::{
+    MetricValue,
     error::FontquantError,
     monkeypatching::{MakeBezGlyphs, PrimaryScript},
-    quantifier, MetricValue,
+    quantifier,
 };
-use fontations::skrifa::{self, prelude::Size, MetadataProvider};
-use fontations::skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
+use fontations::skrifa::{self, MetadataProvider, prelude::Size};
+use fontations::skrifa::{FontRef, raw::TableProvider, setting::VariationSetting};
 use kurbo::{ParamCurveMoments, Point, Shape, Vec2};
 pub struct WholeFontStatistics {
     pub weight: f64,
@@ -76,25 +77,30 @@ impl WholeFontStatistics {
     }
 }
 
-quantifier!(WEIGHT,
+quantifier!(
+    WEIGHT,
     "weight",
     "Measures the weight of encoded characters of the font as the amount of ink per glyph as a percentage of an em square and returns the average of all glyphs measured.",
     MetricValue::Percentage(0.12)
 );
 
-quantifier!(WEIGHT_PERCEPTUAL,
+quantifier!(
+    WEIGHT_PERCEPTUAL,
     "weight_perceptual",
     "Measures the weight of encoded characters of the font as the amount of ink per glyph and returns the average of all glyphs measured.",
     MetricValue::Metric(123.0)
 );
 
-quantifier!(WIDTH,
+quantifier!(
+    WIDTH,
     "width",
     "Measures the width of encoded characters of the font as a percentage of the UPM and returns the average of all glyphs measured.",
     MetricValue::Percentage(0.12)
 );
 
-quantifier!(SLANT, "slant",
+quantifier!(
+    SLANT,
+    "slant",
     "Measures the slant angle of encoded characters of the font in degrees and returns the average of all glyphs measured. Right-leaning shapes have negative numbers.",
     MetricValue::Angle(12.0)
 );
@@ -109,11 +115,7 @@ trait CurveStatistics {
 impl CurveStatistics for kurbo::BezPath {
     fn slant(&self) -> f64 {
         let slant = self.covariance() / self.variance().y;
-        if slant.abs() > 0.001 {
-            slant
-        } else {
-            0.0
-        }
+        if slant.abs() > 0.001 { slant } else { 0.0 }
     }
     fn center_of_mass(&self) -> Point {
         let area = self.area();

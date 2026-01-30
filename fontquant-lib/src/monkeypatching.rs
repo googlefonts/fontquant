@@ -9,7 +9,7 @@
 use std::collections::HashMap;
 
 use fontations::skrifa;
-use fontations::skrifa::{setting::VariationSetting, FontRef, GlyphId, MetadataProvider};
+use fontations::skrifa::{FontRef, GlyphId, MetadataProvider, setting::VariationSetting};
 use unicode_script::UnicodeScript;
 
 use crate::{

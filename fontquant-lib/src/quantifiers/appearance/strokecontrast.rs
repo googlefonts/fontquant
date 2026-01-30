@@ -1,10 +1,11 @@
 use crate::{
+    MetricValue,
     helpers::{
-        raycaster::{ProportionalPoint, Raycaster, EAST, NORTH},
+        raycaster::{EAST, NORTH, ProportionalPoint, Raycaster},
         strokecontrast,
     },
     monkeypatching::MakeBezGlyphs,
-    quantifier, MetricValue,
+    quantifier,
 };
 use fontations::skrifa;
 

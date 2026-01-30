@@ -2,16 +2,17 @@ use std::sync::LazyLock;
 
 use fontations::{
     read::TableProvider,
-    skrifa::{self, prelude::Size, MetadataProvider},
+    skrifa::{self, MetadataProvider, prelude::Size},
 };
 
 use crate::{
+    MetricKey, MetricValue,
     helpers::{
-        raycaster::{Direction, ProportionalPoint, Raycaster, Winding, EAST, NORTH},
+        raycaster::{Direction, EAST, NORTH, ProportionalPoint, Raycaster, Winding},
         remove_outliers,
     },
     monkeypatching::MakeBezGlyphs,
-    quantifier, MetricKey, MetricValue,
+    quantifier,
 };
 
 struct RaycasterBuilder<'a> {

@@ -3,9 +3,10 @@ use itertools::process_results;
 use kurbo::Shape;
 
 use crate::{
-    bezglyph::{bezpaths_to_skpath, skpath_to_bezglyph, BezGlyph},
+    MetricValue,
+    bezglyph::{BezGlyph, bezpaths_to_skpath, skpath_to_bezglyph},
     monkeypatching::MakeBezGlyphs,
-    quantifier, MetricValue,
+    quantifier,
 };
 
 pub fn is_stencil_font(
@@ -25,7 +26,8 @@ pub fn is_stencil_font(
     Ok(())
 }
 
-quantifier!(STENCIL,
+quantifier!(
+    STENCIL,
     "stencil",
     "Reports whether or not a font is a stencil font. It recognizes a stencil font correctly, but may sometimes mis-report non-stencil fonts as stencil fonts because it only looks at a limited set of characters for speed optimization.",
     MetricValue::Boolean(false)

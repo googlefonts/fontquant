@@ -1,7 +1,7 @@
 use kurbo::{BezPath, Insets, Line, ParamCurve, Point, Rect, Shape, Vec2};
 use skia_safe::{EncodedImageFormat, PaintStyle};
 
-use crate::bezglyph::{bezpaths_to_skpath, BezGlyph};
+use crate::bezglyph::{BezGlyph, bezpaths_to_skpath};
 
 pub const EAST: Direction = Direction::Angle(0.0);
 // pub const NORTHEAST: Direction = Direction::Angle(45.0);

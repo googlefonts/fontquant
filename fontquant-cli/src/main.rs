@@ -2,7 +2,7 @@ use std::{collections::BTreeSet, path::Path, str::FromStr};
 
 use clap::Parser;
 use fontations::{skrifa::setting::Setting, types::Tag};
-use fontquant_lib::{run, Results};
+use fontquant_lib::{Results, run};
 use indicatif::ParallelProgressIterator;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
