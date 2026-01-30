@@ -5,7 +5,7 @@ use crate::{
 };
 use fontations::skrifa::{self, prelude::Size, MetadataProvider};
 use fontations::skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
-use greencurves::{ComputeGreenStatistics, CurveStatistics, GreenStatistics};
+use kurbo::{ParamCurveMoments, Point, Shape, Vec2};
 pub struct WholeFontStatistics {
     pub weight: f64,
     #[allow(dead_code)]
@@ -37,14 +37,19 @@ impl WholeFontStatistics {
             else {
                 continue;
             };
-            let glyph_stats = bezglyph
+            let slant = bezglyph
                 .iter()
-                .map(|p| p.green_statistics())
-                .fold(GreenStatistics::default(), |acc, s| acc + s);
-            wght_sum += glyph_stats.area().abs();
-            wght_sum_perceptual += glyph_stats.area().abs() * glyph_width;
+                .map(|p| p.slant())
+                .fold(0.0, |acc, s| acc + s);
+            let area = bezglyph
+                .iter()
+                .map(|p| p.area())
+                .fold(0.0, |acc, s| acc + s);
+
+            wght_sum += area.abs();
+            wght_sum_perceptual += area.abs() * glyph_width;
             wdth_sum += glyph_width;
-            slnt_sum += glyph_stats.slant();
+            slnt_sum += slant;
         }
         Ok(WholeFontStatistics {
             weight: wght_sum * upem / wdth_sum,
@@ -93,3 +98,44 @@ quantifier!(SLANT, "slant",
     "Measures the slant angle of encoded characters of the font in degrees and returns the average of all glyphs measured. Right-leaning shapes have negative numbers.",
     MetricValue::Angle(12.0)
 );
+
+trait CurveStatistics {
+    fn slant(&self) -> f64;
+    fn center_of_mass(&self) -> Point;
+    fn variance(&self) -> Vec2;
+    fn covariance(&self) -> f64;
+}
+
+impl CurveStatistics for kurbo::BezPath {
+    fn slant(&self) -> f64 {
+        let slant = self.covariance() / self.variance().y;
+        if slant.abs() > 0.001 {
+            slant
+        } else {
+            0.0
+        }
+    }
+    fn center_of_mass(&self) -> Point {
+        let area = self.area();
+        let moments = self.moments();
+        Point::new(moments.moment_x / area, moments.moment_y / area)
+    }
+    /// Find the variance of the path
+    fn variance(&self) -> Vec2 {
+        let moments = self.moments();
+        let area = self.area();
+        let mean = self.center_of_mass();
+        Vec2::new(
+            (moments.moment_xx / area - mean.x * mean.x).abs(),
+            (moments.moment_yy / area - mean.y * mean.y).abs(),
+        )
+    }
+
+    /// Find the covariance of the path
+    fn covariance(&self) -> f64 {
+        let area = self.area();
+        let mean = self.center_of_mass();
+        let moments = self.moments();
+        moments.moment_xy / area - mean.x * mean.y
+    }
+}
