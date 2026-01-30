@@ -72,7 +72,7 @@ pub struct ScalerPen<'a> {
 }
 
 impl ScalerPen<'_> {
-    pub fn new(pen: &mut dyn skrifa::outline::OutlinePen, scale: f32) -> ScalerPen {
+    pub fn new(pen: &mut dyn skrifa::outline::OutlinePen, scale: f32) -> ScalerPen<'_> {
         ScalerPen { pen, scale }
     }
 }

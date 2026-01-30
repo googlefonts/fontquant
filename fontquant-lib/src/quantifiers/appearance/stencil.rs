@@ -42,8 +42,8 @@ fn is_stencil_glyph(glyph: &BezGlyph) -> Result<bool, crate::FontquantError> {
                 }
                 // Check if there is no boolean intersection between the two paths
                 // (i.e. not just that the paths don't cross, but that there is no intersection area)
-                let p1_skia = bezpaths_to_skpath(&[path1.clone()]);
-                let p2_skia = bezpaths_to_skpath(&[path2.clone()]);
+                let p1_skia = bezpaths_to_skpath(std::slice::from_ref(path1));
+                let p2_skia = bezpaths_to_skpath(std::slice::from_ref(path2));
                 let intersection = skia_safe::op(&p1_skia, &p2_skia, skia_safe::PathOp::Intersect)
                     .unwrap_or_default();
                 let bg: BezGlyph = skpath_to_bezglyph(intersection);

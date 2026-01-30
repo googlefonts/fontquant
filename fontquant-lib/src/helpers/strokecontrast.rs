@@ -287,7 +287,7 @@ mod tests {
             })),
         };
 
-        let (contrast, angle) = _stroke_contrast_antiqua(&glyph, Some(&debughooks)).unwrap();
+        let (_contrast, angle) = _stroke_contrast_antiqua(&glyph, Some(&debughooks)).unwrap();
 
         std::mem::forget(debughooks);
 

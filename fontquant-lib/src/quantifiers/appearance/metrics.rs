@@ -116,6 +116,7 @@ quantifier!(
 
 // Stolen from fontspector
 
+#[allow(dead_code)] // We'll use it one day
 struct GlyphMetricsStats {
     // At least 80% of encoded ASCII glyphs have the same width
     seems_monospaced: bool,
@@ -187,11 +188,10 @@ fn glyph_metrics_stats(f: &FontRef) -> Result<GlyphMetricsStats, ReadError> {
         {
             continue;
         }
-        if let Some(width) = metrics.advance(glyphid) {
-            if width != 0 {
+        if let Some(width) = metrics.advance(glyphid)
+            && width != 0 {
                 widths.insert(width);
             }
-        }
     }
 
     Ok(GlyphMetricsStats {
