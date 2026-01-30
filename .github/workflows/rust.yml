@@ -104,10 +104,9 @@ jobs:
             os: macos-latest
             target: aarch64-apple-darwin
 
-          - build: windows-gnu
-            os: windows-latest
-            target: x86_64-pc-windows-gnu
-        # python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+          #- build: windows-gnu
+          #  os: windows-latest
+          #  target: x86_64-pc-windows-gnu
 
     steps:
       - name: Checkout
