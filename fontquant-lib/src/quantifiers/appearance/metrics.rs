@@ -53,7 +53,16 @@ pub fn gather_from_font(
             MetricValue::PerMille(space_width as f64 / upem * 1000.0),
         );
     }
-
+    if let Some(i_width) = font
+        .charmap()
+        .map('i' as u32)
+        .and_then(|gid| glyph_metrics.advance_width(gid))
+    {
+        results.add_metric(
+            &I_WIDTH,
+            MetricValue::PerMille(i_width as f64 / upem * 1000.0),
+        );
+    }
     let stats = glyph_metrics_stats(font)?;
     results.add_metric(&MONOSPACED, MetricValue::Boolean(stats.seems_monospaced));
     results.add_metric(&MOST_COMMON_WIDTH, {
@@ -83,6 +92,12 @@ quantifier!(
     SPACE_WIDTH,
     "space_width",
     "Measures the width of the space character in font units per mille.",
+    MetricValue::PerMille(0.5)
+);
+quantifier!(
+    I_WIDTH,
+    "i_width",
+    "Measures the width of the i character in font units per mille.",
     MetricValue::PerMille(0.5)
 );
 quantifier!(
