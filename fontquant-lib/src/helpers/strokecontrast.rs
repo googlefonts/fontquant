@@ -10,7 +10,7 @@ use crate::{
     },
 };
 use itertools::Itertools;
-use kurbo::{flatten, Affine, BezPath, Line, Point, Shape};
+use kurbo::{Affine, BezPath, Line, Point, Shape, flatten};
 use statistical::median;
 
 const TOLERANCE: f64 = 0.1;
@@ -200,7 +200,7 @@ mod tests {
     #![allow(clippy::expect_used, clippy::unwrap_used)]
     use std::io::Write;
 
-    use crate::helpers::raycaster::{ProportionalPoint, EAST, NORTH};
+    use crate::helpers::raycaster::{EAST, NORTH, ProportionalPoint};
     use kurbo::{BezPath, Insets, SvgParseError};
     use skia_safe::{EncodedImageFormat, PaintStyle};
 

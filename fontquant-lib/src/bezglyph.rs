@@ -1,6 +1,6 @@
 use fontations::skrifa;
 use kurbo::{BezPath, Shape};
-use linesweeper::{binary_op, topology::Contours, BinaryOp, FillRule};
+use linesweeper::{BinaryOp, FillRule, binary_op, topology::Contours};
 
 use crate::error::FontquantError;
 
