@@ -1,7 +1,6 @@
-use kurbo::{BezPath, Insets, Line, ParamCurve, Point, Rect, Shape, Vec2};
-use skia_safe::{EncodedImageFormat, PaintStyle};
+use kurbo::{BezPath, Insets, Line, ParamCurve, Point, Rect, Vec2};
 
-use crate::bezglyph::{BezGlyph, bezpaths_to_skpath};
+use crate::bezglyph::BezGlyph;
 
 pub const EAST: Direction = Direction::Angle(0.0);
 // pub const NORTHEAST: Direction = Direction::Angle(45.0);
@@ -301,9 +300,10 @@ impl<'a> Raycaster<'a> {
     }
 
     // Debugging draw tool. If it breaks, you get to keep the pieces.
-    #[doc(hidden)]
+    #[cfg(test)]
     #[allow(dead_code)]
     pub(crate) fn draw(&mut self) -> skia_safe::Data {
+        use kurbo::Shape;
         #[allow(clippy::expect_used)]
         let mut surface = skia_safe::surfaces::raster_n32_premul((
             self.bbox.width() as i32,
@@ -317,9 +317,9 @@ impl<'a> Raycaster<'a> {
         let canvas = surface.canvas();
         canvas.clear(skia_safe::Color::WHITE);
         // Draw the glyph. Upside-down, because Y=0 is top, but this is just a debugging tool.
-        let skia_path = bezpaths_to_skpath(self.paths);
+        let skia_path = crate::bezglyph::bezpaths_to_skpath(self.paths);
         let mut paint = skia_safe::Paint::new(skia_safe::Color4f::new(0.3, 0.3, 0.3, 1.0), None);
-        paint.set_style(PaintStyle::Stroke);
+        paint.set_style(skia_safe::PaintStyle::Stroke);
         paint.set_stroke(true);
         paint.set_stroke_width(2.0);
 
@@ -337,7 +337,7 @@ impl<'a> Raycaster<'a> {
             .unwrap_or_default();
         let fill_color = skia_safe::Color4f::new(1.0, 0.66, 0.66, 0.27); // "#ffaaaa44"
         let mut paint = skia_safe::Paint::new(skia_safe::Color4f::new(1.0, 0.0, 0.0, 1.0), None);
-        paint.set_style(PaintStyle::StrokeAndFill);
+        paint.set_style(skia_safe::PaintStyle::StrokeAndFill);
         paint.set_color4f(fill_color, None);
         canvas.draw_rect(
             skia_safe::Rect {
@@ -351,7 +351,7 @@ impl<'a> Raycaster<'a> {
         for (long_ray, _short_ray) in rays.iter() {
             let mut paint =
                 skia_safe::Paint::new(skia_safe::Color4f::new(1.0, 0.13, 0.13, 0.26), None);
-            paint.set_style(PaintStyle::Stroke);
+            paint.set_style(skia_safe::PaintStyle::Stroke);
             paint.set_stroke_width(1.0);
             let start = skia_safe::Point::new(long_ray.start().x as f32, long_ray.start().y as f32);
             let end = skia_safe::Point::new(long_ray.end().x as f32, long_ray.end().y as f32);
@@ -362,7 +362,7 @@ impl<'a> Raycaster<'a> {
             for pt in intersections.iter() {
                 let mut paint =
                     skia_safe::Paint::new(skia_safe::Color4f::new(0.0, 0.0, 1.0, 1.0), None);
-                paint.set_style(PaintStyle::Fill);
+                paint.set_style(skia_safe::PaintStyle::Fill);
                 let point = skia_safe::Point::new(pt.x as f32, pt.y as f32);
                 canvas.draw_circle(point, 5.0, &paint);
             }
@@ -372,7 +372,7 @@ impl<'a> Raycaster<'a> {
         for (start, end, distance) in distances.iter() {
             let mut paint =
                 skia_safe::Paint::new(skia_safe::Color4f::new(0.0, 1.0, 0.0, 1.0), None);
-            paint.set_style(PaintStyle::Fill);
+            paint.set_style(skia_safe::PaintStyle::Fill);
             let normal = Vec2::new(end.y - start.y, start.x - end.x).normalize();
             let start = skia_safe::Point::new(start.x as f32, start.y as f32);
             let end = skia_safe::Point::new(end.x as f32, end.y as f32);
@@ -396,7 +396,7 @@ impl<'a> Raycaster<'a> {
         for (start, end, distance) in non_outliers.iter() {
             let mut paint =
                 skia_safe::Paint::new(skia_safe::Color4f::new(0.0, 1.0, 0.0, 1.0), None);
-            paint.set_style(PaintStyle::Fill);
+            paint.set_style(skia_safe::PaintStyle::Fill);
             let normal = Vec2::new(end.y - start.y, start.x - end.x).normalize();
             let start = skia_safe::Point::new(start.x as f32, start.y as f32);
             let end = skia_safe::Point::new(end.x as f32, end.y as f32);
@@ -420,7 +420,7 @@ impl<'a> Raycaster<'a> {
         let mut context = surface.direct_context();
         #[allow(clippy::unwrap_used)]
         image
-            .encode(context.as_mut(), EncodedImageFormat::PNG, None)
+            .encode(context.as_mut(), skia_safe::EncodedImageFormat::PNG, None)
             .unwrap()
     }
 }

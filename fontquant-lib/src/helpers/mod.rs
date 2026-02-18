@@ -46,10 +46,12 @@ pub(crate) fn all_intersections(paths: &[&BezPath], line: &Line) -> Vec<Point> {
     intersections
 }
 
+#[cfg(test)]
 #[allow(dead_code)] // Used in tests
 fn k2s(pt: kurbo::Point) -> skia_safe::Point {
     skia_safe::Point::new(pt.x as f32, pt.y as f32)
 }
+#[cfg(test)]
 #[allow(dead_code)] // Used in tests
 fn s2k(pt: skia_safe::Point) -> kurbo::Point {
     kurbo::Point::new(pt.x as f64, pt.y as f64)

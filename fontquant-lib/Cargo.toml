@@ -5,11 +5,14 @@ edition = "2024"
 
 [dependencies]
 itertools = "0.14.0"
-kurbo = "0.13.0"
 fontations = { workspace = true }
-skia-safe = "0.84.0"              # Temporary expedient until kurbo has overlap removal
 thiserror = "2.0.12"
 unicode-script = "0.5.7"
 statistical = "1.0.0"
 log = { workspace = true }
 unicode-properties = "0.1.3"
+kurbo = "0.12.0"                  # Must use same version as linesweeper
+linesweeper = "0.1.2"
+
+[dev-dependencies]
+skia-safe = "0.93.0"

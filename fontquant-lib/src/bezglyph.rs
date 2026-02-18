@@ -1,5 +1,6 @@
 use fontations::skrifa;
 use kurbo::{BezPath, Shape};
+use linesweeper::{binary_op, topology::Contours, BinaryOp, FillRule};
 
 use crate::error::FontquantError;
 
@@ -33,14 +34,34 @@ impl BezGlyph {
     }
 
     pub fn remove_overlaps(&self) -> Result<BezGlyph, FontquantError> {
-        use skia_safe::simplify;
-        let path = bezpaths_to_skpath(self.iter());
-        let newpath = simplify(&path).ok_or(FontquantError::SkiaError)?;
-        Ok(skpath_to_bezglyph(newpath))
+        // Concatenate all the bezpaths into one
+        let bigpath = self.iter().fold(BezPath::new(), |mut acc, path| {
+            acc.extend(path.iter());
+            acc
+        });
+        let result = binary_op(
+            &bigpath,
+            &BezPath::new(),
+            FillRule::EvenOdd,
+            BinaryOp::Union,
+        )
+        .map_err(|_| FontquantError::LinesweeperError)?;
+        Ok(result.into())
     }
 
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+}
+
+impl From<Contours> for BezGlyph {
+    fn from(contours: Contours) -> Self {
+        BezGlyph(
+            contours
+                .contours()
+                .map(|c| c.path.clone())
+                .collect::<Vec<_>>(),
+        )
     }
 }
 
@@ -114,11 +135,11 @@ impl skrifa::outline::OutlinePen for ScalerPen<'_> {
 // Yes, this is a horrible piece of code. But it should hopefully go away soon
 // when kurbo gets native path operations support. However, it's also quite useful
 // for easy visualization.
-
+#[cfg(test)]
 pub(crate) fn bezpaths_to_skpath<'a, I: IntoIterator<Item = &'a BezPath>>(
     bezpaths: I,
 ) -> skia_safe::Path {
-    let mut path = skia_safe::Path::default();
+    let mut path = skia_safe::PathBuilder::new();
     for pathel in bezpaths.into_iter().flatten() {
         match pathel {
             kurbo::PathEl::MoveTo(point) => path.move_to((point.x as i32, point.y as i32)),
@@ -135,21 +156,17 @@ pub(crate) fn bezpaths_to_skpath<'a, I: IntoIterator<Item = &'a BezPath>>(
             kurbo::PathEl::ClosePath => path.close(),
         };
     }
-    path
+    path.detach()
 }
 
+#[cfg(test)]
+#[allow(dead_code)] // Used in tests
 pub(crate) fn skpath_to_bezglyph(path: skia_safe::Path) -> BezGlyph {
-    let points_count = path.count_points();
-    let mut points = vec![skia_safe::Point::default(); points_count];
-    let _count_returned = path.get_points(&mut points);
-
-    let verb_count = path.count_verbs();
-    let mut verbs = vec![0_u8; verb_count];
-    let _count_returned_verbs = path.get_verbs(&mut verbs);
+    let points = path.points();
+    let verbs = path.verbs();
     let mut newglyph = BezGlyph::default();
     let mut cur_pt = 0;
     for verb in verbs {
-        let verb: skia_safe::PathVerb = unsafe { std::mem::transmute(verb as u32) };
         match verb {
             skia_safe::PathVerb::Move => {
                 <BezGlyph as skrifa::outline::OutlinePen>::move_to(

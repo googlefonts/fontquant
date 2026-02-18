@@ -6,7 +6,6 @@ members = ["fontquant-lib", "fontquant-cli"]
 clap = { version = "4.5.35", features = ["derive"] }
 itertools = "0.14.0"
 kurbo = "0.11.1"
-skia-safe = "0.84.0"                                 # Temporary expedient until kurbo has overlap removal
 fontations = "0.2.0"
 thiserror = "2.0.12"
 unicode-script = "0.5.7"

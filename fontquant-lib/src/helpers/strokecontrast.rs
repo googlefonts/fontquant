@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use std::io::Write;
 
 use crate::{
@@ -9,7 +10,7 @@ use crate::{
     },
 };
 use itertools::Itertools;
-use kurbo::{Affine, BezPath, Line, Point, Shape, flatten};
+use kurbo::{flatten, Affine, BezPath, Line, Point, Shape};
 use statistical::median;
 
 const TOLERANCE: f64 = 0.1;
@@ -152,6 +153,7 @@ pub fn stroke_contrast_raycaster(
     raycaster_north.winding(raycaster::Winding::Ink);
     raycaster_east.winding(raycaster::Winding::Ink);
 
+    #[cfg(test)]
     if log::log_enabled!(log::Level::Trace) {
         let data = raycaster_north.draw();
         let mut file = std::fs::File::create("rc-north.png").unwrap();
@@ -175,6 +177,7 @@ pub fn stroke_contrast_raycaster(
     let horizontal_thickness = median(&distances) as f64;
     log::trace!("Horizontal thickness: {:?}", horizontal_thickness);
 
+    #[cfg(test)]
     if log::log_enabled!(log::Level::Trace) {
         let data = raycaster_east.draw();
         let mut file = std::fs::File::create("rc-east.png").unwrap();
@@ -197,7 +200,7 @@ mod tests {
     #![allow(clippy::expect_used, clippy::unwrap_used)]
     use std::io::Write;
 
-    use crate::helpers::raycaster::{EAST, NORTH, ProportionalPoint};
+    use crate::helpers::raycaster::{ProportionalPoint, EAST, NORTH};
     use kurbo::{BezPath, Insets, SvgParseError};
     use skia_safe::{EncodedImageFormat, PaintStyle};
 
