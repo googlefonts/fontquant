@@ -4,7 +4,6 @@ members = ["fontquant-lib", "fontquant-cli"]
 
 [workspace.dependencies]
 clap = { version = "4.5.35", features = ["derive"] }
-greencurves = "0.2.1"
 itertools = "0.14.0"
 kurbo = "0.11.1"
 skia-safe = "0.84.0"                                 # Temporary expedient until kurbo has overlap removal
