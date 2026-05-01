@@ -181,6 +181,7 @@ class StrokeContrastBase(Metric):
 
     def measure(self):
         character = self.get_character_to_measure()
+        print(f"Measure stroke using '{character}'")
         width = 1000
 
         descender = self.ttFont["hhea"].descender

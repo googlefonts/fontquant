@@ -56,6 +56,12 @@ def cli():
         profiler = cProfile.Profile()
         profiler.enable()
 
+    if options.debug and options.show:
+        import matplotlib
+        print("Backend is", matplotlib.get_backend())
+    else:
+        print("No plot output")
+
     formatted = json.dumps(
         quantify(
             options.font,

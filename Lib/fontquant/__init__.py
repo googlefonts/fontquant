@@ -562,4 +562,5 @@ def quantify(font_path, includes=None, excludes=None, locations=None, debug=Fals
     base.debug = debug
     base.show = show
     base.primary_script = primary_script
+    print(base.debug, base.show)
     return order_dict(base.value(includes, excludes))
