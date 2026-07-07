@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fontquant-web</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
+      }
+      body {
+        max-width: 60rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      h1 {
+        margin-bottom: 0.25rem;
+      }
+      .version {
+        color: #888;
+        font-size: 0.875rem;
+      }
+      fieldset {
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      label.inline {
+        flex-direction: row;
+        align-items: center;
+      }
+      input[type="text"] {
+        padding: 0.5rem;
+        font-family: inherit;
+        font-size: inherit;
+      }
+      pre {
+        background: #f6f6f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow: auto;
+        max-height: 40rem;
+      }
+      @media (prefers-color-scheme: dark) {
+        pre {
+          background: #1e1e1e;
+        }
+      }
+      .error {
+        color: #c00;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>fontquant-web</h1>
+    <p class="version" id="version">loading</p>
+
+    <fieldset>
+      <label>
+        <span>Font file</span>
+        <input id="file" type="file" accept=".ttf,.otf,.woff,.woff2" />
+      </label>
+      <label>
+        <span>Variation location (optional, e.g. <code>wght=400,wdth=100</code>)</span>
+        <input id="location" type="text" placeholder="wght=400,wdth=100" />
+      </label>
+      <label class="inline">
+        <input id="parametric" type="checkbox" />
+        <span>Run <code>get_parametric</code> only</span>
+      </label>
+    </fieldset>
+
+    <div id="status"></div>
+    <pre id="output">Drop a font file above to inspect it.</pre>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

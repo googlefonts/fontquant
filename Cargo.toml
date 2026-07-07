@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["fontquant-lib", "fontquant-cli", "fontquant-py"]
+members = ["fontquant-lib", "fontquant-cli", "fontquant-py", "fontquant-web"]
 
 [workspace.dependencies]
 clap = { version = "4.5.35", features = ["derive"] }

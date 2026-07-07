@@ -1,0 +1,23 @@
+[package]
+name = "fontquant-web"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+wasm-bindgen = { version = "0.2.100" }
+console_error_panic_hook = { version = "0.1.7" }
+fontquant-lib = { path = "../fontquant-lib" }
+read-fonts = { workspace = true }
+skrifa = { workspace = true }
+serde_json = "1.0"
+
+# wasm-bindgen backend for statistical's transitive rand 0.6.
+rand = { version = "0.6", features = ["wasm-bindgen"] }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-Oz']
