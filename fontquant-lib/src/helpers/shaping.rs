@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use harfrust::GlyphBuffer;
+use harfrust::{GlyphBuffer, ShapeOptions};
 use skrifa::{FontRef, GlyphId, MetadataProvider, Tag};
 
 pub fn shape_with_features(font: &FontRef, text: &str, features: &[Tag]) -> GlyphBuffer {
@@ -24,7 +24,8 @@ pub fn shape_with_features(font: &FontRef, text: &str, features: &[Tag]) -> Glyp
     buffer.push_str(text);
     buffer.set_direction(harfrust::Direction::LeftToRight);
     buffer.set_script(harfrust::script::LATIN);
-    shaper.shape_with_plan(&plan, buffer, &features)
+    let options = ShapeOptions::new().plan(Some(&plan)).features(&features);
+    shaper.shape(buffer, options)
 }
 
 /// Returns `true` if shaping `text` with `features_a` produces a different result than shaping
@@ -64,8 +65,9 @@ pub fn shapes_differently_between(
         buf.push_str(text);
         buf.set_direction(harfrust::Direction::LeftToRight);
         buf.set_script(harfrust::script::LATIN);
+        let options = ShapeOptions::new().plan(Some(plan)).features(&hb_features);
         shaper
-            .shape_with_plan(plan, buf, &hb_features)
+            .shape(buf, options)
             .serialize(&shaper, harfrust::SerializeFlags::default())
     };
 
@@ -91,24 +93,29 @@ pub fn shapes_differently_with_features(font: &FontRef, text: &str, features: &[
     buffer.push_str(text);
     buffer.set_direction(harfrust::Direction::LeftToRight);
     buffer.set_script(harfrust::script::LATIN);
-    let buffer = shaper.shape_with_plan(&plan, buffer, &[]);
+    let options = ShapeOptions::new().plan(Some(&plan));
+    let buffer = shaper.shape(buffer, options);
     let glyphs_no_feature = buffer.serialize(&shaper, harfrust::SerializeFlags::default());
 
+    let hb_features = features
+        .iter()
+        .map(|&tag| harfrust::Feature::new(tag, 1, ..))
+        .collect::<Vec<_>>();
     let plan_with_feature = harfrust::ShapePlan::new(
         &shaper,
         harfrust::Direction::LeftToRight,
         Some(harfrust::script::LATIN),
         None,
-        &features
-            .iter()
-            .map(|&tag| harfrust::Feature::new(tag, 1, ..))
-            .collect::<Vec<_>>(),
+        &hb_features,
     );
     let mut buffer_with_feature = harfrust::UnicodeBuffer::new();
     buffer_with_feature.push_str(text);
     buffer_with_feature.set_direction(harfrust::Direction::LeftToRight);
     buffer_with_feature.set_script(harfrust::script::LATIN);
-    let buffer_with_feature = shaper.shape_with_plan(&plan_with_feature, buffer_with_feature, &[]);
+    let options_with_feature = ShapeOptions::new()
+        .plan(Some(&plan_with_feature))
+        .features(&hb_features);
+    let buffer_with_feature = shaper.shape(buffer_with_feature, options_with_feature);
     let glyphs_with_feature =
         buffer_with_feature.serialize(&shaper, harfrust::SerializeFlags::default());
 
