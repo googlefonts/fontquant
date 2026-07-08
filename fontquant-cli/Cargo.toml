@@ -5,11 +5,11 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.35", features = ["derive"] }
+font-types = { workspace = true }
 fontquant-lib = { path = "../fontquant-lib" }
-font-types = "0.11.0"
-read-fonts = "0.37.0"
-write-fonts = "0.41.0"
-skrifa = "0.40.0"
-log = { workspace = true }
 indicatif = { version = "0.17.11", features = ["rayon"] }
+log = { workspace = true }
 rayon = "1.10.0"
+read-fonts = { workspace = true }
+skrifa = { workspace = true }
+write-fonts = { workspace = true }
