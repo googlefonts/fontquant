@@ -13,7 +13,7 @@ env:
   GH_TOKEN: ${{ github.token }}
   PROJECT_NAME: fontquant
   CARGO_PUBLISH_ARGS: "-p fontquant"
-  CRATE_PATTERN: "fontquant(-cli|-py)?"
+  CRATE_PATTERN: "fontquant(-py|-lib)?"
 
 jobs:
   build:
