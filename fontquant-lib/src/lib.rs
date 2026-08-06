@@ -132,6 +132,13 @@ pub fn run(
     location: &[skrifa::setting::VariationSetting],
 ) -> Result<Results, FontquantError> {
     let mut results = Results::new();
+    // We don't need this yet, but when we seriously start playing with variations,
+    // then it will be useful:
+
+    // let axes = font.axes();
+    // let mut norm_location = vec![NormalizedCoord::default(); axes.len()];
+    // axes.location_to_slice(location, &mut norm_location);
+
     for metric in ALL_QUANTIFIERS.iter() {
         metric(font, location, &mut results)?;
     }
