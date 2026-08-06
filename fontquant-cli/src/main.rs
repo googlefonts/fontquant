@@ -17,11 +17,19 @@ struct Cli {
     location: std::vec::Vec<Setting<f32>>,
 }
 
+fn csv_escape(s: String) -> String {
+    if s.contains(',') || s.contains('"') || s.contains('\n') {
+        format!("\"{}\"", s.replace('"', "\"\""))
+    } else {
+        s
+    }
+}
+
 fn print_line(font_file: &str, location: &[Setting<f32>], results: &Results, all_keys: &[&str]) {
     let metrics = all_keys.iter().map(|name| {
         results
             .get(name)
-            .map(|m| m.1.to_string())
+            .map(|m| csv_escape(m.1.to_string()))
             .unwrap_or("".to_string())
     });
     let loc_string = location
