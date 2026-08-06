@@ -57,6 +57,38 @@ pub fn gather_from_font(
     measure_width!('i', I_WIDTH);
     measure_width!(' ', SPACE_WIDTH);
 
+    // While we're here, let's also do lc and uc proportions
+    let h_width = font
+        .charmap()
+        .map('H' as u32)
+        .and_then(|gid| glyph_metrics.advance_width(gid))
+        .unwrap_or(1.0);
+    let n_width = font
+        .charmap()
+        .map('n' as u32)
+        .and_then(|gid| glyph_metrics.advance_width(gid))
+        .unwrap_or(1.0);
+    let lc_props = ('a'..='z')
+        .map(|codepoint| {
+            font.charmap()
+                .map(codepoint as u32)
+                .and_then(|gid| glyph_metrics.advance_width(gid))
+                .map(|width| (width / n_width) as f64)
+                .unwrap_or(0.0)
+        })
+        .collect::<Vec<_>>();
+    let uc_props = ('A'..='Z')
+        .map(|codepoint| {
+            font.charmap()
+                .map(codepoint as u32)
+                .and_then(|gid| glyph_metrics.advance_width(gid))
+                .map(|width| (width / h_width) as f64)
+                .unwrap_or(0.0)
+        })
+        .collect::<Vec<_>>();
+    results.add_metric(&PROPORTION_LOWERCASE, MetricValue::MetricList(lc_props));
+    results.add_metric(&PROPORTION_UPPERCASE, MetricValue::MetricList(uc_props));
+
     let stats = glyph_metrics_stats(font)?;
     results.add_metric(&MONOSPACED, MetricValue::Boolean(stats.seems_monospaced));
     results.add_metric(&MOST_COMMON_WIDTH, {
@@ -124,6 +156,20 @@ quantifier!(
     "appearance/monospaced",
     "Tests to see if the font seems monospaced, based on whether there are fewer than 2 different widths for the ASCII characters.",
     MetricValue::Boolean(false)
+);
+
+quantifier!(
+    PROPORTION_LOWERCASE,
+    "proportion/lowercase",
+    "Measures the proportion of lowercase letters in the font.",
+    MetricValue::MetricList(vec![])
+);
+
+quantifier!(
+    PROPORTION_UPPERCASE,
+    "proportion/uppercase",
+    "Measures the proportion of uppercase letters in the font.",
+    MetricValue::MetricList(vec![])
 );
 
 // Stolen from fontspector

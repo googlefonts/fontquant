@@ -1,9 +1,9 @@
 use skrifa;
-
 pub mod appearance;
 pub mod casing;
 pub mod features;
 pub mod numerals;
+pub mod opentype;
 pub mod parametric;
 
 pub type QuantifierFn = fn(
@@ -25,4 +25,5 @@ pub const ALL_QUANTIFIERS: &[QuantifierFn] = &[
     casing::get_lowercase_shapes,
     numerals::get_numeral_styles,
     features::gather_features,
+    opentype::get_fields,
 ];
