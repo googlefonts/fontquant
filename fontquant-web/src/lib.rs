@@ -3,8 +3,7 @@
 use std::str::FromStr;
 
 use fontquant_lib::{MetricValue, Results};
-use read_fonts::types::Tag;
-use read_fonts::FontRef;
+use read_fonts::{types::Tag, FontRef};
 use serde_json::{Map, Value};
 use skrifa::setting::Setting;
 use wasm_bindgen::prelude::*;
@@ -50,6 +49,16 @@ fn metric_value_to_json(mv: &MetricValue) -> Value {
             .unwrap_or(Value::Null),
         MetricValue::String(s) => Value::String(s.clone()),
         MetricValue::List(l) => Value::Array(l.iter().cloned().map(Value::String).collect()),
+        MetricValue::MetricList(l) => Value::Array(
+            l.iter()
+                .cloned()
+                .map(|x| {
+                    Value::Number(
+                        serde_json::Number::from_f64(x).unwrap_or(serde_json::Number::from(0)),
+                    )
+                })
+                .collect(),
+        ),
         MetricValue::Dictionary(d) => Value::Object(
             d.iter()
                 .map(|(k, v)| (k.clone(), Value::String(v.clone())))

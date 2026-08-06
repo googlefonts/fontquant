@@ -32,6 +32,8 @@ pub enum MetricValue {
     String(String),
     /// A list of strings, often used for metrics that return multiple values.
     List(Vec<String>),
+    /// A list of floating point numbers
+    MetricList(Vec<f64>),
     /// Dictionary of string key-value pairs, often used for metrics that return multiple named values.
     Dictionary(HashMap<String, String>),
     /// A boolean value, typically true or false.
@@ -74,6 +76,10 @@ impl std::fmt::Display for MetricValue {
             MetricValue::Percentage(value) => write!(f, "{:.2}%", value * 100.0),
             MetricValue::String(value) => write!(f, "{}", value),
             MetricValue::List(values) => write!(f, "{}", values.join(", ")),
+            MetricValue::MetricList(values) => {
+                let formatted: Vec<String> = values.iter().map(|v| format!("{:.2}", v)).collect();
+                write!(f, "{}", formatted.join(", "))
+            }
             MetricValue::Dictionary(values) => {
                 let formatted: Vec<String> = values
                     .iter()

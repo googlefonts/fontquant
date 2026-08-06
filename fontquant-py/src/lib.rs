@@ -13,6 +13,7 @@ fn pythonize_metric_value(metric_value: &MetricValue, py: Python<'_>) -> Result<
         MetricValue::String(s) => s.into_py_any(py),
         MetricValue::Dictionary(d) => d.into_py_any(py),
         MetricValue::List(s) => s.into_py_any(py),
+        MetricValue::MetricList(s) => s.into_py_any(py),
         MetricValue::Boolean(b) => b.into_py_any(py),
         MetricValue::Angle(a) => a.into_py_any(py),
         MetricValue::PerMille(p) => p.into_py_any(py),
