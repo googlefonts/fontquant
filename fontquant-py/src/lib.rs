@@ -49,7 +49,7 @@ fn run<'a>(py: Python<'a>, font_file: &str) -> Result<Bound<'a, PyAny>, PyErr> {
         .map_err(|e| PyErr::new::<PyRuntimeError, _>(format!("Failed to read font file: {e}")))?;
     let font_file = FontRef::new(&font_file)
         .map_err(|e| PyErr::new::<PyRuntimeError, _>(format!("Failed to parse font file: {e}")))?;
-    let results = fontquant_lib::run(&font_file, &[])
+    let results = fontquant_lib::run(&font_file, &[], &[])
         .map_err(|e| PyErr::new::<PyRuntimeError, _>(format!("{e}")))?;
     pythonize_results(results, py)
 }

@@ -81,7 +81,7 @@ fn results_to_json(results: &Results) -> Value {
 pub fn run(font_data: &[u8], location: Option<String>) -> Result<String, JsValue> {
     let font = FontRef::new(font_data).map_err(|e| JsValue::from(e.to_string()))?;
     let loc = parse_location(location.as_deref().unwrap_or("")).map_err(JsValue::from)?;
-    let results = fontquant_lib::run(&font, &loc).map_err(|e| JsValue::from(e.to_string()))?;
+    let results = fontquant_lib::run(&font, &loc, &[]).map_err(|e| JsValue::from(e.to_string()))?;
     serde_json::to_string(&results_to_json(&results)).map_err(|e| JsValue::from(e.to_string()))
 }
 
