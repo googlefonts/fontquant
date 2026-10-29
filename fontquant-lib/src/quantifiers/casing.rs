@@ -76,6 +76,9 @@ pub fn is_unicase(
             }
         }
     }
+    if char_count == 0 {
+        return Ok(());
+    }
 
     results.add_metric(
         &UNICASE,

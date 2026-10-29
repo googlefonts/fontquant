@@ -125,6 +125,7 @@ fn numeral_style_heuristics(
         .and_then(|g| g.bbox())
         .map(|b| b.max_y() - b.min_y())
         .unwrap_or(0.0);
+
     let (upper_variance, lower_variance) = vertical_variance(font, features)?.unwrap_or((0.0, 0.0));
     // Vertical:
     // Compare upper and lower bbox variance to x-height
@@ -286,7 +287,9 @@ pub(crate) fn get_numeral_styles(
         .count() as f64
         / slashed_zero_checks.len() as f64;
 
-    let default = default_numerals(font);
+    let Some(default) = default_numerals(font) else {
+        return Ok(());
+    };
     results.add_metric(&DEFAULT_NUMERALS, MetricValue::String(default.to_string()));
     results.add_metric(
         &TON,
@@ -348,7 +351,12 @@ pub(crate) fn get_numeral_styles(
     Ok(())
 }
 
-fn default_numerals(font: &FontRef) -> &'static str {
+fn default_numerals(font: &FontRef) -> Option<&'static str> {
+    // Check we actually have some numerals
+    let charmap = font.charmap();
+    if !NUMERALS.iter().any(|c| charmap.map(*c).is_some()) {
+        return None;
+    }
     let mut numeralsets = HashSet::from([PON_LABEL, TON_LABEL, PLN_LABEL, TLN_LABEL]);
     if pon_matrix(font) {
         numeralsets.remove(PON_LABEL);
@@ -364,8 +372,8 @@ fn default_numerals(font: &FontRef) -> &'static str {
     }
     if numeralsets.len() == 1 {
         #[allow(clippy::unwrap_used)]
-        numeralsets.into_iter().next().unwrap()
+        Some(numeralsets.into_iter().next().unwrap())
     } else {
-        numeral_style_heuristics(font, &[]).unwrap_or("unknown")
+        Some(numeral_style_heuristics(font, &[]).unwrap_or("unknown"))
     }
 }
