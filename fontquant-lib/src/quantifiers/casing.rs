@@ -93,7 +93,7 @@ quantifier!(
     e.g. `µ`.
     Alternatively, consider contributing exceptions to the `exceptions_smcp` variable in `casing.rs` to see your
     values rise."#,
-    MetricValue::Percentage(50.0)
+    MetricValue::Percentage(0.5)
 );
 
 quantifier!(
@@ -104,7 +104,7 @@ quantifier!(
     e.g. `Ohm`.
     Alternatively, consider contributing exceptions to the `exceptions_c2sc` variable in `casing.rs` to see your
     values rise."#,
-    MetricValue::Percentage(50.0)
+    MetricValue::Percentage(0.5)
 );
 
 quantifier!(
@@ -112,7 +112,7 @@ quantifier!(
     "casing/case_sensitive_punctuation",
     r#"Returns the percentage of characters that are punctuation (`P*`)
     and get shaped by the `case` feature."#,
-    MetricValue::Percentage(50.0)
+    MetricValue::Percentage(0.5)
 );
 
 pub(crate) fn test_casing(
@@ -136,9 +136,10 @@ pub(crate) fn test_casing(
         Tag::new(b"case"),
     );
 
-    results.add_metric(&SMCP, MetricValue::Percentage(smcp_ratio * 100.0));
-    results.add_metric(&C2SC, MetricValue::Percentage(c2sc_ratio * 100.0));
-    results.add_metric(&CASE, MetricValue::Percentage(case_ratio * 100.0));
+    // We store percentages as 0-1 and display as 0-100.
+    results.add_metric(&SMCP, MetricValue::Percentage(smcp_ratio));
+    results.add_metric(&C2SC, MetricValue::Percentage(c2sc_ratio));
+    results.add_metric(&CASE, MetricValue::Percentage(case_ratio));
 
     Ok(())
 }

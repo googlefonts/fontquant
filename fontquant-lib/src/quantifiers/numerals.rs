@@ -200,19 +200,19 @@ quantifier!(
     SINF,
     "numerals/inferior_numerals",
     "Consider fonts to have a functioning `sinf` feature if the value is 1.0 (100%). _A partial support is useless in practice._",
-    MetricValue::Percentage(100.0)
+    MetricValue::Percentage(1.0)
 );
 quantifier!(
     SUPS,
     "numerals/superior_numerals",
     "Consider fonts to have a functioning `sups` feature if the value is 1.0 (100%). _A partial support is useless in practice._",
-    MetricValue::Percentage(100.0)
+    MetricValue::Percentage(1.0)
 );
 quantifier!(
     ENCODED_FRACTIONS_CHECK,
     "numerals/encoded_fractions",
     "Returns percentage of encoded default fractions (e.g. 1/2) that are shaped by the `frac` feature.",
-    MetricValue::Percentage(100.0)
+    MetricValue::Percentage(1.0)
 );
 quantifier!(
     EXTENDED_FRACTIONS,
@@ -224,7 +224,7 @@ quantifier!(
     SLASHED_ZERO,
     "numerals/slashed_zero",
     "Returns the percentage of tested feature combinations where `zero` changes the shaping result.",
-    MetricValue::Percentage(100.0)
+    MetricValue::Percentage(1.0)
 );
 fn ton_matrix(font: &FontRef) -> bool {
     shapes_differently_with_features(font, "0123456789", &tags_from_matrix(TON_MATRIX))
@@ -322,30 +322,29 @@ pub(crate) fn get_numeral_styles(
     );
     results.add_metric(
         &SINF,
-        MetricValue::Percentage(
-            ratio_of_different_shapes(font, |c| c.is_ascii_digit(), harfrust::Tag::new(b"sinf"))
-                * 100.0,
-        ),
+        MetricValue::Percentage(ratio_of_different_shapes(
+            font,
+            |c| c.is_ascii_digit(),
+            harfrust::Tag::new(b"sinf"),
+        )),
     );
     results.add_metric(
         &SUPS,
-        MetricValue::Percentage(
-            ratio_of_different_shapes(font, |c| c.is_ascii_digit(), harfrust::Tag::new(b"sups"))
-                * 100.0,
-        ),
+        MetricValue::Percentage(ratio_of_different_shapes(
+            font,
+            |c| c.is_ascii_digit(),
+            harfrust::Tag::new(b"sups"),
+        )),
     );
     results.add_metric(
         &ENCODED_FRACTIONS_CHECK,
-        MetricValue::Percentage(encoded_fractions_ratio * 100.0),
+        MetricValue::Percentage(encoded_fractions_ratio),
     );
     results.add_metric(
         &EXTENDED_FRACTIONS,
         MetricValue::Boolean(arbitrary_fractions),
     );
-    results.add_metric(
-        &SLASHED_ZERO,
-        MetricValue::Percentage(slashed_zero_ratio * 100.0),
-    );
+    results.add_metric(&SLASHED_ZERO, MetricValue::Percentage(slashed_zero_ratio));
     Ok(())
 }
 
