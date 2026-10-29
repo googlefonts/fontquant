@@ -3,8 +3,8 @@ use std::fmt::Display;
 use kurbo::{BezPath, PathEl, Point, Shape as _};
 
 use crate::{
-    monkeypatching::MakeBezGlyphs as _, quantifiers::appearance::stats::CurveStatistics as _,
-    quantifier, MetricValue,
+    MetricValue, monkeypatching::MakeBezGlyphs as _, quantifier,
+    quantifiers::appearance::stats::CurveStatistics as _,
 };
 
 quantifier!(
@@ -453,7 +453,8 @@ mod tests {
         assert_eq!(analyse(&path), Some(LoopStyle::Oval));
 
         // Rotation is not undone, but a circle has nothing to undo.
-        let rotated = Affine::rotate(0.4) * Ellipse::new((0., 0.), (100., 100.), 0.0).to_path(0.001);
+        let rotated =
+            Affine::rotate(0.4) * Ellipse::new((0., 0.), (100., 100.), 0.0).to_path(0.001);
         assert_eq!(analyse(&rotated), Some(LoopStyle::Circular));
     }
 

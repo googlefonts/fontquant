@@ -1,9 +1,9 @@
 use itertools::process_results;
 use kurbo::Shape;
-use linesweeper::{binary_op, BinaryOp, FillRule};
+use linesweeper::{BinaryOp, FillRule, binary_op};
 use skrifa;
 
-use crate::{bezglyph::BezGlyph, monkeypatching::MakeBezGlyphs, quantifier, MetricValue};
+use crate::{MetricValue, bezglyph::BezGlyph, monkeypatching::MakeBezGlyphs, quantifier};
 
 pub fn is_stencil_font(
     font: &skrifa::FontRef,

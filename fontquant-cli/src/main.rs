@@ -1,7 +1,7 @@
 use std::{collections::BTreeSet, path::Path, str::FromStr};
 
 use clap::Parser;
-use fontquant_lib::{run, Results};
+use fontquant_lib::{Results, run};
 use indicatif::ParallelProgressIterator;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use read_fonts::types::Tag;

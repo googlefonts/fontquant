@@ -1,12 +1,13 @@
 use crate::{
+    MetricValue,
     bezglyph::BezGlyph,
     error::FontquantError,
     monkeypatching::{MakeBezGlyphs, PrimaryScript},
-    quantifier, MetricValue,
+    quantifier,
 };
 use kurbo::{ParamCurveMoments, Point, Shape, Vec2};
-use skrifa::{self, prelude::Size, MetadataProvider};
-use skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
+use skrifa::{self, MetadataProvider, prelude::Size};
+use skrifa::{FontRef, raw::TableProvider, setting::VariationSetting};
 
 const EPSILON: f64 = 0.001;
 pub struct WholeFontStatistics {
@@ -151,11 +152,7 @@ pub(crate) trait CurveStatistics {
 impl CurveStatistics for kurbo::BezPath {
     fn slant(&self) -> f64 {
         let slant = self.covariance() / self.variance().y;
-        if slant.abs() > EPSILON {
-            slant
-        } else {
-            0.0
-        }
+        if slant.abs() > EPSILON { slant } else { 0.0 }
     }
     fn center_of_mass(&self) -> Point {
         let area = self.area();

@@ -1,7 +1,8 @@
 use crate::{
-    helpers::raycaster::{ProportionalPoint, Raycaster, Winding, NORTH},
+    MetricValue,
+    helpers::raycaster::{NORTH, ProportionalPoint, Raycaster, Winding},
     monkeypatching::MakeBezGlyphs as _,
-    quantifier, MetricValue,
+    quantifier,
 };
 
 quantifier!(

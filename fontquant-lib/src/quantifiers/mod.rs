@@ -3,6 +3,7 @@ use std::sync::LazyLock;
 use skrifa;
 
 use crate::{
+    MetricKey,
     quantifiers::{
         appearance::{
             metrics::{
@@ -26,7 +27,6 @@ use crate::{
         parametric::*,
         structure::{loops::LOOPS, waist::WAIST},
     },
-    MetricKey,
 };
 pub mod appearance;
 pub mod casing;
