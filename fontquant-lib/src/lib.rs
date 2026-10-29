@@ -13,7 +13,7 @@ pub mod quantifiers;
 #[macro_export]
 macro_rules! quantifier {
     ($ident:ident, $name:expr, $description:expr, $example_value:expr) => {
-        static $ident: std::sync::LazyLock<$crate::MetricKey> =
+        pub static $ident: std::sync::LazyLock<$crate::MetricKey> =
             std::sync::LazyLock::new(|| $crate::MetricKey {
                 name: $name.to_string(),
                 description: $description.to_string(),
@@ -125,11 +125,25 @@ impl Results {
     pub fn keys(&self) -> impl Iterator<Item = &String> {
         self.0.keys()
     }
+
+    pub fn filter(&self, strings: &[String]) -> Self {
+        if strings.is_empty() {
+            return self.clone();
+        }
+        let mut filtered = Results::new();
+        for (name, metric) in self.iter() {
+            if strings.iter().any(|s| name.contains(s)) {
+                filtered.add_metric(metric.0, metric.1.clone());
+            }
+        }
+        filtered
+    }
 }
 
 pub fn run(
     font: &skrifa::FontRef,
     location: &[skrifa::setting::VariationSetting],
+    only_run: &[String],
 ) -> Result<Results, FontquantError> {
     let mut results = Results::new();
     // We don't need this yet, but when we seriously start playing with variations,
@@ -139,8 +153,15 @@ pub fn run(
     // let mut norm_location = vec![NormalizedCoord::default(); axes.len()];
     // axes.location_to_slice(location, &mut norm_location);
 
-    for metric in ALL_QUANTIFIERS.iter() {
-        metric(font, location, &mut results)?;
+    for (metric, quantifier) in ALL_QUANTIFIERS.iter() {
+        if !only_run.is_empty() && !only_run.iter().any(|s| metric.name.contains(s)) {
+            continue;
+        }
+        if results.get(&metric.name).is_some() {
+            // May have already been filled in by an earlier function
+            continue;
+        }
+        quantifier(font, location, &mut results)?;
     }
     Ok(results)
 }

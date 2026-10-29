@@ -1,7 +1,7 @@
 use std::{collections::BTreeSet, path::Path, str::FromStr};
 
 use clap::Parser;
-use fontquant_lib::{Results, run};
+use fontquant_lib::{run, Results};
 use indicatif::ParallelProgressIterator;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use read_fonts::types::Tag;
@@ -13,6 +13,8 @@ struct Cli {
     #[arg(long)]
     csv: bool,
     fonts: Vec<String>,
+    #[arg(short, long, default_value = "", value_delimiter = ',')]
+    quantifiers: Vec<String>,
     #[arg(short, long, default_value = "", value_parser=parse_setting)]
     location: std::vec::Vec<Setting<f32>>,
 }
@@ -77,7 +79,7 @@ fn main() {
         .map(|font| {
             let font_data = std::fs::read(font).unwrap();
             let fontref = skrifa::FontRef::new(&font_data).expect("Failed to parse font");
-            run(&fontref, &args.location).map(|results| (font, results))
+            run(&fontref, &args.location, &args.quantifiers).map(|results| (font, results))
         })
         .collect::<Result<Vec<_>, _>>()
         .expect("Failed to run metrics");

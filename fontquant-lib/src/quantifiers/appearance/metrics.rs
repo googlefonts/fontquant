@@ -174,10 +174,10 @@ quantifier!(
 
 // Stolen from fontspector
 
-#[allow(dead_code)] // We'll use it one day
 struct GlyphMetricsStats {
     // At least 80% of encoded ASCII glyphs have the same width
     seems_monospaced: bool,
+    #[allow(dead_code)]
     // Largest advance width in the font
     width_max: u16,
     // Most common width
