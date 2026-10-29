@@ -1,13 +1,12 @@
 use crate::{
-    MetricValue,
     bezglyph::BezGlyph,
     error::FontquantError,
     monkeypatching::{MakeBezGlyphs, PrimaryScript},
-    quantifier,
+    quantifier, MetricValue,
 };
 use kurbo::{ParamCurveMoments, Point, Shape, Vec2};
-use skrifa::{self, MetadataProvider, prelude::Size};
-use skrifa::{FontRef, raw::TableProvider, setting::VariationSetting};
+use skrifa::{self, prelude::Size, MetadataProvider};
+use skrifa::{raw::TableProvider, setting::VariationSetting, FontRef};
 
 const EPSILON: f64 = 0.001;
 pub struct WholeFontStatistics {
@@ -41,7 +40,7 @@ impl WholeFontStatistics {
             else {
                 continue;
             };
-            let slant = glyph_slant(&bezglyph);
+            let slant = glyph_slant(&bezglyph)?;
             let area = bezglyph
                 .iter()
                 .map(|p| p.area())
@@ -77,10 +76,12 @@ impl WholeFontStatistics {
     }
 }
 
-fn glyph_slant(bezglyph: &BezGlyph) -> f64 {
+fn glyph_slant(bezglyph: &BezGlyph) -> Result<f64, FontquantError> {
+    let bezglyph = bezglyph.remove_overlaps()?;
+
     let area = bezglyph.iter().map(|p| p.area()).sum::<f64>();
     if area == 0.0 {
-        return 0.0;
+        return Ok(0.0);
     }
 
     let (moment_x, moment_y, moment_yy, moment_xy) =
@@ -105,7 +106,11 @@ fn glyph_slant(bezglyph: &BezGlyph) -> f64 {
     } else {
         f64::NAN
     };
-    if slant.abs() > EPSILON { slant } else { 0.0 }
+    if slant.abs() > EPSILON {
+        Ok(slant)
+    } else {
+        Ok(0.0)
+    }
 }
 
 quantifier!(
@@ -146,7 +151,11 @@ pub(crate) trait CurveStatistics {
 impl CurveStatistics for kurbo::BezPath {
     fn slant(&self) -> f64 {
         let slant = self.covariance() / self.variance().y;
-        if slant.abs() > EPSILON { slant } else { 0.0 }
+        if slant.abs() > EPSILON {
+            slant
+        } else {
+            0.0
+        }
     }
     fn center_of_mass(&self) -> Point {
         let area = self.area();
@@ -170,5 +179,26 @@ impl CurveStatistics for kurbo::BezPath {
         let mean = self.center_of_mass();
         let moments = self.moments();
         moments.moment_xy / area - mean.x * mean.y
+    }
+}
+
+#[allow(clippy::unwrap_used)] // it's a test suite
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_slant_not_extreme() {
+        let fontref = skrifa::FontRef::new(include_bytes!(
+            "../../../../tests/fonts/Wallpoet-Subset.ttf"
+        ))
+        .unwrap();
+        let stats = WholeFontStatistics::new_from_font(&fontref, &[]).unwrap();
+        // This is an upright font
+        assert!(
+            stats.slant.abs() < 2.0,
+            "Slant is too extreme: {}",
+            stats.slant
+        );
     }
 }
