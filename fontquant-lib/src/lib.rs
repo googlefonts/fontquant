@@ -38,7 +38,7 @@ pub enum MetricValue {
     Dictionary(HashMap<String, String>),
     /// A boolean value, typically true or false.
     Boolean(bool),
-    /// A value representing an angle in degrees.
+    /// A value representing an angle in degrees. Store in degrees.
     Angle(f64),
     /// A value representing a length in em units.
     PerMille(f64),

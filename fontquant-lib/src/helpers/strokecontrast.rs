@@ -139,7 +139,7 @@ fn _stroke_contrast_antiqua(
     let angle = second_min_index.map(|second_min_index| {
         let min = strokes_list[min_index].half_way;
         let second_min = strokes_list[second_min_index].half_way;
-        (min - second_min).angle() as f32
+        (min - second_min).angle().to_degrees() as f32
     });
     let contrast = strokes_list[max_index].distance / strokes_list[min_index].distance;
     Some((contrast, angle))
