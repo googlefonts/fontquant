@@ -1,9 +1,9 @@
 use itertools::process_results;
 use kurbo::Shape;
-use linesweeper::{BinaryOp, FillRule, binary_op};
+use linesweeper::{binary_op, BinaryOp, FillRule};
 use skrifa;
 
-use crate::{MetricValue, bezglyph::BezGlyph, monkeypatching::MakeBezGlyphs, quantifier};
+use crate::{bezglyph::BezGlyph, monkeypatching::MakeBezGlyphs, quantifier, MetricValue};
 
 pub fn is_stencil_font(
     font: &skrifa::FontRef,
@@ -15,6 +15,9 @@ pub fn is_stencil_font(
         .iter()
         .flat_map(|c| font.bezglyph_for_char(location, None, *c).transpose())
         .collect::<Result<Vec<_>, _>>()?;
+    if glyphs_we_have.is_empty() {
+        return Ok(()); // No result
+    }
     let result = process_results(glyphs_we_have.iter().map(is_stencil_glyph), |mut iter| {
         iter.all(|c| c)
     })?;
