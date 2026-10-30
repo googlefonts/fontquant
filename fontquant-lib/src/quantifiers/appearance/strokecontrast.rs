@@ -1,6 +1,7 @@
 use crate::{
     MetricValue,
     helpers::{
+        medial,
         raycaster::{EAST, NORTH, ProportionalPoint, Raycaster},
         strokecontrast,
     },
@@ -25,6 +26,19 @@ pub fn get_stroke_contrast(
         if let Some(angle) = angle {
             results.add_metric(
                 &STROKE_CONTRAST_ANTIQUA_ANGLE,
+                MetricValue::Angle(angle.into()),
+            );
+        }
+    }
+
+    if let Some((contrast, angle)) = medial::stroke_contrast_medial(&lower_o) {
+        results.add_metric(
+            &STROKE_CONTRAST_MEDIAL,
+            MetricValue::Metric(contrast.into()),
+        );
+        if let Some(angle) = angle {
+            results.add_metric(
+                &STROKE_CONTRAST_MEDIAL_ANGLE,
                 MetricValue::Angle(angle.into()),
             );
         }
@@ -105,6 +119,29 @@ quantifier!(
     "The pen angle of the lower-case 'o' glyph, for well-behaved antiqua fonts.
 
 See the caveats in `stroke_contrast/antiqua` quantifier.
+",
+    MetricValue::Angle(30.0)
+);
+
+quantifier!(
+    STROKE_CONTRAST_MEDIAL,
+    "stroke_contrast/medial",
+    r#"The font's stroke contrast, based on the medial axis.
+
+This quantifier rasterizes the lower-case 'o' glyph, computes its distance
+transform, extracts and prunes the medial axis, and takes the ratio of the
+90th to the 10th percentile of the stroke half-widths along it. It is designed
+to be robust to rough-edged fonts, reverse contrast and italics, and returns
+no value when the 'o' is too far from a simple ring shape to measure.
+    "#,
+    MetricValue::Metric(3.0)
+);
+quantifier!(
+    STROKE_CONTRAST_MEDIAL_ANGLE,
+    "stroke_contrast/medial_angle",
+    "The direction of the thin axis of the lower-case 'o' glyph, in degrees.
+
+See the caveats in `stroke_contrast/medial` quantifier.
 ",
     MetricValue::Angle(30.0)
 );

@@ -1,5 +1,6 @@
 use kurbo::{BezPath, Line, ParamCurve, Point};
 
+pub mod medial;
 pub mod raycaster;
 pub mod shaping;
 pub mod strokecontrast;

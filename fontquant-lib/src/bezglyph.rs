@@ -3,7 +3,7 @@ use linesweeper::{BinaryOp, FillRule, binary_op, topology::Contours};
 
 use crate::error::FontquantError;
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct BezGlyph(pub(crate) Vec<BezPath>);
 
 impl BezGlyph {
