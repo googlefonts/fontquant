@@ -10,6 +10,7 @@ use crate::{
                 ASCENDER, CAP_HEIGHT, DESCENDER, I_WIDTH, MONOSPACED, MOST_COMMON_WIDTH, N_WIDTH,
                 PROPORTION_LOWERCASE, PROPORTION_UPPERCASE, SPACE_WIDTH, X_HEIGHT,
             },
+            roughness::ROUGHNESS,
             stats::{SLANT, WEIGHT, WEIGHT_PERCEPTUAL, WIDTH},
             stencil::STENCIL,
             storys::{LOWERCASE_A_STYLE, LOWERCASE_G_STYLE},
@@ -58,6 +59,7 @@ all_quantifiers!(
     quantifier appearance::WholeFontStatistics::gather_from_font => [WEIGHT, WEIGHT_PERCEPTUAL, WIDTH, SLANT]
     quantifier parametric::get_parametric => [XCLR, XCLS, XOFI, XOFI, XOLC, XOPQ, XTFI, XTLC, XTRA, YOFI, YOFI, YOLC, YOPQ, YTAS, YTDE]
     quantifier appearance::is_stencil_font => [STENCIL]
+    quantifier appearance::get_roughness => [ROUGHNESS]
     quantifier appearance::get_stroke_contrast => [STROKE_CONTRAST_ANTIQUA, STROKE_CONTRAST_ANTIQUA_ANGLE, STROKE_CONTRAST_MEDIAL, STROKE_CONTRAST_MEDIAL_ANGLE, STROKE_CONTRAST_RAYCASTER]
     quantifier appearance::metrics::gather_from_font => [X_HEIGHT, CAP_HEIGHT, ASCENDER, DESCENDER, N_WIDTH, SPACE_WIDTH, I_WIDTH, MOST_COMMON_WIDTH, MONOSPACED, PROPORTION_LOWERCASE, PROPORTION_UPPERCASE]
     quantifier casing::is_unicase => [UNICASE]
