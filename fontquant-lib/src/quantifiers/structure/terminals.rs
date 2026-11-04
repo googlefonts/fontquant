@@ -14,7 +14,9 @@
 //! terminals. A pair of consecutive walls is a stem end when
 //!
 //! * the two walls run in opposite directions (up one side, down the other),
-//! * together with the joining run they turn by about 180 degrees,
+//! * together with the joining run they turn by about 180 degrees (a run with a
+//!   pointed tip, where the outline doubles back on itself, is measured the way
+//!   round that keeps the turn small),
 //! * the run spans roughly the width of the stem, rather than the width of a
 //!   counter or of the whole glyph,
 //! * it does not bulge out along the stem much more than the stem is wide (so
@@ -25,6 +27,11 @@
 //! The last two tests are what separate the top of a stem from an arch: at the
 //! top of an `n`, for example, the run between the outer walls spans the whole
 //! arch and the point between the walls is the counter, not ink.
+//!
+//! A flared stem usually ends in a short, almost vertical piece where the flare
+//! turns over, which looks exactly like a wall. Such a piece is part of the
+//! terminal, so a pair whose wall is too short to be a wall is extended through
+//! the neighbouring run until it reaches a real one.
 //!
 //! All of the geometry is measured after deslanting the outline with the font's
 //! slant, so italic stems are vertical and the corner angles are the angles the
@@ -37,20 +44,27 @@
 //!
 //! # Classification
 //!
-//! [`classify_terminal`] categorises a detected terminal:
+//! The shape of the cap and the width profile of the stem are classified
+//! separately, because a terminal can be, for example, both angled and flared.
+//!
+//! [`classify_terminal`] categorises the cap:
 //!
 //! * **blunted** - a flat cap with roughly 90 degree corners;
 //! * **angled** - a flat cap whose corners are not at 90 degrees, usually
 //!   because the end of the stem is cut at a slant;
 //! * **rounded** - a continuous, roughly semicircular curve joining the walls;
 //! * **soft** - a rounded-rectangle cap: a straight top (or an apex flatter
-//!   than a circle) with rounded corners;
-//! * **flared** - the stem is wider at the terminal than one stem width down;
-//! * **tapered** - the stem is narrower there.
+//!   than a circle) with rounded corners.
 //!
-//! An angled cut is reported even when the stem also flares, and a pronounced
-//! flare or taper is reported even for a flat cap. [`most_common_shape`] picks
-//! the shape found most often across a font, and returns `None` on a tie.
+//! [`classify_stem_profile`] categorises the width of the stem:
+//!
+//! * **flared** - the stem is wider at the terminal than one stem width down;
+//! * **straight** - it does not change width appreciably;
+//! * **tapered** - the stem is narrower at the terminal.
+//!
+//! [`most_common_shape`] and [`most_common_profile`] pick the most common value
+//! across a font, and return `None` on a tie. They fill in the
+//! `structure/stem_terminals` and `structure/stem_profile` metrics.
 //!
 //! # Limitations
 //!
@@ -62,7 +76,7 @@
 //! terminal can be found at all, which includes most serif designs, get no
 //! classification.
 
-use std::f64::consts::PI;
+use std::{collections::HashSet, f64::consts::PI};
 
 use kurbo::{Affine, BezPath, ParamCurve as _, PathSeg, Point, Shape as _, Vec2};
 use read_fonts::TableProvider as _;
@@ -88,18 +102,15 @@ const VERTICAL_TOLERANCE_DEGREES: f64 = 15.0;
 const MIN_TURN_DEGREES: f64 = 140.0;
 const MAX_TURN_DEGREES: f64 = 220.0;
 
-/// Extra turning, in degrees, allowed on top of the net turn. A blunt terminal
-/// turns in two jumps of 90 degrees; a rounded one turns smoothly. Anything
-/// that turns backwards on the way (like the tip of a tail) exceeds this.
-const MAX_EXTRA_TURN_DEGREES: f64 = 60.0;
-
 /// Plausible terminal widths, as a fraction of the em.
 const MIN_WIDTH_EM: f64 = 0.008;
 const MAX_WIDTH_EM: f64 = 0.35;
 
 /// How far the terminal may bulge along the stem, relative to the stem width.
-const MAX_DEPTH_RATIO: f64 = 1.3;
-const MIN_DEPTH_RATIO: f64 = -0.3;
+/// Flared terminals turn over along a long curve, so this has to be generous;
+/// arches are rejected by the ink test rather than by their depth.
+const MAX_DEPTH_RATIO: f64 = 6.0;
+const MIN_DEPTH_RATIO: f64 = -0.5;
 
 /// Each wall must run at least this fraction of the stem width away from the
 /// terminal. This is only a guard against reading a tiny vertical wobble as a
@@ -109,7 +120,7 @@ const MIN_WALL_RATIO: f64 = 0.15;
 
 /// A stem at least this much wider (or narrower) at the terminal than one stem
 /// width down the stem is flared (or tapered).
-const FLARED_RATIO: f64 = 1.08;
+const FLARED_RATIO: f64 = 1.05;
 const TAPERED_RATIO: f64 = 0.85;
 
 /// A terminal is flat when this much of it is straight and it does not bulge
@@ -219,16 +230,25 @@ pub fn find_stem_terminals(
         }
         let samples = samples(&segments, shear);
         let runs = vertical_runs(&samples);
+        log::debug!(
+            "{glyph}: contour {contour} has {} samples and {} vertical wall runs",
+            samples.len(),
+            runs.len()
+        );
         if runs.len() < 2 {
             continue;
         }
-        for (i, run) in runs.iter().enumerate() {
-            let next = &runs[(i + 1) % runs.len()];
-            if run.direction == next.direction {
-                continue;
-            }
+        for (start, end) in wall_pairs(&samples, &runs) {
             if let Some(terminal) = terminal_between(
-                glyph, contour, &segments, &samples, run, next, paths, slant, upem,
+                glyph,
+                contour,
+                &segments,
+                &samples,
+                &runs[start],
+                &runs[end],
+                paths,
+                slant,
+                upem,
             ) {
                 terminals.push(terminal);
             }
@@ -336,6 +356,53 @@ fn is_vertical(tangent: Vec2) -> bool {
     from_vertical <= VERTICAL_TOLERANCE_DEGREES
 }
 
+/// Pairs of wall runs that could be the two sides of a stem end, as indices
+/// into `runs`.
+///
+/// A flared terminal often starts with a very short near-vertical piece where
+/// the flare turns over. Such a piece belongs to the terminal rather than to a
+/// wall, so a pair whose wall is shorter than [`MIN_WALL_RATIO`] of the stem
+/// width is extended through the neighbouring run until it reaches a real
+/// wall. Different runs can lead to the same pair this way; each pair is
+/// returned once.
+fn wall_pairs(samples: &[Sample], runs: &[Run]) -> Vec<(usize, usize)> {
+    let count = runs.len();
+    let mut pairs = Vec::new();
+    let mut seen = HashSet::new();
+    for i in 0..count {
+        let mut start = i;
+        let mut end = (i + 1) % count;
+        if runs[start].direction == runs[end].direction {
+            continue;
+        }
+        for _ in 0..count {
+            let width = cap_width(samples, runs[start].end, runs[end].start);
+            let mut extended = false;
+            if run_length(samples, runs[start].start, runs[start].end) < MIN_WALL_RATIO * width {
+                let previous = (start + count - 1) % count;
+                if previous != end && runs[previous].direction != runs[end].direction {
+                    start = previous;
+                    extended = true;
+                }
+            }
+            if run_length(samples, runs[end].start, runs[end].end) < MIN_WALL_RATIO * width {
+                let next = (end + 1) % count;
+                if next != start && runs[next].direction != runs[start].direction {
+                    end = next;
+                    extended = true;
+                }
+            }
+            if !extended {
+                break;
+            }
+        }
+        if seen.insert((start, end)) {
+            pairs.push((start, end));
+        }
+    }
+    pairs
+}
+
 /// Maximal cyclic runs of samples whose tangent is close to vertical.
 fn vertical_runs(samples: &[Sample]) -> Vec<Run> {
     let n = samples.len();
@@ -404,23 +471,23 @@ fn terminal_between(
         return None;
     }
 
-    // Net turning, and how much the outline turns in total, from the first
-    // wall to the second.
+    // Net turn from the first wall to the second.
     let mut turn = 0.0;
-    let mut total_turn = 0.0;
     let mut previous = samples[a].tangent.atan2();
     for &i in cap.iter().chain(std::iter::once(&b)) {
         let current = samples[i].tangent.atan2();
-        let step = signed_angle_difference(previous, current);
-        turn += step;
-        total_turn += step.abs();
+        turn += cap_step(turn, previous, current);
         previous = current;
     }
     let turn_degrees = turn.to_degrees();
     if !(MIN_TURN_DEGREES..=MAX_TURN_DEGREES).contains(&turn_degrees.abs()) {
-        return None;
-    }
-    if total_turn.to_degrees() > turn_degrees.abs() + MAX_EXTRA_TURN_DEGREES {
+        log::debug!(
+            "{glyph}: rejected cap at ({:.0},{:.0}): turn {turn_degrees:.0} deg outside {}..{}",
+            samples[a].point.x,
+            samples[a].point.y,
+            MIN_TURN_DEGREES,
+            MAX_TURN_DEGREES
+        );
         return None;
     }
 
@@ -428,6 +495,14 @@ fn terminal_between(
     let junction_b = samples[b].point;
     let width = (junction_b.x - junction_a.x).abs();
     if width <= 0.0 || !(MIN_WIDTH_EM..=MAX_WIDTH_EM).contains(&(width / upem)) {
+        log::debug!(
+            "{glyph}: rejected cap at ({:.0},{:.0}): width {:.0} outside {}..{} em",
+            junction_a.x,
+            junction_a.y,
+            width,
+            MIN_WIDTH_EM * upem,
+            MAX_WIDTH_EM * upem
+        );
         return None;
     }
 
@@ -445,12 +520,29 @@ fn terminal_between(
                 .fold(f64::INFINITY, f64::min)
     };
     if depth > MAX_DEPTH_RATIO * width || depth < MIN_DEPTH_RATIO * width {
+        log::debug!(
+            "{glyph}: rejected cap at ({:.0},{:.0}): depth {:.0} outside {}..{} for width {:.0}",
+            junction_a.x,
+            junction_a.y,
+            depth,
+            MIN_DEPTH_RATIO * width,
+            MAX_DEPTH_RATIO * width,
+            width
+        );
         return None;
     }
 
     let wall_a_length = run_length(samples, wall_a.start, a);
     let wall_b_length = run_length(samples, b, wall_b.end);
     if wall_a_length.min(wall_b_length) < MIN_WALL_RATIO * width {
+        log::debug!(
+            "{glyph}: rejected cap at ({:.0},{:.0}): walls {:.0} and {:.0} shorter than {:.0}",
+            junction_a.x,
+            junction_a.y,
+            wall_a_length,
+            wall_b_length,
+            MIN_WALL_RATIO * width
+        );
         return None;
     }
 
@@ -471,6 +563,13 @@ fn terminal_between(
     let inside = unslant(Point::new(middle_x, inside_y), slant);
     let outside = unslant(Point::new(middle_x, outside_y), slant);
     if !is_ink(paths, inside) || is_ink(paths, outside) {
+        log::debug!(
+            "{glyph}: rejected cap at ({:.0},{:.0}): ink test failed (inside={}, outside={})",
+            junction_a.x,
+            junction_a.y,
+            is_ink(paths, inside),
+            is_ink(paths, outside)
+        );
         return None;
     }
 
@@ -490,6 +589,23 @@ fn terminal_between(
     })
 }
 
+/// The turn from one tangent to the next, as part of a running turn. Where
+/// the outline reverses (at the pointed tip of a flare, say) the direction of
+/// the reversal is ambiguous; take the one that keeps the running turn small,
+/// so that a doubling back cancels out.
+fn cap_step(turn: f64, previous: f64, current: f64) -> f64 {
+    let step = signed_angle_difference(previous, current);
+    if (step.abs() - PI).abs() > 1e-9 {
+        return step;
+    }
+    let opposite = step - step.signum() * 2.0 * PI;
+    if (turn + opposite).abs() < (turn + step).abs() {
+        opposite
+    } else {
+        step
+    }
+}
+
 fn signed_angle_difference(from: f64, to: f64) -> f64 {
     let mut difference = to - from;
     while difference > PI {
@@ -499,6 +615,10 @@ fn signed_angle_difference(from: f64, to: f64) -> f64 {
         difference += 2.0 * PI;
     }
     difference
+}
+
+fn cap_width(samples: &[Sample], a: usize, b: usize) -> f64 {
+    (samples[b].point.x - samples[a].point.x).abs()
 }
 
 fn run_length(samples: &[Sample], start: usize, end: usize) -> f64 {
@@ -678,21 +798,17 @@ pub fn terminal_features(terminal: &StemTerminal) -> Option<TerminalFeatures> {
     })
 }
 
-/// The shape of a stem terminal.
+/// The shape of the cap at the end of a stem.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TerminalShape {
     /// Roughly 90 degree corners and a flat cap.
     Blunted,
-    /// Corners that are not at 90 degrees, possibly with a little rounding.
+    /// A flat cap cut at an angle, so its corners are not at 90 degrees.
     Angled,
     /// A semicircular, or nearly semicircular, cap.
     Rounded,
     /// A rounded-rectangle cap: a flat top with rounded corners.
     Soft,
-    /// The stem is wider at the terminal than further down.
-    Flared,
-    /// The stem is narrower at the terminal than further down.
-    Tapered,
 }
 
 impl std::fmt::Display for TerminalShape {
@@ -702,38 +818,46 @@ impl std::fmt::Display for TerminalShape {
             TerminalShape::Angled => "angled",
             TerminalShape::Rounded => "rounded",
             TerminalShape::Soft => "soft",
-            TerminalShape::Flared => "flared",
-            TerminalShape::Tapered => "tapered",
         })
     }
 }
 
-/// Categorise a terminal from its measurements.
+/// The width profile of a stem, independent of the shape of its cap.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum StemProfile {
+    /// The stem is wider at the terminal than one stem width down.
+    Flared,
+    /// The stem does not change width appreciably towards the terminal.
+    Straight,
+    /// The stem is narrower at the terminal than one stem width down.
+    Tapered,
+}
+
+impl std::fmt::Display for StemProfile {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            StemProfile::Flared => "flared",
+            StemProfile::Straight => "straight",
+            StemProfile::Tapered => "tapered",
+        })
+    }
+}
+
+/// Categorise the cap of a terminal from its measurements.
 ///
-/// A pronounced flare or taper wins, because it is a property of the stem
-/// rather than of the cap. Otherwise a flat cap is blunted or angled depending
-/// on how its corners sit. A curved cap is soft when it has a straight top (a
-/// rounded-rectangle terminal) and rounded when it is a continuous curve.
+/// The cap is blunted or angled when it is flat, and rounded or soft when it
+/// is curved. The width profile of the stem is reported separately by
+/// [`classify_stem_profile`].
 pub fn classify_terminal(terminal: &StemTerminal) -> Option<TerminalShape> {
     let features = terminal_features(terminal)?;
     let flat =
         features.straight_ratio >= FLAT_STRAIGHT_RATIO && features.bulge_ratio <= FLAT_BULGE_RATIO;
-    let tilted = features.chord_angle > ANGLED_CHORD_DEGREES;
-    // An angled cut is a property of the terminal itself, so it is reported
-    // even when the stem also flares.
-    if flat && tilted {
-        return Some(TerminalShape::Angled);
-    }
-    if let Some(flare) = features.flare_ratio {
-        if flare >= FLARED_RATIO {
-            return Some(TerminalShape::Flared);
-        }
-        if flare <= TAPERED_RATIO {
-            return Some(TerminalShape::Tapered);
-        }
-    }
     if flat {
-        return Some(TerminalShape::Blunted);
+        return Some(if features.chord_angle > ANGLED_CHORD_DEGREES {
+            TerminalShape::Angled
+        } else {
+            TerminalShape::Blunted
+        });
     }
     let flat_topped =
         features.line_ratio >= SOFT_LINE_RATIO || features.apex_radius > SOFT_APEX_RATIO;
@@ -744,20 +868,32 @@ pub fn classify_terminal(terminal: &StemTerminal) -> Option<TerminalShape> {
     })
 }
 
-/// The shape that occurs most often, or `None` when there is a tie or nothing
-/// to count.
-pub fn most_common_shape(shapes: impl IntoIterator<Item = TerminalShape>) -> Option<TerminalShape> {
+/// Categorise the width profile of a stem: flared, tapered or straight.
+///
+/// `None` when the walls are too short to measure a profile.
+pub fn classify_stem_profile(terminal: &StemTerminal) -> Option<StemProfile> {
+    let flare = terminal_features(terminal)?.flare_ratio?;
+    Some(if flare >= FLARED_RATIO {
+        StemProfile::Flared
+    } else if flare <= TAPERED_RATIO {
+        StemProfile::Tapered
+    } else {
+        StemProfile::Straight
+    })
+}
+
+fn most_common<T: Eq + std::hash::Hash + Copy>(items: impl IntoIterator<Item = T>) -> Option<T> {
     let mut counts = std::collections::HashMap::new();
-    for shape in shapes {
-        *counts.entry(shape).or_insert(0usize) += 1;
+    for item in items {
+        *counts.entry(item).or_insert(0usize) += 1;
     }
     let mut best = None;
     let mut tied = false;
-    for (shape, count) in counts {
+    for (item, count) in counts {
         match best {
-            None => best = Some((shape, count)),
+            None => best = Some((item, count)),
             Some((_, best_count)) if count > best_count => {
-                best = Some((shape, count));
+                best = Some((item, count));
                 tied = false;
             }
             Some((_, best_count)) if count == best_count => tied = true,
@@ -767,8 +903,20 @@ pub fn most_common_shape(shapes: impl IntoIterator<Item = TerminalShape>) -> Opt
     if tied {
         None
     } else {
-        best.map(|(shape, _)| shape)
+        best.map(|(item, _)| item)
     }
+}
+
+/// The cap shape that occurs most often, or `None` when there is a tie or
+/// nothing to count.
+pub fn most_common_shape(shapes: impl IntoIterator<Item = TerminalShape>) -> Option<TerminalShape> {
+    most_common(shapes)
+}
+
+/// The stem profile that occurs most often among the terminals that have one,
+/// or `None` when there is a tie or nothing to measure.
+pub fn most_common_profile(terminals: &[StemTerminal]) -> Option<StemProfile> {
+    most_common(terminals.iter().filter_map(classify_stem_profile))
 }
 
 /// The largest distance of the terminal from the chord between its two ends,
@@ -936,13 +1084,24 @@ quantifier!(
     STEM_TERMINALS,
     "structure/stem_terminals",
     r#"The shape of the ends of the stems of the letters 'l', 'm' and 'n', as the
-most common of blunted (roughly 90 degree corners), angled (corners that are
-not 90 degrees), rounded (a semicircular cap), soft (a rounded-rectangle cap),
-flared (the stem widens towards its end) and tapered (the stem narrows towards
-its end). Fonts whose terminals cannot be found, such as most serif designs,
-are not given a value.
+most common of blunted (roughly 90 degree corners), angled (a flat cap cut at
+an angle), rounded (a semicircular cap) and soft (a rounded-rectangle cap).
+Fonts whose terminals cannot be found, such as most serif designs, are not
+given a value. Whether the stem widens or narrows towards the terminal is
+reported separately by `structure/stem_profile`.
 "#,
     MetricValue::String("blunted".to_string())
+);
+
+quantifier!(
+    STEM_PROFILE,
+    "structure/stem_profile",
+    r#"The width profile of the ends of the stems of the letters 'l', 'm' and 'n',
+as the most common of flared (the stem widens towards its end), straight and
+tapered (the stem narrows towards its end). Fonts whose stem widths cannot be
+measured, such as most serif designs, are not given a value.
+"#,
+    MetricValue::String("straight".to_string())
 );
 
 pub(crate) fn gather_stem_terminals(
@@ -954,6 +1113,9 @@ pub(crate) fn gather_stem_terminals(
     let shapes = terminals.iter().filter_map(classify_terminal);
     if let Some(shape) = most_common_shape(shapes) {
         results.add_metric(&STEM_TERMINALS, MetricValue::String(shape.to_string()));
+    }
+    if let Some(profile) = most_common_profile(&terminals) {
+        results.add_metric(&STEM_PROFILE, MetricValue::String(profile.to_string()));
     }
     Ok(())
 }
@@ -1083,7 +1245,8 @@ mod tests {
         ]);
         let terminals = find(&[glyph], 0.0, 1000.0);
         let top = terminals.iter().find(|terminal| terminal.top).unwrap();
-        assert_eq!(classify_terminal(top), Some(TerminalShape::Flared));
+        assert_eq!(classify_terminal(top), Some(TerminalShape::Blunted));
+        assert_eq!(classify_stem_profile(top), Some(StemProfile::Flared));
     }
 
     #[test]
@@ -1098,7 +1261,8 @@ mod tests {
         ]);
         let terminals = find(&[glyph], 0.0, 1000.0);
         let top = terminals.iter().find(|terminal| terminal.top).unwrap();
-        assert_eq!(classify_terminal(top), Some(TerminalShape::Tapered));
+        assert_eq!(classify_terminal(top), Some(TerminalShape::Blunted));
+        assert_eq!(classify_stem_profile(top), Some(StemProfile::Tapered));
     }
 
     #[test]
@@ -1112,27 +1276,40 @@ mod tests {
         assert_eq!(most_common_shape([]), None);
     }
 
-    fn metric_shape(font_data: &[u8]) -> Option<String> {
+    fn metric_value(font_data: &[u8], key: &str) -> Option<String> {
         let font = skrifa::FontRef::new(font_data).unwrap();
         let mut results = crate::Results::new();
         gather_stem_terminals(&font, &[], &mut results).unwrap();
-        results
-            .get(STEM_TERMINALS.name.as_str())
-            .map(|metric| metric.1.to_string())
+        results.get(key).map(|metric| metric.1.to_string())
     }
 
     #[test]
     fn metric_shapes_for_test_fonts() {
+        let open_sans = font("OpenSans-VariableFont_wdth,wght.ttf");
         assert_eq!(
-            metric_shape(&font("OpenSans-VariableFont_wdth,wght.ttf")).as_deref(),
+            metric_value(&open_sans, &STEM_TERMINALS.name).as_deref(),
             Some("blunted")
         );
         assert_eq!(
-            metric_shape(&font("DeliusUnicase-Regular.ttf")).as_deref(),
+            metric_value(&open_sans, &STEM_PROFILE.name).as_deref(),
+            Some("straight")
+        );
+        let delius = font("DeliusUnicase-Regular.ttf");
+        assert_eq!(
+            metric_value(&delius, &STEM_TERMINALS.name).as_deref(),
             Some("rounded")
         );
         assert_eq!(
-            metric_shape(&font("Farro-Regular.ttf")).as_deref(),
+            metric_value(&delius, &STEM_PROFILE.name).as_deref(),
+            Some("straight")
+        );
+        let farro = font("Farro-Regular.ttf");
+        assert_eq!(
+            metric_value(&farro, &STEM_TERMINALS.name).as_deref(),
+            Some("blunted")
+        );
+        assert_eq!(
+            metric_value(&farro, &STEM_PROFILE.name).as_deref(),
             Some("flared")
         );
     }
@@ -1198,6 +1375,27 @@ mod tests {
     fn roboto_flex_terminal_counts() {
         let data = font("RobotoFlex-Var.ttf");
         assert_eq!(counts(&data), (2, 4, 3));
+    }
+
+    /// These fonts flare out to a short, almost vertical piece at the very end
+    /// of each stem, sometimes with a pointed tip where the outline doubles
+    /// back. That piece is part of the terminal, not a wall.
+    #[test]
+    fn flared_terminal_counts() {
+        for name in [
+            "Asul-Regular.ttf",
+            "Marcellus-Regular.ttf",
+            "Smythe-Regular.ttf",
+            "RedRose[wght].ttf",
+        ] {
+            let data = font(name);
+            assert_eq!(counts(&data), (2, 4, 3), "{name}");
+            assert_eq!(
+                metric_value(&data, &STEM_PROFILE.name).as_deref(),
+                Some("flared"),
+                "{name}"
+            );
+        }
     }
 
     fn slices_to_path(slices: &[SegmentSlice]) -> BezPath {
@@ -1330,6 +1528,10 @@ mod tests {
         let output = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../output");
         for name in [
             "ABeeZee-Regular.ttf",
+            "Asul-Regular.ttf",
+            "Marcellus-Regular.ttf",
+            "Smythe-Regular.ttf",
+            "RedRose[wght].ttf",
             "Poppins-Regular.ttf",
             "Inter-Italic[opsz,wght].ttf",
             "Baloo2[wght].ttf",
