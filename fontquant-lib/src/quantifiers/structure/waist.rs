@@ -19,11 +19,11 @@ pub(crate) fn measure_waist(
     results: &mut crate::Results,
 ) -> Result<(), crate::FontquantError> {
     let Some(h_glyph) = font.bezglyph_for_char(location, Some(1.0), 'H')? else {
-        println!("No 'H' glyph found");
+        log::debug!("No 'H' glyph found");
         return Ok(());
     };
     let Some(bbox) = h_glyph.bbox() else {
-        println!("No bounding box for 'H' glyph");
+        log::debug!("No bounding box for 'H' glyph");
         return Ok(());
     };
     // Find the crossbar by raycasting vertically through the glyph. We do this in parametric too.
@@ -42,7 +42,7 @@ pub(crate) fn measure_waist(
         .map(|pt| (pt.0.y + pt.1.y) / 2.0)
         .collect();
     if y_values.is_empty() {
-        println!("No crossbar found");
+        log::debug!("No crossbar found");
         return Ok(());
     }
     let average_y = y_values.iter().sum::<f64>() / y_values.len() as f64;

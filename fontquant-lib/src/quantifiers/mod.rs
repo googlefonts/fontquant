@@ -27,7 +27,11 @@ use crate::{
         },
         opentype::{WEIGHT_CLASS, WIDTH_CLASS},
         parametric::*,
-        structure::{loops::LOOPS, waist::WAIST},
+        structure::{
+            loops::LOOPS,
+            terminals::{STEM_TERMINALS, gather_stem_terminals},
+            waist::WAIST,
+        },
     },
 };
 pub mod appearance;
@@ -72,4 +76,5 @@ all_quantifiers!(
     quantifier opentype::get_fields => [WEIGHT_CLASS, WIDTH_CLASS]
     quantifier structure::loops::check_loop_style => [LOOPS]
     quantifier structure::waist::measure_waist => [WAIST]
+    quantifier gather_stem_terminals => [STEM_TERMINALS]
 );
