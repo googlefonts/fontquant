@@ -60,8 +60,8 @@ use read_fonts::TableProvider as _;
 use crate::{MetricValue, error::FontquantError, monkeypatching::MakeBezGlyphs as _, quantifier};
 
 use super::outline::{
-    Run, Sample, SegmentSlice, cap_step, chain_path, deslant_shear, flatten, is_ink, samples,
-    slant_of, slices_between, unslant, vertical_runs,
+    Run, Sample, SegmentSlice, cap_step, chain_path, deslant_shear, flatten, is_ink, resample,
+    samples, slant_of, slices_between, unslant, vertical_runs,
 };
 
 /// The glyphs used to measure serifs.
@@ -696,44 +696,6 @@ fn serif_at(
         chain,
         slant,
     })
-}
-
-/// Points at even distances along a polyline.
-///
-/// Flattening a chain leaves the corners and little else, so a straight edge
-/// contributes two points however long it is. Spacing the points by distance
-/// instead keeps every part of the serif represented when the chain is sampled
-/// along an axis.
-fn resample(points: &[Point], count: usize) -> Vec<Point> {
-    if points.len() < 2 || count < 2 {
-        return points.to_vec();
-    }
-    let mut lengths = Vec::with_capacity(points.len());
-    lengths.push(0.0);
-    let mut total = 0.0;
-    for pair in points.windows(2) {
-        total += pair[0].distance(pair[1]);
-        lengths.push(total);
-    }
-    if total <= 0.0 {
-        return points.to_vec();
-    }
-    let mut out = Vec::with_capacity(count);
-    let mut index = 0;
-    for step in 0..count {
-        let target = total * step as f64 / (count - 1) as f64;
-        while index + 2 < lengths.len() && lengths[index + 1] < target {
-            index += 1;
-        }
-        let length = lengths[index + 1] - lengths[index];
-        let t = if length > 0.0 {
-            ((target - lengths[index]) / length).clamp(0.0, 1.0)
-        } else {
-            0.0
-        };
-        out.push(points[index].lerp(points[index + 1], t));
-    }
-    out
 }
 
 fn reverse_chain(chain: &[SegmentSlice]) -> Vec<SegmentSlice> {

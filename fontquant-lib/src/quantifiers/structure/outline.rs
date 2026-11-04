@@ -301,3 +301,41 @@ pub(crate) fn corner_turn(incoming: Option<Vec2>, outgoing: Option<Vec2>) -> Opt
             .to_degrees(),
     )
 }
+
+/// Points at even distances along a polyline.
+///
+/// Flattening a chain leaves the corners and little else, so a straight edge
+/// contributes two points however long it is. Spacing the points by distance
+/// instead keeps every part of the serif represented when the chain is sampled
+/// along an axis.
+pub(crate) fn resample(points: &[Point], count: usize) -> Vec<Point> {
+    if points.len() < 2 || count < 2 {
+        return points.to_vec();
+    }
+    let mut lengths = Vec::with_capacity(points.len());
+    lengths.push(0.0);
+    let mut total = 0.0;
+    for pair in points.windows(2) {
+        total += pair[0].distance(pair[1]);
+        lengths.push(total);
+    }
+    if total <= 0.0 {
+        return points.to_vec();
+    }
+    let mut out = Vec::with_capacity(count);
+    let mut index = 0;
+    for step in 0..count {
+        let target = total * step as f64 / (count - 1) as f64;
+        while index + 2 < lengths.len() && lengths[index + 1] < target {
+            index += 1;
+        }
+        let length = lengths[index + 1] - lengths[index];
+        let t = if length > 0.0 {
+            ((target - lengths[index]) / length).clamp(0.0, 1.0)
+        } else {
+            0.0
+        };
+        out.push(points[index].lerp(points[index + 1], t));
+    }
+    out
+}
