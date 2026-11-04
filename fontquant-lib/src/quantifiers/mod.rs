@@ -29,6 +29,7 @@ use crate::{
         parametric::*,
         structure::{
             loops::LOOPS,
+            serifs::{SERIF_ASYMMETRIC, SERIF_BIFURCATED, SERIF_SHAPE, detect_serifs},
             terminals::{STEM_PROFILE, STEM_TERMINALS, gather_stem_terminals},
             waist::WAIST,
         },
@@ -77,4 +78,5 @@ all_quantifiers!(
     quantifier structure::loops::check_loop_style => [LOOPS]
     quantifier structure::waist::measure_waist => [WAIST]
     quantifier gather_stem_terminals => [STEM_TERMINALS, STEM_PROFILE]
+    quantifier detect_serifs => [SERIF_SHAPE, SERIF_ASYMMETRIC, SERIF_BIFURCATED]
 );
