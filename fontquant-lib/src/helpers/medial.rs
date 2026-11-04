@@ -14,7 +14,10 @@ const INF: f32 = 1e30;
 /// Returns `(contrast, Some(stress_angle_in_degrees))`, or `None` if the glyph
 /// is too far from a simple ring (outer contour plus a counter) to be measured.
 pub fn stroke_contrast_medial(glyph: &BezGlyph) -> Option<(f32, Option<f32>)> {
-    let cleaned = glyph.remove_overlaps().ok().unwrap_or_else(|| glyph.clone());
+    let cleaned = glyph
+        .remove_overlaps()
+        .ok()
+        .unwrap_or_else(|| glyph.clone());
     let contours = flatten_glyph(&cleaned);
     if contours.len() < 2 || contours.len() > 8 {
         // A clean 'o' is a single outer contour with a counter; anything with
@@ -278,7 +281,11 @@ fn point_segment_distance(p: Point, a: Point, b: Point) -> f64 {
 }
 
 #[allow(clippy::needless_range_loop)]
-fn rasterize(contours: &[Vec<Point>], gsize: f64, bbox: &kurbo::Rect) -> (Vec<u8>, usize, usize, f64) {
+fn rasterize(
+    contours: &[Vec<Point>],
+    gsize: f64,
+    bbox: &kurbo::Rect,
+) -> (Vec<u8>, usize, usize, f64) {
     let scale = (TARGET_RES * SS) as f64 / gsize;
     let w = ((bbox.width() * scale).ceil() as usize + 2 * MARGIN).max(1);
     let h = ((bbox.height() * scale).ceil() as usize + 2 * MARGIN).max(1);
@@ -577,7 +584,10 @@ fn prune_endpoints(img: &mut [u8], w: usize, h: usize) {
                         }
                         let ny = y as isize + dy;
                         let nx = x as isize + dx;
-                        if ny >= 0 && ny < h as isize && nx >= 0 && nx < w as isize
+                        if ny >= 0
+                            && ny < h as isize
+                            && nx >= 0
+                            && nx < w as isize
                             && img[ny as usize * w + nx as usize] != 0
                         {
                             count += 1;
