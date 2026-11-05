@@ -95,17 +95,21 @@ pub fn stroke_contrast_medial(glyph: &BezGlyph) -> Option<(f32, Option<f32>)> {
 
     widths.sort_by(|a, b| a.total_cmp(b));
     let p10 = percentile(&widths, 0.10);
+    let p20 = percentile(&widths, 0.20);
+    let p80 = percentile(&widths, 0.80);
     let p90 = percentile(&widths, 0.90);
     if p10 <= 0.0 {
         return None;
     }
-    let contrast = p90 / p10;
+    // For near-monoline fonts the extreme quantiles sit in the thin diagonal
+    // corner joins, which exaggerate the contrast and make it unstable between
+    // very similar designs (e.g. Roboto vs Roboto Flex). For such fonts the
+    // 20th/80th percentiles track the horizontal/vertical stroke widths much
+    // better; high-contrast fonts keep the deeper quantiles so hairline joins
+    // don't dominate the thin stroke.
+    let contrast = if p90 / p10 < 2.0 { p80 / p20 } else { p90 / p10 };
 
-    let thin_positions: Vec<_> = positions
-        .into_iter()
-        .filter(|&(_, _, dist)| dist <= p10)
-        .collect();
-    let angle = stress_angle(&thin_positions);
+    let angle = fit_stress_angle(&positions);
     Some((contrast, angle))
 }
 
@@ -617,36 +621,41 @@ fn percentile(sorted: &[f32], q: f64) -> f32 {
     sorted[idx.min(sorted.len() - 1)]
 }
 
-fn stress_angle(thin: &[(usize, usize, f32)]) -> Option<f32> {
-    if thin.len() < 4 {
+/// Fit the stroke half-width around the skeleton to a two-lobed model
+/// `w(theta) = c0 + c2 * cos(2 * (theta - phi))` and report the thin axis
+/// (`phi + 90` degrees). The phase is well defined even when the extreme
+/// quantiles are noisy, but is meaningless for essentially monoline fonts, in
+/// which case `None` is returned.
+fn fit_stress_angle(positions: &[(usize, usize, f32)]) -> Option<f32> {
+    if positions.len() < 8 {
         return None;
     }
-    let mut cx = 0.0f64;
-    let mut cy = 0.0f64;
-    for &(x, y, _) in thin {
-        cx += x as f64;
-        cy += y as f64;
+    let n = positions.len() as f64;
+    let cx = positions.iter().map(|(x, _, _)| *x as f64).sum::<f64>() / n;
+    let cy = positions.iter().map(|(_, y, _)| *y as f64).sum::<f64>() / n;
+    let (mut c0, mut ca, mut cb) = (0.0f64, 0.0f64, 0.0f64);
+    for &(x, y, d) in positions {
+        let theta = (y as f64 - cy).atan2(x as f64 - cx);
+        c0 += d as f64;
+        ca += d as f64 * (2.0 * theta).cos();
+        cb += d as f64 * (2.0 * theta).sin();
     }
-    let n = thin.len() as f64;
-    cx /= n;
-    cy /= n;
-    let mut doubled = Vec::with_capacity(thin.len());
-    for &(x, y, _) in thin {
-        let dx = x as f64 - cx;
-        let dy = y as f64 - cy;
-        if dx.abs() < 1e-9 && dy.abs() < 1e-9 {
-            continue;
-        }
-        let theta = dy.atan2(dx).to_degrees(); // -180..180
-        let theta = if theta < 0.0 { theta + 180.0 } else { theta }; // 0..180
-        doubled.push(2.0 * theta);
-    }
-    if doubled.is_empty() {
+    c0 /= n;
+    ca = 2.0 * ca / n;
+    cb = 2.0 * cb / n;
+    let c2 = (ca * ca + cb * cb).sqrt();
+    if c0 <= 0.0 || c2 / c0 < 0.03 {
         return None;
     }
-    doubled.sort_by(|a, b| a.total_cmp(b));
-    let median = doubled[doubled.len() / 2] / 2.0;
-    Some(median as f32)
+    let phi = 0.5 * cb.atan2(ca).to_degrees();
+    let mut thin = phi + 90.0;
+    while thin < 0.0 {
+        thin += 180.0;
+    }
+    while thin >= 180.0 {
+        thin -= 180.0;
+    }
+    Some(thin as f32)
 }
 
 #[cfg(test)]
