@@ -187,7 +187,7 @@ mod tests {
     #[test]
     fn test_slant_not_extreme() {
         let fontref = skrifa::FontRef::new(include_bytes!(
-            "../../../../tests/fonts/Wallpoet-Subset.ttf"
+            "../../../../tests/fonts/Wallpoet-subset.ttf"
         ))
         .unwrap();
         let stats = WholeFontStatistics::new_from_font(&fontref, &[]).unwrap();
