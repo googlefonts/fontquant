@@ -2,6 +2,12 @@
 resolver = "3"
 members = ["fontquant-lib", "fontquant-cli", "fontquant-py", "fontquant-web"]
 
+[workspace.package]
+version = "0.1.4"
+edition = "2024"
+license-file = "LICENSE"
+repository = "https://github.com/googlefonts/fontquant"
+
 [workspace.dependencies]
 clap = { version = "4.5.35", features = ["derive"] }
 font-types = "0.12.3"

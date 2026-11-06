@@ -3,11 +3,9 @@ name = "fontquant-lib"
 description = "Quantifiable data processor for fonts"
 readme = "../README.md"
 
-version = "0.1.3"
-edition = "2024"
-
-license-file = "../LICENSE"
-repository = "https://github.com/googlefonts/fontquant"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
 
 [dependencies]
 font-types = { workspace = true }
