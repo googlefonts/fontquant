@@ -3,7 +3,7 @@
 use std::str::FromStr;
 
 use fontquant_lib::{MetricValue, Results};
-use read_fonts::{types::Tag, FontRef};
+use read_fonts::{FontRef, types::Tag};
 use serde_json::{Map, Value};
 use skrifa::setting::Setting;
 use wasm_bindgen::prelude::*;

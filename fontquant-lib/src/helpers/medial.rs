@@ -107,7 +107,11 @@ pub fn stroke_contrast_medial(glyph: &BezGlyph) -> Option<(f32, Option<f32>)> {
     // 20th/80th percentiles track the horizontal/vertical stroke widths much
     // better; high-contrast fonts keep the deeper quantiles so hairline joins
     // don't dominate the thin stroke.
-    let contrast = if p90 / p10 < 2.0 { p80 / p20 } else { p90 / p10 };
+    let contrast = if p90 / p10 < 2.0 {
+        p80 / p20
+    } else {
+        p90 / p10
+    };
 
     let angle = fit_stress_angle(&positions);
     Some((contrast, angle))

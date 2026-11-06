@@ -1,7 +1,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used)]
 use std::collections::BTreeMap;
 
-use pyo3::{exceptions::PyRuntimeError, prelude::*, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, exceptions::PyRuntimeError, prelude::*};
 use read_fonts::FontRef;
 
 use fontquant_lib::{MetricValue, Results};
